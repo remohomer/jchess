@@ -29,18 +29,6 @@ public class Pawn extends Figure {
             moves = moveSide(BOTTOM, BOTTOM_BOTTOM, BOTTOM_LEFT, BOTTOM_RIGHT);
     }
 
-
-    public static void PawnsDiagonallyMovementConditions(Game game, int MOVE, int SELECTED) {
-        if (isEmptyFigure(game, MOVE) && isEnPassant(game.getBoard(), MOVE))
-            setLegalMoves(game, MOVE, SELECTED, true);
-        else if (isEmptyFigure(game, MOVE))
-            setUnderPressure(game, MOVE);
-        else if (isEnemyFigure(game, MOVE))
-            setLegalMoves(game, MOVE, SELECTED, true);
-        else if (isFriendlyFigure(game, MOVE))
-            setProtected(game, MOVE);
-    }
-
     @Override
     public void movement(Game game, final int SELECTED) {
         this.setSelected(true);
@@ -114,4 +102,14 @@ public class Pawn extends Figure {
         }
     }
 
+    public static void PawnsDiagonallyMovementConditions(Game game, int MOVE, int SELECTED) {
+        if (isEmptyFigure(game, MOVE) && isEnPassant(game.getBoard(), MOVE))
+            setLegalMoves(game, MOVE, SELECTED, true);
+        else if (isEmptyFigure(game, MOVE))
+            setUnderPressure(game, MOVE);
+        else if (isEnemyFigure(game, MOVE))
+            setLegalMoves(game, MOVE, SELECTED, true);
+        else if (isFriendlyFigure(game, MOVE))
+            setProtected(game, MOVE);
+    }
 }

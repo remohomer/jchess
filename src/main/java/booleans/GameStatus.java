@@ -10,20 +10,20 @@ public class GameStatus {
         DRAW = false;
         CHECK_MATE = false;
     }
+    public boolean isActiveGame() {
+        return ACTIVE_GAME;
+    }
     public void setActiveGame(boolean activeGame) {
         ACTIVE_GAME = activeGame;
+    }
+    public boolean isDraw() {
+        return DRAW;
     }
     public void setDraw(boolean draw) {
         DRAW = draw;
     }
     public void setCheckMate(boolean checkMate) {
         CHECK_MATE = checkMate;
-    }
-    public boolean isActiveGame() {
-        return ACTIVE_GAME;
-    }
-    public boolean isDraw() {
-        return DRAW;
     }
     public boolean isCheckMate() {
         return CHECK_MATE;

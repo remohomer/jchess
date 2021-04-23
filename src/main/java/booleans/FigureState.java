@@ -26,20 +26,20 @@ public class FigureState {
         underPressureByBlack = false;
     }
 
-    public boolean isPinned() {
-        return pinned;
-    }
-
-    public void setPinned(boolean pinned) {
-        this.pinned = pinned;
-    }
-
     public boolean isSelected() {
         return selected;
     }
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
     }
 
     public boolean isCheckLine() {
@@ -50,12 +50,12 @@ public class FigureState {
         this.checkLine = checkLine;
     }
 
-    public boolean isLegalMove() {
-        return legalMove;
+    public boolean isPinnedCheckLine() {
+        return pinnedCheckLine;
     }
 
-    public void setLegalMove(boolean legalMove) {
-        this.legalMove = legalMove;
+    public void setPinnedCheckLine(boolean pinnedCheckLine) {
+        this.pinnedCheckLine = pinnedCheckLine;
     }
 
     public boolean isEnPassant() {
@@ -98,11 +98,11 @@ public class FigureState {
         this.underPressureByBlack = underPressureByBlack;
     }
 
-    public boolean isPinnedCheckLine() {
-        return pinnedCheckLine;
+    public boolean isLegalMove() {
+        return legalMove;
     }
 
-    public void setPinnedCheckLine(boolean pinnedCheckLine) {
-        this.pinnedCheckLine = pinnedCheckLine;
+    public void setLegalMove(boolean legalMove) {
+        this.legalMove = legalMove;
     }
 }

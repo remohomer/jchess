@@ -2,7 +2,6 @@ package app;
 
 import enums.Color;
 import enums.FigureType;
-import figures.Empty;
 
 public class Printer {
 
@@ -229,7 +228,7 @@ public class Printer {
                 System.out.print(" " + row + "   ");
             }
             if (i < 10) {
-                System.out.print(" 0" + i);
+                System.out.print(" " + i + " ");
             } else {
                 System.out.print(" " + i);
             }

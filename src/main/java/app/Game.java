@@ -3,7 +3,6 @@ package app;
 import enums.Color;
 import booleans.GameStatus;
 
-import java.io.File;
 import java.util.Scanner;
 
 public class Game extends GameStatus {
@@ -39,6 +38,7 @@ public class Game extends GameStatus {
             int firstPosition = loadFirstPosition();
             this.board.getField(firstPosition).getFigure().movement(this, firstPosition);
 
+            Printer.printBoardWithNumbers(this);
             Printer.printBoardWhileFigureIsSelected(this);
 
             int secondPosition = loadSecondPosition();
@@ -101,9 +101,21 @@ public class Game extends GameStatus {
         return secondPosition;
     }
 
+    public void invertWhichPlayer() {
+        if (whichPlayer == Color.WHITE) whichPlayer = Color.BLACK;
+        else whichPlayer = Color.WHITE;
+    }
+
     public void isGameOver() {
         if (this.isCheckMate() || this.isDraw())
             setActiveGame(false);
+    }
+
+    public void whoWon() {
+        if (this.whichPlayer == Color.BLACK) {
+            System.out.println("Wygrał " + this.getPlayer1().getPlayerName());
+        } else
+            System.out.println("Wygrał " + this.getPlayer2().getPlayerName());
     }
 
     public Board getBoard() {
@@ -122,15 +134,7 @@ public class Game extends GameStatus {
         return whichPlayer;
     }
 
-    public void invertWhichPlayer() {
-        if (whichPlayer == Color.WHITE) whichPlayer = Color.BLACK;
-        else whichPlayer = Color.WHITE;
-    }
 
-    public void whoWon() {
-        if (this.whichPlayer == Color.BLACK) {
-            System.out.println("Wygrał " + this.getPlayer1().getPlayerName());
-        } else
-            System.out.println("Wygrał " + this.getPlayer2().getPlayerName());
-    }
+
+
 }

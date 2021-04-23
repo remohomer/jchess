@@ -11,122 +11,19 @@ public abstract class Figure extends FigureState implements Movement {
     protected FigureType figureType;
     protected Color figureColor;
 
+    public Color getFigureColor() {
+        return figureColor;
+    }
+    public FigureType getFigureType() {
+        return figureType;
+    }
+
+
     public static boolean isKingCheck(Game game) {
         if (game.getWhichPlayer() == Color.WHITE) {
             return game.getBoard().getCastlingConditions().isWhiteKingCheck();
         } else {
             return game.getBoard().getCastlingConditions().isBlackKingCheck();
-        }
-    }
-
-    public static boolean isEmptyFigure(Game game, int position) {
-        return game.getBoard().getField(position).getFigure().getFigureType() == FigureType.EMPTY;
-    }
-
-    public static boolean isEnemyFigure(Game game, int position) {
-        return game.getBoard().getField(position).getFigure().getFigureColor() != Color.NONE && game.getBoard().getField(position).getFigure().getFigureColor() != game.getWhichPlayer();
-    }
-    public boolean isPawn(Board board, int position) {
-        return board.getField(position).getFigure().getFigureType() == FigureType.PAWN;
-    }
-
-    public static boolean isEnemyKing(Game game, int position) {
-        return game.getBoard().getField(position).getFigure().getFigureType() == FigureType.KING && game.getBoard().getField(position).getFigure().getFigureColor() != game.getWhichPlayer();
-    }
-
-    public static boolean isFriendlyFigure(Game game, int position) {
-        return game.getBoard().getField(position).getFigure().getFigureColor() == game.getWhichPlayer();
-    }
-
-    public static boolean isOnBoard(int position) {
-        return position >= 0 && position <= 63;
-    }
-
-    public static boolean isEnPassant(Board board, int position) {
-        return board.getField(position).getFigure().isEnPassant();
-    }
-
-    public static boolean isFirstRow(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getRow() == 1;
-    }
-
-    public static boolean isSecondRow(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getRow() == 2;
-    }
-
-    public static boolean isSevenRow(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getRow() == 7;
-    }
-
-    public static boolean isEightRow(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getRow() == 8;
-    }
-
-    public static boolean isFirstColumn(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getColumn() == 1;
-    }
-
-    public static boolean isSecondColumn(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getColumn() == 2;
-    }
-
-    public static boolean isSevenColumn(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getColumn() == 7;
-    }
-
-    public static boolean isEightColumn(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getColumn() == 8;
-    }
-
-    public static void setUnderPressure(Game game, int position) {
-        if (game.getWhichPlayer() == Color.WHITE)
-            game.getBoard().getField(position).getFigure().setUnderPressureByWhite(true);
-        else
-            game.getBoard().getField(position).getFigure().setUnderPressureByBlack(true);
-    }
-
-    public static void setProtected(Game game, int position) {
-        if (game.getWhichPlayer() == Color.WHITE)
-            game.getBoard().getField(position).getFigure().setProtectedByWhite(true);
-        else
-            game.getBoard().getField(position).getFigure().setProtectedByBlack(true);
-    }
-
-    public static boolean setCheckLines(Game game, int MOVE, int whichMove, int j) {
-        if (isEnemyKing(game, MOVE)) {
-            if (isOnBoard(MOVE + whichMove) && isEmptyFigure(game, MOVE + whichMove)) {
-                game.getBoard().getField(MOVE + whichMove).getFigure().setCheckLine(true);
-                setUnderPressure(game, MOVE + whichMove);
-            }
-            for (int i = 0; i <= j; i++) {
-                game.getBoard().getField(MOVE - whichMove * i).getFigure().setCheckLine(true);
-            }
-            return true;
-        }
-        return false;
-    }
-
-
-    public static boolean setPinnedCheckLines(Game game, int MOVE, int whichMove, int j) {
-        if (isOnBoard(MOVE + whichMove)) {
-            if (isEnemyKing(game, MOVE + whichMove)) {
-                game.getBoard().getField(MOVE).getFigure().setPinned(true);
-                for (int i = 0; i <= j; i++) {
-                    game.getBoard().getField(MOVE - whichMove * i).getFigure().setPinnedCheckLine(true);
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static void setLegalMoves(Game game, int MOVE, int SELECTED, boolean setUnderPressure) {
-        if (canIMoveWhenIsKingCheck(game, MOVE, setUnderPressure)) ;
-        else if (canIMoveWhenIAmPinned(game, MOVE, SELECTED, setUnderPressure)) ;
-        else {
-            game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
-            if (setUnderPressure)
-                setUnderPressure(game, MOVE);
         }
     }
 
@@ -167,6 +64,94 @@ public abstract class Figure extends FigureState implements Movement {
             }
         }
         return false;
+    }
+
+    public static void setUnderPressure(Game game, int position) {
+        if (game.getWhichPlayer() == Color.WHITE)
+            game.getBoard().getField(position).getFigure().setUnderPressureByWhite(true);
+        else
+            game.getBoard().getField(position).getFigure().setUnderPressureByBlack(true);
+    }
+
+    public static void setProtected(Game game, int position) {
+        if (game.getWhichPlayer() == Color.WHITE)
+            game.getBoard().getField(position).getFigure().setProtectedByWhite(true);
+        else
+            game.getBoard().getField(position).getFigure().setProtectedByBlack(true);
+    }
+
+    public static boolean setCheckLines(Game game, int MOVE, int whichMove, int j) {
+        if (isEnemyKing(game, MOVE)) {
+            if (isOnBoard(MOVE + whichMove) && isEmptyFigure(game, MOVE + whichMove)) {
+                game.getBoard().getField(MOVE + whichMove).getFigure().setCheckLine(true);
+                setUnderPressure(game, MOVE + whichMove);
+            }
+            for (int i = 0; i <= j; i++) {
+                game.getBoard().getField(MOVE - whichMove * i).getFigure().setCheckLine(true);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean setPinnedCheckLines(Game game, int MOVE, int whichMove, int j) {
+        if (isOnBoard(MOVE + whichMove)) {
+            if (isEnemyKing(game, MOVE + whichMove)) {
+                game.getBoard().getField(MOVE).getFigure().setPinned(true);
+                for (int i = 0; i <= j; i++) {
+                    game.getBoard().getField(MOVE - whichMove * i).getFigure().setPinnedCheckLine(true);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void setLegalMoves(Game game, int MOVE, int SELECTED, boolean setUnderPressure) {
+        if (canIMoveWhenIsKingCheck(game, MOVE, setUnderPressure)) ;
+        else if (canIMoveWhenIAmPinned(game, MOVE, SELECTED, setUnderPressure)) ;
+        else {
+            game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
+            if (setUnderPressure)
+                setUnderPressure(game, MOVE);
+        }
+    }
+
+    public static void movementExceptions(Game game, Exception e, int SELECTED, int whichMove) {
+        System.out.println(e.getMessage());
+        System.out.println("----------------------------------");
+        System.out.println("FigureType: " + game.getBoard().getField(SELECTED).getFigure().figureType);
+        System.out.println("FigureColor: " + game.getBoard().getField(SELECTED).getFigure().figureColor);
+        System.out.println("SELECTED: " + SELECTED);
+        System.out.println("whichMoves: " + whichMove);
+    }
+
+    public boolean isPawn(Board board, int position) {
+        return board.getField(position).getFigure().getFigureType() == FigureType.PAWN;
+    }
+
+    public static boolean isOnBoard(int position) {
+        return position >= 0 && position <= 63;
+    }
+
+    public static boolean isEmptyFigure(Game game, int position) {
+        return game.getBoard().getField(position).getFigure().getFigureType() == FigureType.EMPTY;
+    }
+
+    public static boolean isFriendlyFigure(Game game, int position) {
+        return game.getBoard().getField(position).getFigure().getFigureColor() == game.getWhichPlayer();
+    }
+
+    public static boolean isEnemyFigure(Game game, int position) {
+        return game.getBoard().getField(position).getFigure().getFigureColor() != Color.NONE && game.getBoard().getField(position).getFigure().getFigureColor() != game.getWhichPlayer();
+    }
+
+    public static boolean isEnemyKing(Game game, int position) {
+        return game.getBoard().getField(position).getFigure().getFigureType() == FigureType.KING && game.getBoard().getField(position).getFigure().getFigureColor() != game.getWhichPlayer();
+    }
+
+    public static boolean isEnPassant(Board board, int position) {
+        return board.getField(position).getFigure().isEnPassant();
     }
 
     public static void LoopedMoveSwitch(Game game, final int SELECTED, int whichMove) {
@@ -264,20 +249,35 @@ public abstract class Figure extends FigureState implements Movement {
         }
     }
 
-    public static void movementExceptions(Game game, Exception e, int SELECTED, int whichMove) {
-        System.out.println(e.getMessage());
-        System.out.println("----------------------------------");
-        System.out.println("FigureType: " + game.getBoard().getField(SELECTED).getFigure().figureType);
-        System.out.println("FigureColor: " + game.getBoard().getField(SELECTED).getFigure().figureColor);
-        System.out.println("SELECTED: " + SELECTED);
-        System.out.println("whichMoves: " + whichMove);
+    public static boolean isFirstRow(Board board, int selectedFigurePosition) {
+        return board.getField(selectedFigurePosition).getRow() == 1;
     }
 
-    public Color getFigureColor() {
-        return figureColor;
+    public static boolean isSecondRow(Board board, int selectedFigurePosition) {
+        return board.getField(selectedFigurePosition).getRow() == 2;
     }
 
-    public FigureType getFigureType() {
-        return figureType;
+    public static boolean isSevenRow(Board board, int selectedFigurePosition) {
+        return board.getField(selectedFigurePosition).getRow() == 7;
+    }
+
+    public static boolean isEightRow(Board board, int selectedFigurePosition) {
+        return board.getField(selectedFigurePosition).getRow() == 8;
+    }
+
+    public static boolean isFirstColumn(Board board, int selectedFigurePosition) {
+        return board.getField(selectedFigurePosition).getColumn() == 1;
+    }
+
+    public static boolean isSecondColumn(Board board, int selectedFigurePosition) {
+        return board.getField(selectedFigurePosition).getColumn() == 2;
+    }
+
+    public static boolean isSevenColumn(Board board, int selectedFigurePosition) {
+        return board.getField(selectedFigurePosition).getColumn() == 7;
+    }
+
+    public static boolean isEightColumn(Board board, int selectedFigurePosition) {
+        return board.getField(selectedFigurePosition).getColumn() == 8;
     }
 }

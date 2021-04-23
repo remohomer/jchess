@@ -21,15 +21,6 @@ public class Knight extends Figure {
         moves = moveSide(TOP_TOP_LEFT, TOP_TOP_RIGHT, BOTTOM_BOTTOM_LEFT, BOTTOM_BOTTOM_RIGHT, LEFT_LEFT_TOP, LEFT_LEFT_BOTTOM, RIGHT_RIGHT_TOP, RIGHT_RIGHT_BOTTOM);
     }
 
-    public void MovementConditions(Game game, int MOVE) {
-        if (isFriendlyFigure(game, MOVE))
-            setProtected(game, MOVE);
-        else {
-            game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
-            setUnderPressure(game, MOVE);
-        }
-    }
-
     @Override
     public void movement(Game game, final int SELECTED) {
         this.setSelected(true);
@@ -109,6 +100,15 @@ public class Knight extends Figure {
             } catch (Exception e) {
                 movementExceptions(game, e, SELECTED, whichMove);
             }
+        }
+    }
+
+    public void MovementConditions(Game game, int MOVE) {
+        if (isFriendlyFigure(game, MOVE))
+            setProtected(game, MOVE);
+        else {
+            game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
+            setUnderPressure(game, MOVE);
         }
     }
 }

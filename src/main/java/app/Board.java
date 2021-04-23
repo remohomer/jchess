@@ -7,8 +7,8 @@ import booleans.CastlingConditions;
 public class Board {
     private static int counter = 1;
     protected final int id;
-    private final Field[] field;
     private final CastlingConditions castlingConditions;
+    private final Field[] field;
 
     public Board() {
         id = counter;
@@ -138,16 +138,16 @@ public class Board {
         return id;
     }
 
+    public CastlingConditions getCastlingConditions() {
+        return castlingConditions;
+    }
+
     public Field getField(int i) {
         return field[i];
     }
 
     public Field[] getWholeField() {
         return field;
-    }
-
-    public CastlingConditions getCastlingConditions() {
-        return castlingConditions;
     }
 }
 
