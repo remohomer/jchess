@@ -33,15 +33,13 @@ public class Game extends GameStatus {
         this.setActiveGame(true);
         while (this.isActiveGame()) {
 
-            FileManager.saveBoardToByteFile(this.getBoard(),"test2");
-            FileManager.saveBoardToByteFile(this.getBoard(),"test2");
+            Printer.printBoardWithNumbers(this);
             Printer.printBoard(this);
 
             int firstPosition = loadFirstPosition();
             this.board.getField(firstPosition).getFigure().movement(this, firstPosition);
 
             Printer.printBoardWhileFigureIsSelected(this);
-
 
             int secondPosition = loadSecondPosition();
             Move.clearFigureStates(this.getBoard());
@@ -61,21 +59,21 @@ public class Game extends GameStatus {
     private int loadFirstPosition() {
         int firstPosition = 0;
 
-        boolean noException;
+        boolean thereAreNoExceptions;
         do {
-            noException = true;
+            thereAreNoExceptions = true;
             try {
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("Którą figurę poruszyć: ");
+                System.out.print("Którą figurę poruszyć [0-63]: ");
                 firstPosition = scanner.nextInt();
                 if (!Move.isLegalFirstPosition(this.board, this.whichPlayer, firstPosition)) {
-                    noException = false;
+                    thereAreNoExceptions = false;
                 }
             } catch (Exception e) {
                 System.out.println("ERROR: Podaj liczbę całkowitą od 0 do 63");
-                noException = false;
+                thereAreNoExceptions = false;
             }
-        } while (!noException);
+        } while (!thereAreNoExceptions);
 
         return firstPosition;
     }
@@ -88,7 +86,7 @@ public class Game extends GameStatus {
             thereAreNoExceptions = true;
             try {
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("Gdzie tą figurę położyć?: ");
+                System.out.print("Gdzie tą figurę położyć? [0-63]: ");
                 secondPosition = scanner.nextInt();
                 if (!Move.isLegalSecondPosition(this.board, this.whichPlayer, secondPosition)) {
                     thereAreNoExceptions = false;

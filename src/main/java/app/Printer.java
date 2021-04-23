@@ -217,6 +217,37 @@ public class Printer {
         }
     }
 
+    public static void printBoardWithNumbers(Game game) {
+
+        int row = 8;
+
+        for (int i = 0; i < 64; i++) {
+            if (i == 0) {
+                System.out.println("      a  b  c  d  e  f  g  h  \n");
+            }
+            if (i % 8 == 0) {
+                System.out.print(" " + row + "   ");
+            }
+            if (i < 10) {
+                System.out.print(" 0" + i);
+            } else {
+                System.out.print(" " + i);
+            }
+
+            if ((i + 1) % 8 == 0) {
+                System.out.print("   " + row + "\n");
+            }
+
+            if (i != 0 && (i + 1) % 8 == 0) {
+                row--;
+            }
+
+            if (i == 63) {
+                System.out.println("\n      a  b  c  d  e  f  g  h  ");
+            }
+        }
+    }
+
     public static void printBoardWithUnderPressure(Game game) {
 
         System.out.println("\n isUnderPressure()");
@@ -304,7 +335,6 @@ public class Printer {
     public static void printBoardWithLegalMoves(Game game) {
 
         System.out.println("\n isLegalMove()");
-        System.out.println("\n " + game.getWhichPlayer());
 
         int row = 8;
 

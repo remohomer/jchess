@@ -32,9 +32,7 @@ public class Board {
             ch++;
         }
 
-//        initializeBoard(); // if you want to initialize other Boards you have to comment King. line if you are testing something on not default board
-        initializeBoardTestingCheckMate();
-
+        initializeBoard(); // if you want to initialize other Boards you have to comment King. line if you are testing something on not default board
         counter++;
     }
 
