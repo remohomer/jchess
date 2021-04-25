@@ -10,6 +10,7 @@ public class Empty extends Figure {
     public Empty() {
         this.figureType = FigureType.EMPTY;
         this.figureColor = Color.NONE;
+        activePromotion = false;
     }
     public Empty(Figure figure) {
         super(figure);
