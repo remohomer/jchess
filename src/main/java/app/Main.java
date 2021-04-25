@@ -6,8 +6,8 @@ import figures.*;
 public class Main {
 
     public static void main(String[] args) {
-
         initializeGame();
+
     }
 
     public static void initializeGame() {
@@ -31,6 +31,7 @@ public class Main {
             ch++;
         }
         CastlingConditions castlingConditions = new CastlingConditions();
+
         Board board = new Board(castlingConditions, field);
         Game game = new Game(board);
         game.newGame();

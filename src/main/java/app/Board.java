@@ -15,7 +15,7 @@ public class Board {
         this.field = field;
         this.castlingConditions = castlingConditions;
 
-        initializeBoard(); // if you want to initialize other Boards you have to comment King. line if you are testing something on not default board
+        initializeBoard(); // if you want to initialize other Boards you have to comment "King.setLegalCastling(game)"
         counter++;
     }
 
