@@ -7,10 +7,10 @@ public class Main {
 
     public static void main(String[] args) {
 
-        initializeGame("game_1");
+        initializeGame();
     }
 
-    public static void initializeGame(String gameName) {
+    public static void initializeGame() {
         Figure figure = new Empty();
         Field[] field = new Field[64];
 
