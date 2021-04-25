@@ -1,22 +1,19 @@
 package figures;
 
 import app.Game;
-import enums.FigureType;
 import enums.Color;
+import enums.FigureType;
 
 public class Empty extends Figure {
     private boolean activePromotion;
 
     public Empty() {
-        activePromotion = false;
-        figureColor = Color.NONE;
-        figureType = FigureType.EMPTY;
+        this.figureType = FigureType.EMPTY;
+        this.figureColor = Color.NONE;
     }
     public Empty(Figure figure) {
-        super();
+        super(figure);
         activePromotion = false;
-        this.figureType = FigureType.EMPTY;
-        this.figureColor = figure.getFigureColor();
     }
 
     @Override

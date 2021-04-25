@@ -1,22 +1,25 @@
 package app;
 
-import figures.Empty;
 import figures.Figure;
 
 public class Field {
 
-    private final int number;
-    private final int row;
-    private final int column;
-    private final String cords;
+    private int number;
+    private int row;
+    private int column;
+    private String cords;
     private Figure figure;
 
-    public Field(int number, int row, int column, String cords) {
+    public Field() {
+
+    }
+
+    public Field(int number, int row, int column, String cords, Figure figure) {
         this.number = number;
         this.row = row;
         this.column = column;
         this.cords = cords;
-        figure = new Empty();
+        this.figure = figure;
     }
 
     public Figure getFigure() {
@@ -46,4 +49,18 @@ public class Field {
     public String getCords() {
         return cords;
     }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+    public void setRow(int row) {
+        this.row = row;
+    }
+    public void setColumn(int column) {
+        this.column = column;
+    }
+    public void setCords(String cords) {
+        this.cords = cords;
+    }
+
 }

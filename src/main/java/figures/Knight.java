@@ -1,23 +1,20 @@
 package figures;
 
 import app.Game;
-import enums.FigureType;
 import enums.Color;
+import enums.FigureType;
 
 public class Knight extends Figure {
     private final int[] moves;
 
     public Knight(Color figureColor) {
-        super();
-        figureType = FigureType.KNIGHT;
-        this.figureColor = figureColor;
+        super(figureColor);
+        this.figureType = FigureType.KNIGHT;
         moves = moveSide(TOP_TOP_LEFT, TOP_TOP_RIGHT, BOTTOM_BOTTOM_LEFT, BOTTOM_BOTTOM_RIGHT, LEFT_LEFT_TOP, LEFT_LEFT_BOTTOM, RIGHT_RIGHT_TOP, RIGHT_RIGHT_BOTTOM);
     }
 
     public Knight(Figure figure) {
-        super();
-        this.figureType = FigureType.KNIGHT;
-        this.figureColor = figure.getFigureColor();
+        super(figure);
         moves = moveSide(TOP_TOP_LEFT, TOP_TOP_RIGHT, BOTTOM_BOTTOM_LEFT, BOTTOM_BOTTOM_RIGHT, LEFT_LEFT_TOP, LEFT_LEFT_BOTTOM, RIGHT_RIGHT_TOP, RIGHT_RIGHT_BOTTOM);
     }
 

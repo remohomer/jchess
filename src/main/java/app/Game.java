@@ -5,21 +5,23 @@ import booleans.GameStatus;
 
 import java.util.Scanner;
 
+
 public class Game extends GameStatus {
     private Player player1;
     private Player player2;
     private Board board;
     private Color whichPlayer;
 
-    public Game() {
-        board = new Board();
+
+    public Game(Board board) {
+        this.board = board;
         this.whichPlayer = Color.WHITE;
         player1 = new Player("PLAYER_1", Color.WHITE);
         player2 = new Player("PLAYER_2", Color.BLACK);
     }
 
-    public Game(String player1, String player2) {
-        this();
+    public Game(Board board, String player1, String player2) {
+        this(board);
         this.player1 = new Player(player1, Color.WHITE);
         this.player2 = new Player(player2, Color.BLACK);
     }
@@ -133,8 +135,6 @@ public class Game extends GameStatus {
     public Color getWhichPlayer() {
         return whichPlayer;
     }
-
-
 
 
 }

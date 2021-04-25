@@ -9,10 +9,8 @@ public class Pawn extends Figure {
     public final int[] moves;
 
     public Pawn(Color figureColor) {
-        super();
-        figureType = FigureType.PAWN;
-        this.figureColor = figureColor;
-
+        super(figureColor);
+        this.figureType = FigureType.PAWN;
         if (figureColor == Color.WHITE)
             moves = moveSide(TOP, TOP_TOP, TOP_LEFT, TOP_RIGHT);
         else
@@ -20,9 +18,7 @@ public class Pawn extends Figure {
     }
 
     public Pawn(Figure figure) {
-        super();
-        this.figureType = FigureType.PAWN;
-        this.figureColor = figure.getFigureColor();
+        super(figure);
         if (figureColor == Color.WHITE)
             moves = moveSide(TOP, TOP_TOP, TOP_LEFT, TOP_RIGHT);
         else

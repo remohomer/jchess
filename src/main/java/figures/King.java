@@ -1,24 +1,21 @@
 package figures;
 
 import app.Game;
-import enums.FigureType;
 import enums.Color;
+import enums.FigureType;
 
 public class King extends Figure {
 
     public final int[] moves;
 
     public King(Color figureColor) {
-        super();
-        figureType = FigureType.KING;
-        this.figureColor = figureColor;
+        super(figureColor);
+        this.figureType = FigureType.KING;
         moves = moveSide(TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT);
     }
 
     public King(Figure figure) {
-        super();
-        this.figureType = FigureType.KING;
-        this.figureColor = figure.getFigureColor();
+        super(figure);
         moves = moveSide(TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT);
     }
 

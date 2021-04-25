@@ -11,13 +11,23 @@ public abstract class Figure extends FigureState implements Movement {
     protected FigureType figureType;
     protected Color figureColor;
 
+    public Figure() { }
+
+    public Figure(Color figureColor) {
+        this.figureColor = figureColor;
+    }
+
+    public Figure(Figure figure) {
+        this.figureType = figure.getFigureType();
+        this.figureColor = figure.getFigureColor();
+    }
+
     public Color getFigureColor() {
         return figureColor;
     }
     public FigureType getFigureType() {
         return figureType;
     }
-
 
     public static boolean isKingCheck(Game game) {
         if (game.getWhichPlayer() == Color.WHITE) {

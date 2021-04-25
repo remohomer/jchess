@@ -7,30 +7,13 @@ import booleans.CastlingConditions;
 public class Board {
     private static int counter = 1;
     protected final int id;
-    private final CastlingConditions castlingConditions;
-    private final Field[] field;
+    private CastlingConditions castlingConditions;
+    private Field[] field;
 
-    public Board() {
+    public Board(CastlingConditions castlingConditions, Field[] field) {
         id = counter;
-        field = new Field[64];
-        castlingConditions = new CastlingConditions();
-
-        int column = 8;
-        char ch = 97;
-        for (int i = 0; i < 64; i++) {
-            int row;
-            if ((i + 1) % 8 == 0) {
-                row = 8;
-            } else {
-                row = (i + 1) % 8;
-            }
-            field[i] = new Field(i, column, row, Character.toString(ch) + column);
-            if ((i + 1) % 8 == 0) {
-                column--;
-                ch -= 8;
-            }
-            ch++;
-        }
+        this.field = field;
+        this.castlingConditions = castlingConditions;
 
         initializeBoard(); // if you want to initialize other Boards you have to comment King. line if you are testing something on not default board
         counter++;
