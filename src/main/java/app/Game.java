@@ -1,6 +1,6 @@
 package app;
 
-import enums.Color;
+import enums.FigureColor;
 import booleans.GameStatus;
 
 import java.util.Scanner;
@@ -10,24 +10,27 @@ public class Game extends GameStatus {
     private Player player1;
     private Player player2;
     private Board board;
-    private Color whichPlayer;
+    private FigureColor whichPlayer;
 
 
     public Game(Board board) {
         this.board = board;
-        this.whichPlayer = Color.WHITE;
-        player1 = new Player("PLAYER_1", Color.WHITE);
-        player2 = new Player("PLAYER_2", Color.BLACK);
+        this.whichPlayer = FigureColor.WHITE;
+        player1 = new Player("PLAYER_1", FigureColor.WHITE);
+        player2 = new Player("PLAYER_2", FigureColor.BLACK);
     }
 
     public Game(Board board, String player1, String player2) {
         this(board);
-        this.player1 = new Player(player1, Color.WHITE);
-        this.player2 = new Player(player2, Color.BLACK);
+        this.player1 = new Player(player1, FigureColor.WHITE);
+        this.player2 = new Player(player2, FigureColor.BLACK);
     }
 
     public Game(Game game) {
-        // resume game
+        this.board = game.getBoard();
+        this.whichPlayer = FigureColor.WHITE;
+        this.player1 = game.getPlayer1();
+        this.player2 = game.getPlayer2();
     }
 
     public void newGame() {
@@ -104,8 +107,8 @@ public class Game extends GameStatus {
     }
 
     public void invertWhichPlayer() {
-        if (whichPlayer == Color.WHITE) whichPlayer = Color.BLACK;
-        else whichPlayer = Color.WHITE;
+        if (whichPlayer == FigureColor.WHITE) whichPlayer = FigureColor.BLACK;
+        else whichPlayer = FigureColor.WHITE;
     }
 
     public void isGameOver() {
@@ -114,7 +117,7 @@ public class Game extends GameStatus {
     }
 
     public void whoWon() {
-        if (this.whichPlayer == Color.BLACK) {
+        if (this.whichPlayer == FigureColor.BLACK) {
             System.out.println("Wygrał " + this.getPlayer1().getPlayerName());
         } else
             System.out.println("Wygrał " + this.getPlayer2().getPlayerName());
@@ -132,7 +135,7 @@ public class Game extends GameStatus {
         return player2;
     }
 
-    public Color getWhichPlayer() {
+    public FigureColor getWhichPlayer() {
         return whichPlayer;
     }
 

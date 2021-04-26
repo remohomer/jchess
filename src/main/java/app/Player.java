@@ -1,19 +1,19 @@
 package app;
 
-import enums.Color;
+import enums.FigureColor;
 
 public class Player {
 
-    Color playerColor;
+    FigureColor playerFigureColor;
     String playerName;
 
-    public Player(String playerName, Color playerColor) {
+    public Player(String playerName, FigureColor playerFigureColor) {
         this.playerName = new String(playerName);
-        this.playerColor = playerColor;
+        this.playerFigureColor = playerFigureColor;
     }
 
-    public Color getPlayerColor() {
-        return playerColor;
+    public FigureColor getPlayerColor() {
+        return playerFigureColor;
     }
     public String getPlayerName() {
         return playerName;

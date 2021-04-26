@@ -1,8 +1,6 @@
 package app;
 
-import booleans.CastlingConditions;
-import enums.Color;
-import enums.FigureType;
+import enums.FigureColor;
 import figures.*;
 
 import java.io.*;
@@ -13,20 +11,20 @@ public class FileManager {
     private static final int COLOR_LENGHT = 5;
     private static final int TYPE_LENGHT = 5;
 
-    public static void saveBoardToByteFile(Board board, String fileName) {
+    public static void saveGameToByteFile(Game game, String fileName) {
         try {
-            DataOutputStream outS = new DataOutputStream(new FileOutputStream(fileName + ".byte"));
+            DataOutputStream outS = new DataOutputStream(new FileOutputStream(fileName + ".txt"));
 
             for (int i = 0; i < 64; i++) {
-                outS.writeInt(board.getField(i).getNumber());
+                outS.writeInt(game.getBoard().getField(i).getNumber());
 
                 StringBuffer figureColor = new StringBuffer(COLOR_LENGHT);
-                figureColor.append(board.getField(i).getFigure().getFigureColor());
+                figureColor.append(game.getBoard().getField(i).getFigure().getFigureColor());
                 figureColor.setLength(COLOR_LENGHT);
                 outS.writeChars(figureColor.toString());
 
                 StringBuffer figureType = new StringBuffer(TYPE_LENGHT);
-                figureType.append(board.getField(i).getFigure().getFigureType());
+                figureType.append(game.getBoard().getField(i).getFigure().getFigureType());
                 figureType.setLength(TYPE_LENGHT);
                 outS.writeChars(figureType.toString());
             }
@@ -38,9 +36,9 @@ public class FileManager {
         }
     }
 
-    public static void loadByteFileToBoard(Board board, String fileName) {
+    public static void loadByteFileToGame(Game game, String fileName) {
         try {
-            DataInputStream inS = new DataInputStream(new FileInputStream(fileName + ".byte"));
+            DataInputStream inS = new DataInputStream(new FileInputStream(fileName + ".txt"));
 
             for (int i = 0; i < 64; i++) {
 
@@ -60,7 +58,7 @@ public class FileManager {
                     if (tChar != '\0')
                         figureType.append(tChar);
                 }
-                initializeFigureSwitch(board, figureColor.toString(), figureType.toString(), position);
+                initializeFigure(game.getBoard(), figureColor.toString(), figureType.toString(), position);
             }
             inS.close();
 
@@ -69,7 +67,7 @@ public class FileManager {
         }
     }
 
-    public static void initializeFigureSwitch(Board board, String figureColor, String figureType, int position) {
+    public static void initializeFigure(Board board, String figureColor, String figureType, int position) {
         switch (figureType) {
             case "EMPTY": {
                 if (figureColor.equals("NONE")) {
@@ -79,55 +77,55 @@ public class FileManager {
             }
             case "PAWN": {
                 if (figureColor.equals("WHITE")) {
-                    board.getField(position).setFigure(new Pawn(Color.WHITE));
+                    board.getField(position).setFigure(new Pawn(FigureColor.WHITE));
                     break;
                 } else {
-                    board.getField(position).setFigure(new Pawn(Color.BLACK));
+                    board.getField(position).setFigure(new Pawn(FigureColor.BLACK));
                     break;
                 }
             }
             case "BISHOP": {
                 if (figureColor.equals("WHITE")) {
-                    board.getField(position).setFigure(new Bishop(Color.WHITE));
+                    board.getField(position).setFigure(new Bishop(FigureColor.WHITE));
                     break;
                 } else {
-                    board.getField(position).setFigure(new Bishop(Color.BLACK));
+                    board.getField(position).setFigure(new Bishop(FigureColor.BLACK));
                     break;
                 }
             }
             case "KNIGHT": {
                 if (figureColor.equals("WHITE")) {
-                    board.getField(position).setFigure(new Knight(Color.WHITE));
+                    board.getField(position).setFigure(new Knight(FigureColor.WHITE));
                     break;
                 } else {
-                    board.getField(position).setFigure(new Knight(Color.BLACK));
+                    board.getField(position).setFigure(new Knight(FigureColor.BLACK));
                     break;
                 }
             }
             case "ROOK": {
                 if (figureColor.equals("WHITE")) {
-                    board.getField(position).setFigure(new Rook(Color.WHITE));
+                    board.getField(position).setFigure(new Rook(FigureColor.WHITE));
                     break;
                 } else {
-                    board.getField(position).setFigure(new Rook(Color.BLACK));
+                    board.getField(position).setFigure(new Rook(FigureColor.BLACK));
                     break;
                 }
             }
             case "QUEEN": {
                 if (figureColor.equals("WHITE")) {
-                    board.getField(position).setFigure(new Queen(Color.WHITE));
+                    board.getField(position).setFigure(new Queen(FigureColor.WHITE));
                     break;
                 } else {
-                    board.getField(position).setFigure(new Queen(Color.BLACK));
+                    board.getField(position).setFigure(new Queen(FigureColor.BLACK));
                     break;
                 }
             }
             case "KING": {
                 if (figureColor.equals("WHITE")) {
-                    board.getField(position).setFigure(new King(Color.WHITE));
+                    board.getField(position).setFigure(new King(FigureColor.WHITE));
                     break;
                 } else {
-                    board.getField(position).setFigure(new King(Color.BLACK));
+                    board.getField(position).setFigure(new King(FigureColor.BLACK));
                     break;
                 }
             }
@@ -137,14 +135,14 @@ public class FileManager {
 
     }
 
-    public static void saveBoardToFileTxt(Board board, String fileName) {
+    public static void saveBoardToFileTxt(Game game, String fileName) {
 
         try {
             PrintWriter writer = new PrintWriter(new FileWriter(fileName + ".txt"));
-            writer.println(board.getId());
+            writer.println(game.getBoard().getId());
 
             for (int i = 0; i < 64; i++) {
-                writer.println(board.getField(i).getNumber() + "|" + board.getField(i).getCords() + "|" + board.getField(i).getFigure().getFigureType() + "|" + board.getField(i).getFigure().getFigureColor());
+                writer.println(game.getBoard().getField(i).getNumber() + "|" + game.getBoard().getField(i).getCords() + "|" + game.getBoard().getField(i).getFigure().getFigureType() + "|" + game.getBoard().getField(i).getFigure().getFigureColor());
             }
             writer.close();
         } catch (IOException e) {
@@ -152,29 +150,10 @@ public class FileManager {
         }
     }
 
-    public static Board loadFileTxtToBoard(String fileName) {
-        Figure figure = new Empty();
-        Field[] field = new Field[64];
+    public static void loadFileTxtToGame(Game game, String fileName) {
 
-        int row = 8;
-        char ch = 97;
-        for (int i = 0; i < 64; i++) {
-            int column;
-            if ((i + 1) % 8 == 0) {
-                column = 8;
-            } else {
-                column = (i + 1) % 8;
-            }
-            field[i] = new Field(i, row, column, Character.toString(ch) + row, figure);
-            if ((i + 1) % 8 == 0) {
-                row--;
-                ch -= 8;
-            }
-            ch++;
-        }
-        CastlingConditions castlingConditions = new CastlingConditions();
-        Board board = new Board(castlingConditions, field);
-        Game game = new Game(board);
+        game = new Game(InitializeGame.start());
+
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(fileName + ".txt"));
@@ -189,62 +168,62 @@ public class FileManager {
                 switch (token.nextToken()) {
                     case "EMPTY": {
                         if (token.nextToken().equals("NONE")) {
-                            board.getField(i).setFigure(new Empty());
+                            game.getBoard().getField(i).setFigure(new Empty());
                         }
                         break;
 
                     }
                     case "PAWN": {
                         if (token.nextToken().equals("WHITE")) {
-                            board.getField(i).setFigure(new Pawn(Color.WHITE));
+                            game.getBoard().getField(i).setFigure(new Pawn(FigureColor.WHITE));
                             break;
                         } else {
-                            board.getField(i).setFigure(new Pawn(Color.BLACK));
+                            game.getBoard().getField(i).setFigure(new Pawn(FigureColor.BLACK));
                             break;
                         }
                     }
                     case "BISHOP": {
                         if (token.nextToken().equals("WHITE")) {
-                            board.getField(i).setFigure(new Bishop(Color.WHITE));
+                            game.getBoard().getField(i).setFigure(new Bishop(FigureColor.WHITE));
                             break;
                         } else {
-                            board.getField(i).setFigure(new Bishop(Color.BLACK));
+                            game.getBoard().getField(i).setFigure(new Bishop(FigureColor.BLACK));
                             break;
                         }
                     }
                     case "KNIGHT": {
                         if (token.nextToken().equals("WHITE")) {
-                            board.getField(i).setFigure(new Knight(Color.WHITE));
+                            game.getBoard().getField(i).setFigure(new Knight(FigureColor.WHITE));
                             break;
                         } else {
-                            board.getField(i).setFigure(new Knight(Color.BLACK));
+                            game.getBoard().getField(i).setFigure(new Knight(FigureColor.BLACK));
                             break;
                         }
                     }
                     case "ROOK": {
                         if (token.nextToken().equals("WHITE")) {
-                            board.getField(i).setFigure(new Rook(Color.WHITE));
+                            game.getBoard().getField(i).setFigure(new Rook(FigureColor.WHITE));
                             break;
                         } else {
-                            board.getField(i).setFigure(new Rook(Color.BLACK));
+                            game.getBoard().getField(i).setFigure(new Rook(FigureColor.BLACK));
                             break;
                         }
                     }
                     case "QUEEN": {
                         if (token.nextToken().equals("WHITE")) {
-                            board.getField(i).setFigure(new Queen(Color.WHITE));
+                            game.getBoard().getField(i).setFigure(new Queen(FigureColor.WHITE));
                             break;
                         } else {
-                            board.getField(i).setFigure(new Queen(Color.BLACK));
+                            game.getBoard().getField(i).setFigure(new Queen(FigureColor.BLACK));
                             break;
                         }
                     }
                     case "KING": {
                         if (token.nextToken().equals("WHITE")) {
-                            board.getField(i).setFigure(new King(Color.WHITE));
+                            game.getBoard().getField(i).setFigure(new King(FigureColor.WHITE));
                             break;
                         } else {
-                            board.getField(i).setFigure(new King(Color.BLACK));
+                            game.getBoard().getField(i).setFigure(new King(FigureColor.BLACK));
                             break;
                         }
                     }
@@ -256,7 +235,6 @@ public class FileManager {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        return board;
     }
 
 }

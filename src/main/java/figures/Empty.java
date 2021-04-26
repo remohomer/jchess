@@ -1,7 +1,7 @@
 package figures;
 
 import app.Game;
-import enums.Color;
+import enums.FigureColor;
 import enums.FigureType;
 
 public class Empty extends Figure {
@@ -9,7 +9,7 @@ public class Empty extends Figure {
 
     public Empty() {
         this.figureType = FigureType.EMPTY;
-        this.figureColor = Color.NONE;
+        this.figureColor = FigureColor.NONE;
         activePromotion = false;
     }
     public Empty(Figure figure) {

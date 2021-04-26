@@ -1,13 +1,13 @@
 package figures;
 
 import app.Game;
-import enums.Color;
+import enums.FigureColor;
 import enums.FigureType;
 
 public class Rook extends Figure {
     private final int[] moves;
 
-    public Rook(Color figureColor) {
+    public Rook(FigureColor figureColor) {
         super(figureColor);
         this.figureType = FigureType.ROOK;
         moves = moveSide(TOP, BOTTOM, LEFT, RIGHT);

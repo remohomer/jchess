@@ -10,10 +10,6 @@ public class Field {
     private String cords;
     private Figure figure;
 
-    public Field() {
-
-    }
-
     public Field(int number, int row, int column, String cords, Figure figure) {
         this.number = number;
         this.row = row;

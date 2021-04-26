@@ -1,14 +1,14 @@
 package figures;
 
 import app.Game;
-import enums.Color;
+import enums.FigureColor;
 import enums.FigureType;
 
 public class King extends Figure {
 
     public final int[] moves;
 
-    public King(Color figureColor) {
+    public King(FigureColor figureColor) {
         super(figureColor);
         this.figureType = FigureType.KING;
         moves = moveSide(TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT);
@@ -148,7 +148,7 @@ public class King extends Figure {
     }
 
     public boolean isUnderPressureOrProtected(Game game, int MOVE) {
-        if (game.getWhichPlayer() == Color.WHITE)
+        if (game.getWhichPlayer() == FigureColor.WHITE)
             return game.getBoard().getField(MOVE).getFigure().isUnderPressureByBlack() || game.getBoard().getField(MOVE).getFigure().isProtectedByBlack();
         else
             return game.getBoard().getField(MOVE).getFigure().isUnderPressureByWhite() || game.getBoard().getField(MOVE).getFigure().isProtectedByWhite();

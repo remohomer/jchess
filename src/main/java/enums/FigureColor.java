@@ -1,6 +1,6 @@
 package enums;
 
-public enum Color {
+public enum FigureColor {
     NONE,
     WHITE,
     BLACK

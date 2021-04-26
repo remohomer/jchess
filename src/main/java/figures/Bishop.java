@@ -1,13 +1,13 @@
 package figures;
 
 import app.Game;
-import enums.Color;
+import enums.FigureColor;
 import enums.FigureType;
 
 public class Bishop extends Figure {
     private final int[] moves;
 
-    public Bishop(Color figureColor) {
+    public Bishop(FigureColor figureColor) {
         super(figureColor);
         this.figureType = FigureType.BISHOP;
         moves = moveSide(TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT);

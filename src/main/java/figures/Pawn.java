@@ -2,16 +2,16 @@ package figures;
 
 import app.Game;
 import enums.FigureType;
-import enums.Color;
+import enums.FigureColor;
 
 public class Pawn extends Figure {
 
     public final int[] moves;
 
-    public Pawn(Color figureColor) {
+    public Pawn(FigureColor figureColor) {
         super(figureColor);
         this.figureType = FigureType.PAWN;
-        if (figureColor == Color.WHITE)
+        if (figureColor == FigureColor.WHITE)
             moves = moveSide(TOP, TOP_TOP, TOP_LEFT, TOP_RIGHT);
         else
             moves = moveSide(BOTTOM, BOTTOM_BOTTOM, BOTTOM_LEFT, BOTTOM_RIGHT);
@@ -19,7 +19,7 @@ public class Pawn extends Figure {
 
     public Pawn(Figure figure) {
         super(figure);
-        if (figureColor == Color.WHITE)
+        if (figureColor == FigureColor.WHITE)
             moves = moveSide(TOP, TOP_TOP, TOP_LEFT, TOP_RIGHT);
         else
             moves = moveSide(BOTTOM, BOTTOM_BOTTOM, BOTTOM_LEFT, BOTTOM_RIGHT);
