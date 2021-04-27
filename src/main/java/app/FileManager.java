@@ -306,7 +306,9 @@ public class FileManager {
 
     public static void deleteFile() {
         File file = new File("board_1.txt");
-        if (file.exists()) file.delete();
+        if (file.exists()) {
+            file.delete();
+        }
 
         try {
             Thread.sleep(3000);
