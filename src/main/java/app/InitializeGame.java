@@ -1,12 +1,13 @@
 package app;
 
 import booleans.CastlingConditions;
+import enums.FigureColor;
 import figures.Empty;
 import figures.Figure;
 
 public class InitializeGame {
 
-    public static Game start() {
+    public static Game newGame() {
         Figure figure = new Empty();
         Field[] field = new Field[64];
 
@@ -29,11 +30,13 @@ public class InitializeGame {
         CastlingConditions castlingConditions = new CastlingConditions();
 
         Board board = new Board(castlingConditions, field);
-        Game game = new Game(board);
+        Player player1 = new Player("Player 1", FigureColor.WHITE);
+        Player player2 = new Player("Player 2", FigureColor.BLACK);
+        Game game = new Game(board,player1,player2);
         return game;
     }
 
-    public static Game start(String player1, String player2) {
+    public static Game newGame(String playerName1, String playerName2) {
         Figure figure = new Empty();
         Field[] field = new Field[64];
 
@@ -56,7 +59,10 @@ public class InitializeGame {
         CastlingConditions castlingConditions = new CastlingConditions();
 
         Board board = new Board(castlingConditions, field);
-        Game game = new Game(board, player1, player2);
+        Player player1 = new Player(playerName1, FigureColor.WHITE);
+        Player player2 = new Player(playerName2, FigureColor.BLACK);
+        Game game = new Game(board,player1,player2);
         return game;
     }
+
 }

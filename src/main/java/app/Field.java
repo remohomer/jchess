@@ -4,13 +4,13 @@ import figures.Figure;
 
 public class Field {
 
-    private int number;
-    private int row;
-    private int column;
-    private String cords;
+    private final int number;
+    private final int row;
+    private final int column;
+    private final String cords;
     private Figure figure;
 
-    public Field(int number, int row, int column, String cords, Figure figure) {
+    public Field(final int number, final int row, final int column, final String cords, Figure figure) {
         this.number = number;
         this.row = row;
         this.column = column;
@@ -44,19 +44,6 @@ public class Field {
 
     public String getCords() {
         return cords;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-    public void setRow(int row) {
-        this.row = row;
-    }
-    public void setColumn(int column) {
-        this.column = column;
-    }
-    public void setCords(String cords) {
-        this.cords = cords;
     }
 
 }

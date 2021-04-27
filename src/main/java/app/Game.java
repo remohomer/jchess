@@ -7,38 +7,50 @@ import java.util.Scanner;
 
 
 public class Game extends GameStatus {
-    private Player player1;
-    private Player player2;
-    private Board board;
+
+    private final Player player1;
+    private final Player player2;
+    private final Board board;
     private FigureColor whichPlayer;
 
+    private static int counter = 1;
+    protected final int id;
 
-    public Game(Board board) {
+
+    public Game(Board board, Player player1, Player player2) {
         this.board = board;
         this.whichPlayer = FigureColor.WHITE;
-        player1 = new Player("PLAYER_1", FigureColor.WHITE);
-        player2 = new Player("PLAYER_2", FigureColor.BLACK);
-    }
-
-    public Game(Board board, String player1, String player2) {
-        this(board);
-        this.player1 = new Player(player1, FigureColor.WHITE);
-        this.player2 = new Player(player2, FigureColor.BLACK);
+        this.player1 = player1;
+        this.player2 = player2;
+        id = counter++;
     }
 
     public Game(Game game) {
         this.board = game.getBoard();
-        this.whichPlayer = FigureColor.WHITE;
+        this.whichPlayer = game.getWhichPlayer();
         this.player1 = game.getPlayer1();
         this.player2 = game.getPlayer2();
+        this.id = game.getId();
     }
 
-    public void newGame() {
+    public void start() {
         this.setActiveGame(true);
         while (this.isActiveGame()) {
 
+            FileManager.saveCurrentBoard(this);
+            FileManager.scanCurrentBoard(this);
+
+            if(this.isDraw()) {
+                Printer.printBoard(this);
+                System.out.println("REMIS przez powtórzenie ukłądu szachownicy");
+                break;
+            }
+
             Printer.printBoardWithNumbers(this);
             Printer.printBoard(this);
+
+            Move.scanBoardAndSetUnderPressureAndProtectedStates(this);
+            Move.isKingCheck(this.board);
 
             int firstPosition = loadFirstPosition();
             this.board.getField(firstPosition).getFigure().movement(this, firstPosition);
@@ -60,6 +72,7 @@ public class Game extends GameStatus {
             isGameOver();
         }
     }
+
 
     private int loadFirstPosition() {
         int firstPosition = 0;
@@ -111,6 +124,17 @@ public class Game extends GameStatus {
         else whichPlayer = FigureColor.WHITE;
     }
 
+    public void setWhichPlayer(FigureColor figureColor) {
+        this.whichPlayer = figureColor;
+    }
+
+    public void setWhichPlayer(String figureColor) {
+        if (figureColor.equals(FigureColor.WHITE.toString()))
+            this.whichPlayer = FigureColor.WHITE;
+        else
+            this.whichPlayer = FigureColor.BLACK;
+    }
+
     public void isGameOver() {
         if (this.isCheckMate() || this.isDraw())
             setActiveGame(false);
@@ -137,6 +161,10 @@ public class Game extends GameStatus {
 
     public FigureColor getWhichPlayer() {
         return whichPlayer;
+    }
+
+    public int getId() {
+        return id;
     }
 
 

@@ -10,8 +10,17 @@ import java.util.Scanner;
 
 public class Move implements figures.Movement {
 
+    private static boolean pawnIsMovedOrFigureIsTaking = false;
+
     public static void move(Game game, int firstPosition, int secondPosition) {
         try {
+
+            if (game.getBoard().getField(firstPosition).getFigure().getFigureType() == FigureType.PAWN
+                    || game.getBoard().getField(secondPosition).getFigure().getFigureType() != FigureType.EMPTY)
+                pawnIsMovedOrFigureIsTaking = true;
+            else
+                pawnIsMovedOrFigureIsTaking = false;
+
             if (doEnpassant(game, firstPosition, secondPosition)) ;
             else if (doCastling(game.getBoard(), firstPosition, secondPosition)) ;
             else if (doPromotion(game, firstPosition, secondPosition)) ;
@@ -452,5 +461,9 @@ public class Move implements figures.Movement {
 
     @Override
     public void movement(Game game, int selectedFigurePosition) {
+    }
+
+    public static boolean getPawnIsMovedOrFigureIsTaking() {
+        return pawnIsMovedOrFigureIsTaking;
     }
 }

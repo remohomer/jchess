@@ -5,13 +5,11 @@ import figures.*;
 import booleans.CastlingConditions;
 
 public class Board {
-    private static int counter = 1;
-    protected final int id;
-    private CastlingConditions castlingConditions;
-    private Field[] field;
+
+    private final CastlingConditions castlingConditions;
+    private final Field[] field;
 
     public Board(CastlingConditions castlingConditions, Field[] field) {
-        id = counter++;
         this.field = field;
         this.castlingConditions = castlingConditions;
 
@@ -114,10 +112,6 @@ public class Board {
         this.field[4].initializeFigure(new King(FigureColor.BLACK));
         this.field[10].initializeFigure(new Pawn(FigureColor.WHITE));
         this.field[60].initializeFigure(new King(FigureColor.WHITE));
-    }
-
-    public int getId() {
-        return id;
     }
 
     public CastlingConditions getCastlingConditions() {

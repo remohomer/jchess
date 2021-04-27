@@ -1,31 +1,31 @@
 package booleans;
 
 public class GameStatus {
-    private boolean ACTIVE_GAME;
-    private boolean DRAW;
-    private boolean CHECK_MATE;
+    private boolean activeGame;
+    private boolean draw;
+    private boolean checkMate;
 
     public GameStatus() {
-        ACTIVE_GAME = false;
-        DRAW = false;
-        CHECK_MATE = false;
+        activeGame = false;
+        draw = false;
+        checkMate = false;
     }
     public boolean isActiveGame() {
-        return ACTIVE_GAME;
+        return activeGame;
     }
     public void setActiveGame(boolean activeGame) {
-        ACTIVE_GAME = activeGame;
+        this.activeGame = activeGame;
     }
     public boolean isDraw() {
-        return DRAW;
+        return draw;
     }
     public void setDraw(boolean draw) {
-        DRAW = draw;
+        this.draw = draw;
     }
     public void setCheckMate(boolean checkMate) {
-        CHECK_MATE = checkMate;
+        this.checkMate = checkMate;
     }
     public boolean isCheckMate() {
-        return CHECK_MATE;
+        return checkMate;
     }
 }
