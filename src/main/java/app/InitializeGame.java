@@ -43,8 +43,4 @@ public class InitializeGame {
         game.getPlayer2().setPlayerName(player2Name);
         return game;
     }
-
-    public static Game loadGame(String gameId) {
-        return FileManager.loadByteFileToGame(gameId);
-    }
 }

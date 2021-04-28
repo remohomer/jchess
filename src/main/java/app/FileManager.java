@@ -83,7 +83,7 @@ public class FileManager {
         Board board = new Board(castlingConditions, field);
         Player player1 = new Player("Player 1", FigureColor.WHITE);
         Player player2 = new Player("Player 2", FigureColor.BLACK);
-        Game game = new Game(board,player1,player2);
+        Game game = new Game(board, player1, player2);
 
         try {
             DataInputStream inS = new DataInputStream(new FileInputStream("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "game_" + game.getId() + ".txt"));
@@ -317,10 +317,15 @@ public class FileManager {
         return game;
     }
 
-    public static void saveCurrentBoard(Game game) {
+    public static void saveCurrentBoard(Game game, boolean append) {
 
         try {
-            PrintWriter writer = new PrintWriter(new FileWriter("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "currentBoard_" + game.getId() + ".txt", true));
+            PrintWriter writer;
+            if (append) {
+                writer = new PrintWriter(new FileWriter("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "currentBoard_" + game.getId() + ".txt", true));
+            } else {
+                writer = new PrintWriter(new FileWriter("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "currentBoard_" + game.getId() + ".txt"));
+            }
 
             writer.println(passiveMoveCounter);
             for (int i = 0; i < 64; i++) {
@@ -340,61 +345,15 @@ public class FileManager {
         }
     }
 
+
     public static void scanCurrentBoard(Game game) {
 
         if (passiveMoveCounter > 50) {
             game.setDraw(true);
             System.out.println("50 ruchów z rzędu bez zbicia figury lub poruszenia pionka... Dokonałeś niemożliwego. \nGratuluje spektakularnego remisu!");
-        } else if (Move.getPawnIsMovedOrFigureIsTaking()) {
-            deleteCurrentBoardFile(game);
-            passiveMoveCounter = 0;
-            saveCurrentBoard(game);
         } else {
             try {
                 BufferedReader reader = new BufferedReader(new FileReader("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "currentBoard_" + game.getId() + ".txt"));
-
-
-                class SimpleBoard {
-                    private String[] figureColor;
-                    private String[] figureType;
-
-                    SimpleBoard() {
-                        figureColor = new String[64];
-                        figureType = new String[64];
-                    }
-
-                    public String getFigureColor(int i) {
-                        return figureColor[i];
-                    }
-
-                    public void setFigureColor(int i, String figureColor) {
-                        this.figureColor[i] = figureColor;
-                    }
-
-                    public String getFigureType(int i) {
-                        return figureType[i];
-                    }
-
-                    public void setFigureType(int i, String figureType) {
-                        this.figureType[i] = figureType;
-                    }
-
-                    @Override
-                    public boolean equals(Object ob) {
-
-                        int counter = 0;
-
-                        for (int i = 0; i < 64; i++) {
-                            if (this.getFigureColor(i).equals(((SimpleBoard) ob).getFigureColor(i)) && this.getFigureType(i).equals(((SimpleBoard) ob).getFigureType(i)))
-                                counter++;
-                        }
-
-                        if (counter == 64)
-                            return true;
-                        else
-                            return false;
-                    }
-                }
 
                 SimpleBoard simpleBoard[] = new SimpleBoard[50];
 
@@ -433,5 +392,11 @@ public class FileManager {
         }
     }
 
+    public static int getPassiveMoveCounter() {
+        return passiveMoveCounter;
+    }
 
+    public static void setPassiveMoveCounter(int passiveMoveCounter) {
+        FileManager.passiveMoveCounter = passiveMoveCounter;
+    }
 }

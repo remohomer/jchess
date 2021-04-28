@@ -16,8 +16,7 @@ public class Game extends GameStatus {
     private static int counter = 1;
     protected final int id;
 
-    public final static int RETURN = 66;
-    public final static int SAVE_AND_EXIT_GAME = 99;
+    public final static int RETURN = 99;
     public final static int EXIT_GAME = 100;
 
     public Game(Board board, Player player1, Player player2) {
@@ -40,7 +39,7 @@ public class Game extends GameStatus {
         this.setActiveGame(true);
         while (this.isActiveGame()) {
 
-            FileManager.saveCurrentBoard(this);
+            FileManager.saveCurrentBoard(this, true);
             FileManager.scanCurrentBoard(this);
 
             if (this.isDraw()) {
@@ -58,11 +57,8 @@ public class Game extends GameStatus {
             do {
                 firstPosition = loadFirstPosition();
 
-                if (firstPosition == SAVE_AND_EXIT_GAME) {
-                    this.setActiveGame(false);
-                    FileManager.saveGameToByteFile(this);
-                    break;
-                } else if (firstPosition == EXIT_GAME) {
+                if (firstPosition == EXIT_GAME) {
+                    FileManager.deleteCurrentBoardFile(this);
                     this.setActiveGame(false);
                     break;
                 }
@@ -74,12 +70,10 @@ public class Game extends GameStatus {
 
                 secondPosition = loadSecondPosition();
 
-                if (secondPosition == SAVE_AND_EXIT_GAME) {
+
+                if (secondPosition == EXIT_GAME) {
                     this.setActiveGame(false);
-                    FileManager.saveGameToByteFile(this);
-                    break;
-                } else if (secondPosition == EXIT_GAME) {
-                    this.setActiveGame(false);
+                    FileManager.deleteCurrentBoardFile(this);
                     break;
                 } else if (secondPosition == RETURN) {
                     Move.clearFigureStates(this.getBoard());
@@ -91,14 +85,22 @@ public class Game extends GameStatus {
                 }
             } while (secondPosition == RETURN);
 
-            Move.clearSelectedFigureAndLegalMoves(this.board);
-            invertWhichPlayer();
+            if (isActiveGame()) {
+                Move.clearSelectedFigureAndLegalMoves(this.board);
 
-            Move.scanBoardAndSetUnderPressureAndProtectedStates(this);
-            Move.isKingCheck(this.board);
-            Move.scanBoardAndFindCheckMateOrDraw(this);
+                if (Move.getPawnIsMovedOrFigureIsTaking()) {
+                    FileManager.deleteCurrentBoardFile(this);
+                    FileManager.setPassiveMoveCounter(0);
+                }
 
-            isGameOver();
+                invertWhichPlayer();
+
+                Move.scanBoardAndSetUnderPressureAndProtectedStates(this);
+                Move.isKingCheck(this.board);
+                Move.scanBoardAndFindCheckMateOrDraw(this);
+
+                isGameOver();
+            }
         }
 
     }
@@ -112,7 +114,7 @@ public class Game extends GameStatus {
             thereAreNoExceptions = true;
             try {
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("Podaj liczbę [0-63 wybór figury / 99 zapisz i wyjdź / 100 zapisz]: ");
+                System.out.print("Podaj liczbę [0-63 wybór figury / 100 wyjdź]: ");
                 firstPosition = scanner.nextInt();
                 if (!Move.isLegalFirstPosition(this, this.whichPlayer, firstPosition)) {
                     thereAreNoExceptions = false;
@@ -134,7 +136,7 @@ public class Game extends GameStatus {
             thereAreNoExceptions = true;
             try {
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("Gdzie tą figurę położyć? [0-63 wybór figury / 66 wróć / 99 zapisz i wyjdź / 100 zapisz]: ");
+                System.out.print("Gdzie tą figurę położyć? [0-63 wybór figury / 99 wróć / 100 wyjdź]: ");
                 secondPosition = scanner.nextInt();
                 if (!Move.isLegalSecondPosition(this, this.whichPlayer, secondPosition)) {
                     thereAreNoExceptions = false;
@@ -196,10 +198,5 @@ public class Game extends GameStatus {
     public int getId() {
         return id;
     }
-
-    public static void saveGame(Game game) {
-        FileManager.saveGameToByteFile(game);
-    }
-
 
 }

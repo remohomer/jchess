@@ -390,7 +390,7 @@ public class Move implements figures.Movement {
     }
 
     public static boolean isLegalFirstPosition(Game game, FigureColor whichPlayer, int firstPosition) {
-        if (firstPosition == Game.SAVE_AND_EXIT_GAME || firstPosition == Game.EXIT_GAME) {
+        if (firstPosition == Game.EXIT_GAME) {
             return true;
         }
         if (game.getBoard().getField(firstPosition).getFigure().getFigureType() == FigureType.EMPTY) {
@@ -405,7 +405,7 @@ public class Move implements figures.Movement {
     }
 
     public static boolean isLegalSecondPosition(Game game, FigureColor whichPlayer, int secondPosition) {
-        if (secondPosition == Game.RETURN || secondPosition == Game.SAVE_AND_EXIT_GAME || secondPosition == Game.EXIT_GAME) {
+        if (secondPosition == Game.RETURN || secondPosition == Game.EXIT_GAME) {
             return true;
         }
         if (whichPlayer == game.getBoard().getField(secondPosition).getFigure().getFigureColor()) {
