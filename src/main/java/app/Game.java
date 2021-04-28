@@ -16,6 +16,9 @@ public class Game extends GameStatus {
     private static int counter = 1;
     protected final int id;
 
+    public final static int RETURN = 66;
+    public final static int SAVE_AND_EXIT_GAME = 99;
+    public final static int EXIT_GAME = 100;
 
     public Game(Board board, Player player1, Player player2) {
         this.board = board;
@@ -40,9 +43,7 @@ public class Game extends GameStatus {
             FileManager.saveCurrentBoard(this);
             FileManager.scanCurrentBoard(this);
 
-            if(this.isDraw()) {
-                Printer.printBoard(this);
-                System.out.println("REMIS przez powtórzenie ukłądu szachownicy");
+            if (this.isDraw()) {
                 break;
             }
 
@@ -52,15 +53,43 @@ public class Game extends GameStatus {
             Move.scanBoardAndSetUnderPressureAndProtectedStates(this);
             Move.isKingCheck(this.board);
 
-            int firstPosition = loadFirstPosition();
-            this.board.getField(firstPosition).getFigure().movement(this, firstPosition);
+            int firstPosition, secondPosition;
 
-            Printer.printBoardWithNumbers(this);
-            Printer.printBoardWhileFigureIsSelected(this);
+            do {
+                firstPosition = loadFirstPosition();
 
-            int secondPosition = loadSecondPosition();
-            Move.clearFigureStates(this.getBoard());
-            Move.move(this, firstPosition, secondPosition);
+                if (firstPosition == SAVE_AND_EXIT_GAME) {
+                    this.setActiveGame(false);
+                    FileManager.saveGameToByteFile(this);
+                    break;
+                } else if (firstPosition == EXIT_GAME) {
+                    this.setActiveGame(false);
+                    break;
+                }
+
+                this.board.getField(firstPosition).getFigure().movement(this, firstPosition);
+
+                Printer.printBoardWithNumbers(this);
+                Printer.printBoardWhileFigureIsSelected(this);
+
+                secondPosition = loadSecondPosition();
+
+                if (secondPosition == SAVE_AND_EXIT_GAME) {
+                    this.setActiveGame(false);
+                    FileManager.saveGameToByteFile(this);
+                    break;
+                } else if (secondPosition == EXIT_GAME) {
+                    this.setActiveGame(false);
+                    break;
+                } else if (secondPosition == RETURN) {
+                    Move.clearFigureStates(this.getBoard());
+                    Move.clearUnderPressure(this.getBoard());
+                    Printer.printBoard(this);
+                } else {
+                    Move.clearFigureStates(this.getBoard());
+                    Move.move(this, firstPosition, secondPosition);
+                }
+            } while (secondPosition == RETURN);
 
             Move.clearSelectedFigureAndLegalMoves(this.board);
             invertWhichPlayer();
@@ -71,6 +100,7 @@ public class Game extends GameStatus {
 
             isGameOver();
         }
+
     }
 
 
@@ -82,13 +112,13 @@ public class Game extends GameStatus {
             thereAreNoExceptions = true;
             try {
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("Którą figurę poruszyć [0-63]: ");
+                System.out.print("Podaj liczbę [0-63 wybór figury / 99 zapisz i wyjdź / 100 zapisz]: ");
                 firstPosition = scanner.nextInt();
-                if (!Move.isLegalFirstPosition(this.board, this.whichPlayer, firstPosition)) {
+                if (!Move.isLegalFirstPosition(this, this.whichPlayer, firstPosition)) {
                     thereAreNoExceptions = false;
                 }
             } catch (Exception e) {
-                System.out.println("ERROR: Podaj liczbę całkowitą od 0 do 63");
+                System.out.println("ERROR: Niepoprawne dane wejściowe");
                 thereAreNoExceptions = false;
             }
         } while (!thereAreNoExceptions);
@@ -104,14 +134,14 @@ public class Game extends GameStatus {
             thereAreNoExceptions = true;
             try {
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("Gdzie tą figurę położyć? [0-63]: ");
+                System.out.print("Gdzie tą figurę położyć? [0-63 wybór figury / 66 wróć / 99 zapisz i wyjdź / 100 zapisz]: ");
                 secondPosition = scanner.nextInt();
-                if (!Move.isLegalSecondPosition(this.board, this.whichPlayer, secondPosition)) {
+                if (!Move.isLegalSecondPosition(this, this.whichPlayer, secondPosition)) {
                     thereAreNoExceptions = false;
                 }
 
             } catch (Exception e) {
-                System.out.println("ERROR: Podaj liczbę całkowitą od 0 do 63");
+                System.out.println("ERROR: Niepoprawne dane wejściowe");
                 thereAreNoExceptions = false;
             }
         } while (!thereAreNoExceptions);
@@ -165,6 +195,10 @@ public class Game extends GameStatus {
 
     public int getId() {
         return id;
+    }
+
+    public static void saveGame(Game game) {
+        FileManager.saveGameToByteFile(game);
     }
 
 

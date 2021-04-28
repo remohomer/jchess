@@ -1,5 +1,6 @@
 package app;
 
+import booleans.CastlingConditions;
 import enums.FigureColor;
 import figures.*;
 
@@ -11,12 +12,14 @@ public class FileManager {
     private static final int NAME_LENGHT = 30;
     private static final int COLOR_LENGHT = 5;
     private static final int TYPE_LENGHT = 6;
-    private static int moveCounter = 0;
+    private static int passiveMoveCounter = 0;
     private static int theSameBoard = 0;
 
-    public static void saveGameToByteFile(Game game, String fileName) {
+    public static void saveGameToByteFile(Game game) {
         try {
-            DataOutputStream outS = new DataOutputStream(new FileOutputStream(fileName + ".txt"));
+            DataOutputStream outS = new DataOutputStream(new FileOutputStream("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "game_" + game.getId() + ".txt"));
+
+            outS.writeInt(passiveMoveCounter);
 
             StringBuffer player1Name = new StringBuffer((NAME_LENGHT));
             player1Name.append(game.getPlayer1().getPlayerName());
@@ -54,12 +57,38 @@ public class FileManager {
         }
     }
 
-    public static Game loadByteFileToGame(String fileName) {
+    public static Game loadByteFileToGame(String gameId) {
 
-        Game game = new Game(InitializeGame.newGame());
+        Figure figure = new Empty();
+        Field[] field = new Field[64];
+
+        int row = 8;
+        char ch = 97;
+        for (int i = 0; i < 64; i++) {
+            int column;
+            if ((i + 1) % 8 == 0) {
+                column = 8;
+            } else {
+                column = (i + 1) % 8;
+            }
+            field[i] = new Field(i, row, column, Character.toString(ch) + row, figure);
+            if ((i + 1) % 8 == 0) {
+                row--;
+                ch -= 8;
+            }
+            ch++;
+        }
+        CastlingConditions castlingConditions = new CastlingConditions();
+
+        Board board = new Board(castlingConditions, field);
+        Player player1 = new Player("Player 1", FigureColor.WHITE);
+        Player player2 = new Player("Player 2", FigureColor.BLACK);
+        Game game = new Game(board,player1,player2);
 
         try {
-            DataInputStream inS = new DataInputStream(new FileInputStream(fileName + ".txt"));
+            DataInputStream inS = new DataInputStream(new FileInputStream("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "game_" + game.getId() + ".txt"));
+
+            passiveMoveCounter = inS.readInt();
 
             StringBuffer playerName1 = new StringBuffer(COLOR_LENGHT);
             for (int j = 0; j < NAME_LENGHT; j++) {
@@ -181,7 +210,7 @@ public class FileManager {
     public static void saveGameToFileTxt(Game game, String fileName) {
 
         try {
-            PrintWriter writer = new PrintWriter(new FileWriter(fileName + ".txt"));
+            PrintWriter writer = new PrintWriter(new FileWriter("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "game_" + game.getId() + ".txt"));
             writer.println(game.getId());
             writer.println(game.getPlayer1().getPlayerName());
             writer.println(game.getPlayer2().getPlayerName());
@@ -200,7 +229,7 @@ public class FileManager {
 
         Game game = new Game(InitializeGame.newGame());
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(fileName + ".txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "game_" + game.getId() + ".txt"));
             int id = Integer.parseInt(reader.readLine());
             game.getPlayer1().setPlayerName(reader.readLine());
             game.getPlayer2().setPlayerName(reader.readLine());
@@ -291,44 +320,41 @@ public class FileManager {
     public static void saveCurrentBoard(Game game) {
 
         try {
-            PrintWriter writer = new PrintWriter(new FileWriter("board_" + game.getId() + ".txt", true));
+            PrintWriter writer = new PrintWriter(new FileWriter("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "currentBoard_" + game.getId() + ".txt", true));
 
-            writer.println(moveCounter);
+            writer.println(passiveMoveCounter);
             for (int i = 0; i < 64; i++) {
                 writer.println(game.getBoard().getField(i).getFigure().getFigureType() + "|" + game.getBoard().getField(i).getFigure().getFigureColor());
             }
             writer.close();
-            moveCounter++;
+            passiveMoveCounter++;
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public static void deleteFile() {
-        File file = new File("board_1.txt");
+    public static void deleteCurrentBoardFile(Game game) {
+        File file = new File("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "currentBoard_" + game.getId() + ".txt");
         if (file.exists()) {
             file.delete();
-        }
-
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
         }
     }
 
     public static void scanCurrentBoard(Game game) {
 
-        if (Move.getPawnIsMovedOrFigureIsTaking()) {
-            deleteFile();
-            moveCounter = 0;
+        if (passiveMoveCounter > 50) {
+            game.setDraw(true);
+            System.out.println("50 ruchów z rzędu bez zbicia figury lub poruszenia pionka... Dokonałeś niemożliwego. \nGratuluje spektakularnego remisu!");
+        } else if (Move.getPawnIsMovedOrFigureIsTaking()) {
+            deleteCurrentBoardFile(game);
+            passiveMoveCounter = 0;
             saveCurrentBoard(game);
         } else {
             try {
-                BufferedReader reader = new BufferedReader(new FileReader("board_" + game.getId() + ".txt"));
+                BufferedReader reader = new BufferedReader(new FileReader("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "currentBoard_" + game.getId() + ".txt"));
 
 
-                class SimpleBoard extends Object {
+                class SimpleBoard {
                     private String[] figureColor;
                     private String[] figureType;
 
@@ -372,7 +398,7 @@ public class FileManager {
 
                 SimpleBoard simpleBoard[] = new SimpleBoard[50];
 
-                for (int j = 0; j < moveCounter; j++) {
+                for (int j = 0; j < passiveMoveCounter; j++) {
                     int whichBoard = Integer.parseInt(reader.readLine());
                     simpleBoard[whichBoard] = new SimpleBoard();
 
@@ -383,11 +409,11 @@ public class FileManager {
                     }
                 }
 
-                for (int j = 0; j < moveCounter; j++) {
-                    if (j + 1 == moveCounter)
+                for (int j = 0; j < passiveMoveCounter; j++) {
+                    if (j + 1 == passiveMoveCounter)
                         break;
 
-                    for (int i = j + 1; i < moveCounter; i++) {
+                    for (int i = j + 1; i < passiveMoveCounter; i++) {
                         if (simpleBoard[j].equals(simpleBoard[i]))
                             theSameBoard++;
                     }
@@ -395,9 +421,11 @@ public class FileManager {
                         theSameBoard = 0;
                     else {
                         game.setDraw(true);
+                        System.out.println("50 ruchów z rzędu bez zbicia figury lub poruszenia pionka... Dokonałeś niemożliwego. \nGratuluje spektakularnego remisu!");
                         break;
                     }
                 }
+                reader.close();
 
             } catch (IOException e) {
                 System.out.println(e.getMessage());

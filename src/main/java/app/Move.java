@@ -389,24 +389,30 @@ public class Move implements figures.Movement {
         return false;
     }
 
-    public static boolean isLegalFirstPosition(Board board, FigureColor whichPlayer, int firstPosition) {
-        if (board.getField(firstPosition).getFigure().getFigureType() == FigureType.EMPTY) {
+    public static boolean isLegalFirstPosition(Game game, FigureColor whichPlayer, int firstPosition) {
+        if (firstPosition == Game.SAVE_AND_EXIT_GAME || firstPosition == Game.EXIT_GAME) {
+            return true;
+        }
+        if (game.getBoard().getField(firstPosition).getFigure().getFigureType() == FigureType.EMPTY) {
             System.out.println("ERROR: Pole, które wybrałeś jest puste");
             return false;
         }
-        if (whichPlayer != board.getField(firstPosition).getFigure().getFigureColor()) {
+        if (whichPlayer != game.getBoard().getField(firstPosition).getFigure().getFigureColor()) {
             System.out.println("ERROR: To nie jest Twoja figura");
             return false;
         }
         return true;
     }
 
-    public static boolean isLegalSecondPosition(Board board, FigureColor whichPlayer, int secondPosition) {
-        if (whichPlayer == board.getField(secondPosition).getFigure().getFigureColor()) {
+    public static boolean isLegalSecondPosition(Game game, FigureColor whichPlayer, int secondPosition) {
+        if (secondPosition == Game.RETURN || secondPosition == Game.SAVE_AND_EXIT_GAME || secondPosition == Game.EXIT_GAME) {
+            return true;
+        }
+        if (whichPlayer == game.getBoard().getField(secondPosition).getFigure().getFigureColor()) {
             System.out.println("ERROR: Nie możesz zbić własnej figury");
             return false;
         }
-        if (!board.getField(secondPosition).getFigure().isLegalMove()) {
+        if (!game.getBoard().getField(secondPosition).getFigure().isLegalMove()) {
             System.out.println("ERROR: Niepoprawny ruch");
             return false;
         }

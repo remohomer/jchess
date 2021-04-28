@@ -55,33 +55,10 @@ public class Board {
     }
 
     public void initializeTestBoard() {
-        this.field[0].initializeFigure(new Empty());
-        this.field[1].initializeFigure(new Empty());
-        this.field[2].initializeFigure(new Empty());
-        this.field[3].initializeFigure(new Queen(FigureColor.BLACK));
-        this.field[4].initializeFigure(new Empty());
-        this.field[5].initializeFigure(new Empty());
-        this.field[6].initializeFigure(new Empty());
-        this.field[7].initializeFigure(new Empty());
 
-        for (int i = 8; i < 16; i++) {
-            this.field[i].initializeFigure(new Empty());
-        }
-        for (int i = 16; i < 48; i++) {
-            this.field[i].initializeFigure(new Empty());
-        }
-        for (int i = 48; i < 56; i++) {
-            this.field[i].initializeFigure(new Empty());
-        }
-
-        this.field[56].initializeFigure(new Empty());
-        this.field[57].initializeFigure(new Empty());
-        this.field[58].initializeFigure(new Empty());
-        this.field[59].initializeFigure(new Queen(FigureColor.WHITE));
-        this.field[60].initializeFigure(new Empty());
-        this.field[61].initializeFigure(new Empty());
-        this.field[62].initializeFigure(new Empty());
-        this.field[63].initializeFigure(new Empty());
+        initializeEmptyBoard();
+        this.field[0].initializeFigure(new Queen(FigureColor.BLACK));
+        this.field[30].initializeFigure(new Queen(FigureColor.WHITE));
     }
 
     public void initializeBoardTestingCheckMate() {
