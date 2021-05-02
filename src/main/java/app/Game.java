@@ -48,7 +48,7 @@ public class Game extends GameStatus {
                 break;
             }
 
-            Printer.printBoardWithNumbers(this);
+            Printer.printBoardWithNumbers();
             Printer.printBoard(this);
 
             Move.scanBoardAndSetUnderPressureAndProtectedStates(this);
@@ -67,8 +67,8 @@ public class Game extends GameStatus {
 
                 this.board.getField(firstPosition).getFigure().movement(this, firstPosition);
 
-                Printer.printBoardWithNumbers(this);
-                Printer.printBoardWhileFigureIsSelected(this);
+                Printer.printBoardWithNumbers();
+                Printer.printBoard(this);
 
                 secondPosition = loadSecondPosition();
 

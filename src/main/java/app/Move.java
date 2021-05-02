@@ -10,16 +10,12 @@ import java.util.Scanner;
 
 public class Move implements figures.Movement {
 
-    private static boolean pawnIsMovedOrFigureIsTaking = false;
+    private static boolean pawnIsMovedOrFigureIsTaking;
 
     public static void move(Game game, int firstPosition, int secondPosition) {
         try {
-
-            if (game.getBoard().getField(firstPosition).getFigure().getFigureType() == FigureType.PAWN
-                    || game.getBoard().getField(secondPosition).getFigure().getFigureType() != FigureType.EMPTY)
-                pawnIsMovedOrFigureIsTaking = true;
-            else
-                pawnIsMovedOrFigureIsTaking = false;
+            pawnIsMovedOrFigureIsTaking = game.getBoard().getField(firstPosition).getFigure().getFigureType() == FigureType.PAWN
+                    || game.getBoard().getField(secondPosition).getFigure().getFigureType() != FigureType.EMPTY;
 
             if (doEnpassant(game, firstPosition, secondPosition)) ;
             else if (doCastling(game.getBoard(), firstPosition, secondPosition)) ;
