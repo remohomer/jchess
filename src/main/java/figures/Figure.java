@@ -8,6 +8,9 @@ import enums.FigureType;
 
 public abstract class Figure extends FigureState implements Movement {
 
+
+    public abstract void movement(Game game, final int selectedFigurePosition);
+
     protected FigureType figureType;
     protected FigureColor figureColor;
 
@@ -29,7 +32,7 @@ public abstract class Figure extends FigureState implements Movement {
         return figureType;
     }
 
-    public static final boolean isKingCheck(Game game) {
+    public static boolean isKingCheck(Game game) {
         if (game.getWhichPlayer() == FigureColor.WHITE) {
             return game.getBoard().getCastlingConditions().isWhiteKingCheck();
         } else {
@@ -37,7 +40,7 @@ public abstract class Figure extends FigureState implements Movement {
         }
     }
 
-    public static final boolean canIMoveWhenIsKingCheck(Game game, int MOVE, boolean setUnderPressure) {
+    public static boolean canIMoveWhenIsKingCheck(Game game, int MOVE, boolean setUnderPressure) {
         if (isKingCheck(game)) {
             if (game.getBoard().getField(MOVE).getFigure().isCheckLine() && game.getBoard().getField(MOVE).getFigure().getFigureType() != FigureType.KING) {
                 game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
@@ -50,7 +53,7 @@ public abstract class Figure extends FigureState implements Movement {
         return false;
     }
 
-    public static final boolean canIMoveWhenIAmPinned(Game game, int MOVE, int SELECTED, boolean setUnderPressure) {
+    public static boolean canIMoveWhenIAmPinned(Game game, int MOVE, int SELECTED, boolean setUnderPressure) {
         if (!isKingCheck(game)) {
             if (game.getBoard().getField(SELECTED).getFigure().isPinned()) {
                 if (game.getBoard().getField(SELECTED).getFigure().getFigureType() == FigureType.PAWN) {
@@ -76,21 +79,21 @@ public abstract class Figure extends FigureState implements Movement {
         return false;
     }
 
-    public static final void setUnderPressure(Game game, int position) {
+    public static void setUnderPressure(Game game, int position) {
         if (game.getWhichPlayer() == FigureColor.WHITE)
             game.getBoard().getField(position).getFigure().setUnderPressureByWhite(true);
         else
             game.getBoard().getField(position).getFigure().setUnderPressureByBlack(true);
     }
 
-    public static final void setProtected(Game game, int position) {
+    public static void setProtected(Game game, int position) {
         if (game.getWhichPlayer() == FigureColor.WHITE)
             game.getBoard().getField(position).getFigure().setProtectedByWhite(true);
         else
             game.getBoard().getField(position).getFigure().setProtectedByBlack(true);
     }
 
-    public static final boolean setCheckLines(Game game, int MOVE, int whichMove, int j) {
+    public static boolean setCheckLines(Game game, int MOVE, int whichMove, int j) {
         if (isEnemyKing(game, MOVE)) {
             if (isOnBoard(MOVE + whichMove) && isEmptyFigure(game, MOVE + whichMove)) {
                 game.getBoard().getField(MOVE + whichMove).getFigure().setCheckLine(true);
@@ -104,7 +107,7 @@ public abstract class Figure extends FigureState implements Movement {
         return false;
     }
 
-    public static final boolean setPinnedCheckLines(Game game, int MOVE, int whichMove, int j) {
+    public static boolean setPinnedCheckLines(Game game, int MOVE, int whichMove, int j) {
         if (isOnBoard(MOVE + whichMove)) {
             if (isEnemyKing(game, MOVE + whichMove)) {
                 game.getBoard().getField(MOVE).getFigure().setPinned(true);
@@ -117,7 +120,7 @@ public abstract class Figure extends FigureState implements Movement {
         return false;
     }
 
-    public static final void setLegalMoves(Game game, int MOVE, int SELECTED, boolean setUnderPressure) {
+    public static void setLegalMoves(Game game, int MOVE, int SELECTED, boolean setUnderPressure) {
         if (canIMoveWhenIsKingCheck(game, MOVE, setUnderPressure)) ;
         else if (canIMoveWhenIAmPinned(game, MOVE, SELECTED, setUnderPressure)) ;
         else {
@@ -127,7 +130,7 @@ public abstract class Figure extends FigureState implements Movement {
         }
     }
 
-    public static final void movementExceptions(Game game, Exception e, int SELECTED, int whichMove) {
+    public static void movementExceptions(Game game, Exception e, int SELECTED, int whichMove) {
         System.out.println(e.getMessage());
         System.out.println("----------------------------------");
         System.out.println("FigureType: " + game.getBoard().getField(SELECTED).getFigure().figureType);

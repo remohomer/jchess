@@ -39,6 +39,8 @@ public class Game extends GameStatus {
         this.setActiveGame(true);
         while (this.isActiveGame()) {
 
+//            FileManager.saveGameToFileTxt(this);
+
             FileManager.saveCurrentBoard(this, true);
             FileManager.scanCurrentBoard(this);
 

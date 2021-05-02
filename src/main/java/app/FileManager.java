@@ -57,7 +57,7 @@ public class FileManager {
         }
     }
 
-    public static Game loadByteFileToGame(String gameId) {
+    public static Game loadByteFileToGame(int gameId) {
 
         Figure figure = new Empty();
         Field[] field = new Field[64];
@@ -85,8 +85,9 @@ public class FileManager {
         Player player2 = new Player("Player 2", FigureColor.BLACK);
         Game game = new Game(board, player1, player2);
 
+
         try {
-            DataInputStream inS = new DataInputStream(new FileInputStream("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "game_" + game.getId() + ".txt"));
+            DataInputStream inS = new DataInputStream(new FileInputStream("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "game_" + gameId + ".txt"));
 
             passiveMoveCounter = inS.readInt();
 
@@ -140,74 +141,48 @@ public class FileManager {
     }
 
     public static void initializeFigure(Board board, String figureColor, String figureType, int position) {
+
+        FigureColor newFigureColor;
+        if (figureColor.equals("WHITE")) {
+            newFigureColor = FigureColor.WHITE;
+        } else {
+            newFigureColor = FigureColor.BLACK;
+        }
+
         switch (figureType) {
             case "EMPTY": {
-                if (figureColor.equals("NONE")) {
-                    board.getField(position).setFigure(new Empty());
-                }
+                board.getField(position).setFigure(new Empty());
                 break;
             }
             case "PAWN": {
-                if (figureColor.equals("WHITE")) {
-                    board.getField(position).setFigure(new Pawn(FigureColor.WHITE));
-                    break;
-                } else {
-                    board.getField(position).setFigure(new Pawn(FigureColor.BLACK));
-                    break;
-                }
+                board.getField(position).setFigure(new Pawn(newFigureColor));
+                break;
             }
             case "BISHOP": {
-                if (figureColor.equals("WHITE")) {
-                    board.getField(position).setFigure(new Bishop(FigureColor.WHITE));
-                    break;
-                } else {
-                    board.getField(position).setFigure(new Bishop(FigureColor.BLACK));
-                    break;
-                }
+                board.getField(position).setFigure(new Bishop(newFigureColor));
+                break;
             }
             case "KNIGHT": {
-                if (figureColor.equals("WHITE")) {
-                    board.getField(position).setFigure(new Knight(FigureColor.WHITE));
-                    break;
-                } else {
-                    board.getField(position).setFigure(new Knight(FigureColor.BLACK));
-                    break;
-                }
+                board.getField(position).setFigure(new Knight(newFigureColor));
+                break;
             }
             case "ROOK": {
-                if (figureColor.equals("WHITE")) {
-                    board.getField(position).setFigure(new Rook(FigureColor.WHITE));
-                    break;
-                } else {
-                    board.getField(position).setFigure(new Rook(FigureColor.BLACK));
-                    break;
-                }
+                board.getField(position).setFigure(new Rook(newFigureColor));
+                break;
             }
             case "QUEEN": {
-                if (figureColor.equals("WHITE")) {
-                    board.getField(position).setFigure(new Queen(FigureColor.WHITE));
-                    break;
-                } else {
-                    board.getField(position).setFigure(new Queen(FigureColor.BLACK));
-                    break;
-                }
+                board.getField(position).setFigure(new Queen(newFigureColor));
+                break;
             }
             case "KING": {
-                if (figureColor.equals("WHITE")) {
-                    board.getField(position).setFigure(new King(FigureColor.WHITE));
-                    break;
-                } else {
-                    board.getField(position).setFigure(new King(FigureColor.BLACK));
-                    break;
-                }
-            }
-            default:
+                board.getField(position).setFigure(new King(newFigureColor));
                 break;
+            }
         }
 
     }
 
-    public static void saveGameToFileTxt(Game game, String fileName) {
+    public static void saveGameToFileTxt(Game game) {
 
         try {
             PrintWriter writer = new PrintWriter(new FileWriter("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "game_" + game.getId() + ".txt"));
@@ -225,11 +200,11 @@ public class FileManager {
         }
     }
 
-    public static Game loadFileTxtToGame(String fileName) {
+    public static Game loadFileTxtToGame(int gameId) {
 
         Game game = new Game(InitializeGame.newGame());
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "game_" + game.getId() + ".txt"));
+            BufferedReader reader = new BufferedReader(new FileReader("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "game_" + gameId + ".txt"));
             int id = Integer.parseInt(reader.readLine());
             game.getPlayer1().setPlayerName(reader.readLine());
             game.getPlayer2().setPlayerName(reader.readLine());
@@ -244,70 +219,43 @@ public class FileManager {
                 token.nextToken();
 
 
-                switch (token.nextToken()) {
-                    case "EMPTY": {
-                        if (token.nextToken().equals("NONE")) {
-                            game.getBoard().getField(i).setFigure(new Empty());
-                        }
-                        break;
+                String figureColor = token.nextToken();
+                FigureColor newFigureColor;
+                if (figureColor.equals("WHITE")) {
+                    newFigureColor = FigureColor.WHITE;
+                } else {
+                    newFigureColor = FigureColor.BLACK;
+                }
 
+                switch (figureColor) {
+                    case "EMPTY": {
+                        game.getBoard().getField(i).setFigure(new Empty());
+                        break;
                     }
                     case "PAWN": {
-                        if (token.nextToken().equals("WHITE")) {
-                            game.getBoard().getField(i).setFigure(new Pawn(FigureColor.WHITE));
-                            break;
-                        } else {
-                            game.getBoard().getField(i).setFigure(new Pawn(FigureColor.BLACK));
-                            break;
-                        }
+                        game.getBoard().getField(i).setFigure(new Pawn(newFigureColor));
+                        break;
                     }
                     case "BISHOP": {
-                        if (token.nextToken().equals("WHITE")) {
-                            game.getBoard().getField(i).setFigure(new Bishop(FigureColor.WHITE));
-                            break;
-                        } else {
-                            game.getBoard().getField(i).setFigure(new Bishop(FigureColor.BLACK));
-                            break;
-                        }
+                        game.getBoard().getField(i).setFigure(new Bishop(newFigureColor));
+                        break;
                     }
                     case "KNIGHT": {
-                        if (token.nextToken().equals("WHITE")) {
-                            game.getBoard().getField(i).setFigure(new Knight(FigureColor.WHITE));
-                            break;
-                        } else {
-                            game.getBoard().getField(i).setFigure(new Knight(FigureColor.BLACK));
-                            break;
-                        }
+                        game.getBoard().getField(i).setFigure(new Knight(newFigureColor));
+                        break;
                     }
                     case "ROOK": {
-                        if (token.nextToken().equals("WHITE")) {
-                            game.getBoard().getField(i).setFigure(new Rook(FigureColor.WHITE));
-                            break;
-                        } else {
-                            game.getBoard().getField(i).setFigure(new Rook(FigureColor.BLACK));
-                            break;
-                        }
+                        game.getBoard().getField(i).setFigure(new Rook(newFigureColor));
+                        break;
                     }
                     case "QUEEN": {
-                        if (token.nextToken().equals("WHITE")) {
-                            game.getBoard().getField(i).setFigure(new Queen(FigureColor.WHITE));
-                            break;
-                        } else {
-                            game.getBoard().getField(i).setFigure(new Queen(FigureColor.BLACK));
-                            break;
-                        }
+                        game.getBoard().getField(i).setFigure(new Queen(newFigureColor));
+                        break;
                     }
                     case "KING": {
-                        if (token.nextToken().equals("WHITE")) {
-                            game.getBoard().getField(i).setFigure(new King(FigureColor.WHITE));
-                            break;
-                        } else {
-                            game.getBoard().getField(i).setFigure(new King(FigureColor.BLACK));
-                            break;
-                        }
-                    }
-                    default:
+                        game.getBoard().getField(i).setFigure(new King(newFigureColor));
                         break;
+                    }
                 }
             }
 

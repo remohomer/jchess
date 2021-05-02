@@ -4,6 +4,7 @@ import enums.FigureColor;
 import figures.*;
 import booleans.CastlingConditions;
 
+
 public class Board {
 
     private final CastlingConditions castlingConditions;
