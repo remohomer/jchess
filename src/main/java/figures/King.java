@@ -95,14 +95,10 @@ public class King extends Figure {
     }
 
     public void setLegalCastling(Game game) {
-        if (isWhiteKingSideCastleActive(game))
-            game.getBoard().getField(62).getFigure().setLegalMove(true);
-        if (isWhiteQueenSideCastleActive(game))
-            game.getBoard().getField(58).getFigure().setLegalMove(true);
-        if (isBlackKingSideCastleActive(game))
-            game.getBoard().getField(6).getFigure().setLegalMove(true);
-        if (isBlackQueenSideCastleActive(game))
-            game.getBoard().getField(2).getFigure().setLegalMove(true);
+            game.getBoard().getField(62).getFigure().setLegalMove(isWhiteKingSideCastleActive(game));
+            game.getBoard().getField(58).getFigure().setLegalMove(isWhiteQueenSideCastleActive(game));
+            game.getBoard().getField(6).getFigure().setLegalMove(isBlackKingSideCastleActive(game));
+            game.getBoard().getField(2).getFigure().setLegalMove(isBlackQueenSideCastleActive(game));
     }
 
     public static boolean isWhiteKingSideCastleActive(Game game) {

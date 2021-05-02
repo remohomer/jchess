@@ -195,18 +195,13 @@ public class Move implements figures.Movement {
 
     public static void updateCastlingConditions(Board board, int firstPosition) {
 
-        if (DoIMoveWhiteKing(board, firstPosition))
-            board.getCastlingConditions().setWhiteKingMove(true);
-        if (DoIMoveWhiteLeftRook(board, firstPosition))
-            board.getCastlingConditions().setWhiteLeftRookMove(true);
-        if (DoIMoveWhiteRightRook(board, firstPosition))
-            board.getCastlingConditions().setWhiteRightRookMove(true);
-        if (DoIMoveBlackKing(board, firstPosition))
-            board.getCastlingConditions().setBlackKingMove(true);
-        if (DoIMoveBlackeLeftRook(board, firstPosition))
-            board.getCastlingConditions().setBlackLeftRookMove(true);
-        if (DoIMoveBlackRightRook(board, firstPosition))
-            board.getCastlingConditions().setBlackRightRookMove(true);
+        board.getCastlingConditions().setWhiteKingMove(DoIMoveWhiteKing(board, firstPosition));
+        board.getCastlingConditions().setWhiteLeftRookMove(DoIMoveWhiteLeftRook(board, firstPosition));
+        board.getCastlingConditions().setWhiteRightRookMove(DoIMoveWhiteRightRook(board, firstPosition));
+
+        board.getCastlingConditions().setBlackKingMove(DoIMoveBlackKing(board, firstPosition));
+        board.getCastlingConditions().setBlackLeftRookMove(DoIMoveBlackeLeftRook(board, firstPosition));
+        board.getCastlingConditions().setBlackRightRookMove(DoIMoveBlackRightRook(board, firstPosition));
     }
 
     public static boolean DoIMoveWhiteKing(Board board, int firstPosition) {
@@ -246,12 +241,11 @@ public class Move implements figures.Movement {
     }
 
     public static int[] findAllPositionsOfNoNEmptyFiguresOnTheBoard(Game game, boolean inverted) {
+        int[] tfiguresPosition = new int[64];
+        int nr = 0;
+
         if (inverted) {
-            int[] tfiguresPosition = new int[64];
-            int nr = 0;
-
             if (game.getWhichPlayer() == FigureColor.WHITE) {
-
                 for (Field field : game.getBoard().getWholeField()) {
                     if (field.getFigure().getFigureColor() == FigureColor.BLACK) {
                         tfiguresPosition[nr] = field.getNumber();
@@ -276,8 +270,6 @@ public class Move implements figures.Movement {
             }
             return figuresPosition;
         } else {
-            int[] tfiguresPosition = new int[64];
-            int nr = 0;
 
             if (game.getWhichPlayer() == FigureColor.WHITE) {
 
@@ -461,11 +453,11 @@ public class Move implements figures.Movement {
         Move.clearPinned(board);
     }
 
-    @Override
-    public void movement(Game game, int selectedFigurePosition) {
-    }
-
     public static boolean getPawnIsMovedOrFigureIsTaking() {
         return pawnIsMovedOrFigureIsTaking;
+    }
+
+    @Override
+    public void movement(Game game, int selectedFigurePosition) {
     }
 }
