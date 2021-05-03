@@ -153,6 +153,16 @@ public class Printer {
         }
     }
 
+    private static void printAllOfBoards(Game game, int selectedFigurePosition) {
+        Printer.printBoard(game, PrintBoardType.EN_PASSANT, selectedFigurePosition);
+        Printer.printBoard(game, PrintBoardType.CHECK_LINES, selectedFigurePosition);
+        Printer.printBoard(game, PrintBoardType.PINNED_AND_PINNED_CHECK_LINES, selectedFigurePosition);
+        Printer.printBoard(game, PrintBoardType.PROTECTED, selectedFigurePosition);
+        Printer.printBoard(game, PrintBoardType.UNDER_PRESSURE, selectedFigurePosition);
+        Printer.printBoard(game, PrintBoardType.LEGAL_MOVES, selectedFigurePosition);
+        Printer.printBoard(game, PrintBoardType.DEFAULT, selectedFigurePosition);
+    }
+
     public static void printFigureStates(Game game) {
         for (int i = 0; i < 64; i++) {
             if (i < 10) System.out.print("0" + game.getBoard().getField(i).getNumber());
