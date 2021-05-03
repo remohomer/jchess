@@ -13,16 +13,21 @@ public abstract class Figure extends FigureState implements Movement {
 
     protected FigureType figureType;
     protected FigureColor figureColor;
+    protected boolean activePromotion;
 
-    public Figure() { }
+    public Figure() {
+        activePromotion = false;
+    }
 
     public Figure(FigureColor figureColor) {
         this.figureColor = figureColor;
+        activePromotion = false;
     }
 
     public Figure(Figure figure) {
         this.figureType = figure.getFigureType();
         this.figureColor = figure.getFigureColor();
+        activePromotion = false;
     }
 
     public FigureColor getFigureColor() {
@@ -72,8 +77,6 @@ public abstract class Figure extends FigureState implements Movement {
                     return true;
                 }
                 return true;
-
-
             }
         }
         return false;
@@ -292,5 +295,12 @@ public abstract class Figure extends FigureState implements Movement {
 
     public static boolean isEightColumn(Board board, int selectedFigurePosition) {
         return board.getField(selectedFigurePosition).getColumn() == 8;
+    }
+    public boolean isActivePromotion() {
+        return activePromotion;
+    }
+
+    public void setActivePromotion(boolean activePromotion) {
+        this.activePromotion = activePromotion;
     }
 }

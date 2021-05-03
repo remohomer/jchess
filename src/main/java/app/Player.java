@@ -4,27 +4,12 @@ import enums.FigureColor;
 
 public class Player {
 
-    private FigureColor FigureColor;
+    private FigureColor playerColor;
     private String playerName;
 
-    public Player(String playerName, FigureColor playerFigureColor) {
+    public Player(String playerName, FigureColor playerColor) {
         this.playerName = playerName;
-        this.FigureColor = playerFigureColor;
-    }
-
-    public FigureColor getPlayerFigureColor() {
-        return FigureColor;
-    }
-
-    public void setPlayerFigureColor(FigureColor figureColor) {
-        this.FigureColor = figureColor;
-    }
-
-    public void setPlayerFigureColor(String figureColor) {
-        if (figureColor.equals("WHITE"))
-            this.FigureColor = enums.FigureColor.WHITE;
-        else
-            this.FigureColor = enums.FigureColor.BLACK;
+        this.playerColor = playerColor;
     }
 
     public String getPlayerName() {

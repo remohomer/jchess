@@ -1,5 +1,6 @@
 package app;
 
+import enums.PrintBoardType;
 import enums.FigureColor;
 import booleans.GameStatus;
 
@@ -15,9 +16,11 @@ public class Game extends GameStatus {
 
     private static int counter = 1;
     protected final int id;
+    public static final int UNINITIALIZED_POSITION = -1;
 
     public final static int RETURN = 99;
     public final static int EXIT_GAME = 100;
+    public final static int SAVE_AND_EXIT_GAME = 111;
 
     public Game(Board board, Player player1, Player player2) {
         this.board = board;
@@ -38,75 +41,100 @@ public class Game extends GameStatus {
     public void start() {
         this.setActiveGame(true);
         while (this.isActiveGame()) {
-
-//            FileManager.saveGameToFileTxt(this);
-
-            FileManager.saveCurrentBoard(this, true);
-            FileManager.scanCurrentBoard(this);
-
-            if (this.isDraw()) {
+            if (lookingForDrawByRepeatingPositionOr50PassiveMoves()) {
                 break;
             }
+            FileManager.saveGameToFileTxt(this);
+            scanBoardAndSetLegalMovesForCurrentPlayer();
 
-            Printer.printBoardWithNumbers();
-            Printer.printBoard(this);
+            loadPositions:
+            {
+                int firstPosition, secondPosition;
+                do {
+                    printBoard(Printer.NOT_SELCTED_FIGURE);
 
-            Move.scanBoardAndSetUnderPressureAndProtectedStates(this);
-            Move.isKingCheck(this.board);
+                    firstPosition = loadFirstPosition();
+                    switch (firstPosition) {
+                        case SAVE_AND_EXIT_GAME: {
+                        }
+                        case EXIT_GAME: {
+                            exitGameConditions();
+                            break loadPositions;
+                        }
+                        default: {
+                            printBoard(firstPosition);
+                            break;
+                        }
+                    }
 
-            int firstPosition, secondPosition;
-
-            do {
-                firstPosition = loadFirstPosition();
-
-                if (firstPosition == EXIT_GAME) {
-                    FileManager.deleteCurrentBoardFile(this);
-                    this.setActiveGame(false);
-                    break;
-                }
-
-                this.board.getField(firstPosition).getFigure().movement(this, firstPosition);
-
-                Printer.printBoardWithNumbers();
-                Printer.printBoard(this);
-
-                secondPosition = loadSecondPosition();
-
-
-                if (secondPosition == EXIT_GAME) {
-                    this.setActiveGame(false);
-                    FileManager.deleteCurrentBoardFile(this);
-                    break;
-                } else if (secondPosition == RETURN) {
-                    Move.clearFigureStates(this.getBoard());
-                    Move.clearUnderPressure(this.getBoard());
-                    Printer.printBoard(this);
-                } else {
-                    Move.clearFigureStates(this.getBoard());
-                    Move.move(this, firstPosition, secondPosition);
-                }
-            } while (secondPosition == RETURN);
+                    secondPosition = loadSecondPosition();
+                    switch (secondPosition) {
+                        case RETURN: {
+                            returnConditions();
+                            break;
+                        }
+                        case SAVE_AND_EXIT_GAME: {
+                        }
+                        case EXIT_GAME: {
+                            exitGameConditions();
+                            break loadPositions;
+                        }
+                        default: {
+                            Move.clearFigureStates(this.getBoard());
+                            Move.move(this, firstPosition, secondPosition);
+                            break;
+                        }
+                    }
+                } while (secondPosition == RETURN);
+            }
 
             if (isActiveGame()) {
                 Move.clearSelectedFigureAndLegalMoves(this.board);
-
                 if (Move.getPawnIsMovedOrFigureIsTaking()) {
                     FileManager.deleteCurrentBoardFile(this);
                     FileManager.setPassiveMoveCounter(0);
                 }
-
-                invertWhichPlayer();
-
-                Move.scanBoardAndSetUnderPressureAndProtectedStates(this);
-                Move.isKingCheck(this.board);
-                Move.scanBoardAndFindCheckMateOrDraw(this);
-
-                isGameOver();
+                if (lookingForCheckMateOrDraw()) {
+                    setActiveGame(false);
+                }
             }
         }
-
     }
 
+    private boolean lookingForDrawByRepeatingPositionOr50PassiveMoves() {
+        FileManager.saveCurrentBoard(this, true);
+        FileManager.scanCurrentBoard(this);
+        return this.isDraw();
+    }
+
+    private void scanBoardAndSetLegalMovesForCurrentPlayer() {
+        Move.scanBoardAndSetUnderPressureAndProtectedStates(this);
+        Move.isKingCheck(this.board);
+    }
+
+    private void printBoard(int selectedFigurePosition) {
+        Printer.printBoard(this, PrintBoardType.NUMBERS, selectedFigurePosition);
+        Printer.printBoard(this, PrintBoardType.DEFAULT, selectedFigurePosition);
+    }
+
+    private void exitGameConditions() {
+        this.setActiveGame(false);
+        FileManager.deleteCurrentBoardFile(this);
+    }
+
+    private void returnConditions() {
+        Move.clearFigureStates(this.getBoard());
+        Move.clearUnderPressure(this.getBoard());
+        Move.clearSelectedFigureAndLegalMoves(this.getBoard());
+    }
+
+    private boolean lookingForCheckMateOrDraw() {
+        invertWhichPlayer();
+        Move.scanBoardAndSetUnderPressureAndProtectedStates(this);
+        Move.isKingCheck(this.board);
+        Move.scanBoardAndFindCheckMateOrDraw(this);
+        return this.isCheckMate() || this.isDraw();
+    }
 
     private int loadFirstPosition() {
         int firstPosition = 0;
@@ -143,7 +171,6 @@ public class Game extends GameStatus {
                 if (!Move.isLegalSecondPosition(this, this.whichPlayer, secondPosition)) {
                     thereAreNoExceptions = false;
                 }
-
             } catch (Exception e) {
                 System.out.println("ERROR: Niepoprawne dane wejściowe");
                 thereAreNoExceptions = false;
@@ -154,8 +181,11 @@ public class Game extends GameStatus {
     }
 
     public void invertWhichPlayer() {
-        if (whichPlayer == FigureColor.WHITE) whichPlayer = FigureColor.BLACK;
-        else whichPlayer = FigureColor.WHITE;
+        if (whichPlayer == FigureColor.WHITE) {
+            whichPlayer = FigureColor.BLACK;
+        } else {
+            whichPlayer = FigureColor.WHITE;
+        }
     }
 
     public void setWhichPlayer(FigureColor figureColor) {
@@ -163,22 +193,19 @@ public class Game extends GameStatus {
     }
 
     public void setWhichPlayer(String figureColor) {
-        if (figureColor.equals(FigureColor.WHITE.toString()))
+        if (figureColor.equals(FigureColor.WHITE.toString())) {
             this.whichPlayer = FigureColor.WHITE;
-        else
+        } else {
             this.whichPlayer = FigureColor.BLACK;
-    }
-
-    public void isGameOver() {
-        if (this.isCheckMate() || this.isDraw())
-            setActiveGame(false);
+        }
     }
 
     public void whoWon() {
         if (this.whichPlayer == FigureColor.BLACK) {
             System.out.println("Wygrał " + this.getPlayer1().getPlayerName());
-        } else
+        } else {
             System.out.println("Wygrał " + this.getPlayer2().getPlayerName());
+        }
     }
 
     public Board getBoard() {

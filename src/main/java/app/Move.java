@@ -2,25 +2,29 @@ package app;
 
 import enums.FigureType;
 import enums.FigureColor;
+import enums.PrintBoardType;
 import figures.*;
 
 import java.util.Locale;
 import java.util.Scanner;
 
 
-public class Move implements figures.Movement {
+public class Move {
 
-    private static boolean pawnIsMovedOrFigureIsTaking;
+    private static boolean pawnIsMovedOrFigureIsTaking = false;
 
     public static void move(Game game, int firstPosition, int secondPosition) {
         try {
-            pawnIsMovedOrFigureIsTaking = game.getBoard().getField(firstPosition).getFigure().getFigureType() == FigureType.PAWN
-                    || game.getBoard().getField(secondPosition).getFigure().getFigureType() != FigureType.EMPTY;
+            setPawnIsMovedOrFigureIsTaking(game.getBoard().getField(firstPosition).getFigure().getFigureType() == FigureType.PAWN
+                    || game.getBoard().getField(secondPosition).getFigure().getFigureType() != FigureType.EMPTY);
 
-            if (doEnpassant(game, firstPosition, secondPosition)) ;
-            else if (doCastling(game.getBoard(), firstPosition, secondPosition)) ;
-            else if (doPromotion(game, firstPosition, secondPosition)) ;
-            else {
+            if (doEnpassant(game, firstPosition, secondPosition)) {
+             ;
+            } else if (doCastling(game.getBoard(), firstPosition, secondPosition)) {
+             ;
+            } else if (doPromotion(game, firstPosition, secondPosition)) {
+                game.getBoard().getField(secondPosition).getFigure().setActivePromotion(false);
+            } else {
                 updateEnPassantConditions(game.getBoard(), firstPosition, secondPosition);
                 updateCastlingConditions(game.getBoard(), firstPosition);
 
@@ -33,17 +37,21 @@ public class Move implements figures.Movement {
         }
     }
 
+
     public static boolean doEnpassant(Game game, int firstPosition, int secondPosition) {
         if (game.getBoard().getField(firstPosition).getFigure().getFigureType() == FigureType.PAWN
                 && game.getBoard().getField(secondPosition).getFigure().isEnPassant()
                 && game.getBoard().getField(secondPosition).getFigure().isLegalMove()) {
+
             game.getBoard().getField(firstPosition).setFigure(new Empty());
             game.getBoard().getField(secondPosition).setFigure(new Pawn(game.getWhichPlayer()));
-            if (game.getWhichPlayer() == FigureColor.WHITE)
-                game.getBoard().getField(secondPosition + BOTTOM).setFigure(new Empty());
-            else
-                game.getBoard().getField(secondPosition + TOP).setFigure(new Empty());
+            if (game.getWhichPlayer() == FigureColor.WHITE) {
+                game.getBoard().getField(secondPosition + figures.Movement.BOTTOM).setFigure(new Empty());
+            } else {
+                game.getBoard().getField(secondPosition + figures.Movement.TOP).setFigure(new Empty());
+            }
             return true;
+
         }
         clearEnPassant(game.getBoard());
         return false;
@@ -108,6 +116,9 @@ public class Move implements figures.Movement {
 
             if (game.getBoard().getField(secondPosition).getRow() == 8) {
                 game.getBoard().getField(firstPosition).setFigure(new Empty());
+
+                game.getBoard().getField(secondPosition).getFigure().setActivePromotion(true);
+                Printer.printBoard(game, PrintBoardType.DEFAULT,Printer.NOT_SELCTED_FIGURE);
 
                 char typeOfPromotionFigure = (askPlayerForTypeOfPromotionFigure());
 
@@ -187,9 +198,9 @@ public class Move implements figures.Movement {
 
     public static void updateEnPassantConditions(Board board, int firstPosition, int secondPosition) {
         if (board.getField(firstPosition).getFigure().getFigureType() == FigureType.PAWN && board.getField(firstPosition).getRow() == 2 && board.getField(secondPosition).getRow() == 4) {
-            board.getField(firstPosition + TOP).getFigure().setEnPassant(true);
+            board.getField(firstPosition + figures.Movement.TOP).getFigure().setEnPassant(true);
         } else if (board.getField(firstPosition).getFigure().getFigureType() == FigureType.PAWN && board.getField(firstPosition).getRow() == 7 && board.getField(secondPosition).getRow() == 5) {
-            board.getField(firstPosition + BOTTOM).getFigure().setEnPassant(true);
+            board.getField(firstPosition + figures.Movement.BOTTOM).getFigure().setEnPassant(true);
         }
     }
 
@@ -336,7 +347,8 @@ public class Move implements figures.Movement {
             }
         }
         if (!isLegalMoveHere) {
-            Printer.printBoard(game);
+            clearSelectedFigureAndLegalMoves(game.getBoard());
+            Printer.printBoard(game, PrintBoardType.DEFAULT, Printer.NOT_SELCTED_FIGURE);
             if (isKingCheck(game.getBoard())) {
                 game.setCheckMate(true);
                 System.out.println();
@@ -457,7 +469,7 @@ public class Move implements figures.Movement {
         return pawnIsMovedOrFigureIsTaking;
     }
 
-    @Override
-    public void movement(Game game, int selectedFigurePosition) {
+    public static void setPawnIsMovedOrFigureIsTaking(boolean aaa) {
+        pawnIsMovedOrFigureIsTaking = aaa;
     }
 }

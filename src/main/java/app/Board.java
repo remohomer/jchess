@@ -35,8 +35,7 @@ public class Board {
         this.field[7].initializeFigure(new Rook(FigureColor.BLACK));
 
         for (int i = 8; i < 16; i++) {
-            this.field[i].initializeFigure(new Pawn(FigureColor.BLACK))
-            ;
+            this.field[i].initializeFigure(new Pawn(FigureColor.BLACK));
         }
         for (int i = 16; i < 48; i++) {
             this.field[i].initializeFigure(new Empty());
@@ -78,7 +77,6 @@ public class Board {
     public void initializeBoardTestingDraw() {
 
         initializeEmptyBoard();
-
         this.field[6].initializeFigure(new Bishop(FigureColor.WHITE));
         this.field[7].initializeFigure(new King(FigureColor.BLACK));
         this.field[62].initializeFigure(new Rook(FigureColor.WHITE));

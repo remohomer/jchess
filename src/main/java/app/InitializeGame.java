@@ -7,7 +7,7 @@ import figures.Figure;
 
 public class InitializeGame {
 
-    public static Game newGame() {
+    public static Game newTempGame() {
         Figure figure = new Empty();
         Field[] field = new Field[64];
 
@@ -33,14 +33,20 @@ public class InitializeGame {
         Player player1 = new Player("Player 1", FigureColor.WHITE);
         Player player2 = new Player("Player 2", FigureColor.BLACK);
         Game game = new Game(board,player1,player2);
+        return game;
+    }
+
+    public static Game newGame() {
+        Game game = new Game(newTempGame());
         FileManager.deleteCurrentBoardFile(game);
         return game;
     }
 
-    public static Game newGame(String player1Name, String player2Name) {
-        Game game = new Game(newGame());
-        game.getPlayer1().setPlayerName(player1Name);
-        game.getPlayer2().setPlayerName(player2Name);
+    public static Game newGame(String firstPlayerName, String secondPlayerName) {
+        Game game = new Game(newTempGame());
+        FileManager.deleteCurrentBoardFile(game);
+        game.getPlayer1().setPlayerName(firstPlayerName);
+        game.getPlayer2().setPlayerName(secondPlayerName);
         return game;
     }
 }

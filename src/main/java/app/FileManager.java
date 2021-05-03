@@ -1,6 +1,5 @@
 package app;
 
-import booleans.CastlingConditions;
 import enums.FigureColor;
 import figures.*;
 
@@ -17,34 +16,36 @@ public class FileManager {
 
     public static void saveGameToByteFile(Game game) {
         try {
-            DataOutputStream outS = new DataOutputStream(new FileOutputStream("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "game_" + game.getId() + ".txt"));
+            String patch = patchBuilder(game.getId(), "game");
+            DataOutputStream outS = new DataOutputStream(new FileOutputStream(patch));
 
             outS.writeInt(passiveMoveCounter);
 
-            StringBuffer player1Name = new StringBuffer((NAME_LENGHT));
-            player1Name.append(game.getPlayer1().getPlayerName());
-            player1Name.setLength(NAME_LENGHT);
-            outS.writeChars(player1Name.toString());
+            StringBuilder firstPlayerName = new StringBuilder((NAME_LENGHT));
+            firstPlayerName.append(game.getPlayer1().getPlayerName());
+            firstPlayerName.setLength(NAME_LENGHT);
+            outS.writeChars(firstPlayerName.toString());
 
-            StringBuffer player2Name = new StringBuffer((NAME_LENGHT));
-            player2Name.append(game.getPlayer2().getPlayerName());
-            player2Name.setLength(NAME_LENGHT);
-            outS.writeChars(player2Name.toString());
+            StringBuilder secondPlayerName = new StringBuilder((NAME_LENGHT));
+            secondPlayerName.append(game.getPlayer2().getPlayerName());
+            secondPlayerName.setLength(NAME_LENGHT);
+            outS.writeChars(secondPlayerName.toString());
 
-            if (game.getWhichPlayer() == FigureColor.WHITE)
+            if (game.getWhichPlayer() == FigureColor.WHITE) {
                 outS.writeInt(1);
-            else
+            } else {
                 outS.writeInt(2);
+            }
 
             for (int i = 0; i < 64; i++) {
                 outS.writeInt(game.getBoard().getField(i).getNumber());
 
-                StringBuffer figureColor = new StringBuffer(COLOR_LENGHT);
+                StringBuilder figureColor = new StringBuilder(COLOR_LENGHT);
                 figureColor.append(game.getBoard().getField(i).getFigure().getFigureColor());
                 figureColor.setLength(COLOR_LENGHT);
                 outS.writeChars(figureColor.toString());
 
-                StringBuffer figureType = new StringBuffer(TYPE_LENGHT);
+                StringBuilder figureType = new StringBuilder(TYPE_LENGHT);
                 figureType.append(game.getBoard().getField(i).getFigure().getFigureType());
                 figureType.setLength(TYPE_LENGHT);
                 outS.writeChars(figureType.toString());
@@ -59,51 +60,16 @@ public class FileManager {
 
     public static Game loadByteFileToGame(int gameId) {
 
-        Figure figure = new Empty();
-        Field[] field = new Field[64];
-
-        int row = 8;
-        char ch = 97;
-        for (int i = 0; i < 64; i++) {
-            int column;
-            if ((i + 1) % 8 == 0) {
-                column = 8;
-            } else {
-                column = (i + 1) % 8;
-            }
-            field[i] = new Field(i, row, column, Character.toString(ch) + row, figure);
-            if ((i + 1) % 8 == 0) {
-                row--;
-                ch -= 8;
-            }
-            ch++;
-        }
-        CastlingConditions castlingConditions = new CastlingConditions();
-
-        Board board = new Board(castlingConditions, field);
-        Player player1 = new Player("Player 1", FigureColor.WHITE);
-        Player player2 = new Player("Player 2", FigureColor.BLACK);
-        Game game = new Game(board, player1, player2);
-
+        Game game = new Game(InitializeGame.newGame());
 
         try {
-            DataInputStream inS = new DataInputStream(new FileInputStream("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "game_" + gameId + ".txt"));
+            String patch = patchBuilder(game.getId(), "game");
+            DataInputStream inS = new DataInputStream(new FileInputStream(patch));
 
             passiveMoveCounter = inS.readInt();
 
-            StringBuffer playerName1 = new StringBuffer(COLOR_LENGHT);
-            for (int j = 0; j < NAME_LENGHT; j++) {
-                char tChar = inS.readChar();
-                if (tChar != '\0')
-                    playerName1.append(tChar);
-            }
-
-            StringBuffer playerName2 = new StringBuffer(COLOR_LENGHT);
-            for (int j = 0; j < NAME_LENGHT; j++) {
-                char tChar = inS.readChar();
-                if (tChar != '\0')
-                    playerName2.append(tChar);
-            }
+            StringBuilder firstPlayerName = new StringBuilder(stringBuilderFactory(inS, NAME_LENGHT));
+            StringBuilder secondPlayerName = new StringBuilder(stringBuilderFactory(inS, NAME_LENGHT));
 
             if (inS.readInt() == 1) {
                 game.setWhichPlayer(FigureColor.WHITE);
@@ -115,22 +81,12 @@ public class FileManager {
                 int position;
                 position = (inS.readInt());
 
-                StringBuffer figureColor = new StringBuffer(COLOR_LENGHT);
-                for (int j = 0; j < COLOR_LENGHT; j++) {
-                    char tChar = inS.readChar();
-                    if (tChar != '\0')
-                        figureColor.append(tChar);
-                }
+                String figureColor = new String(stringBuilderFactory(inS, COLOR_LENGHT));
+                String figureType = new String(stringBuilderFactory(inS, TYPE_LENGHT));
 
-                StringBuffer figureType = new StringBuffer(TYPE_LENGHT);
-                for (int j = 0; j < TYPE_LENGHT; j++) {
-                    char tChar = inS.readChar();
-                    if (tChar != '\0')
-                        figureType.append(tChar);
-                }
-                game.getPlayer1().setPlayerName(playerName1.toString());
-                game.getPlayer2().setPlayerName(playerName2.toString());
-                initializeFigure(game.getBoard(), figureColor.toString(), figureType.toString(), position);
+                game.getPlayer1().setPlayerName(firstPlayerName.toString());
+                game.getPlayer2().setPlayerName(secondPlayerName.toString());
+                initializeFigure(game.getBoard(), figureColor, figureType, position);
             }
             inS.close();
 
@@ -185,8 +141,9 @@ public class FileManager {
     public static void saveGameToFileTxt(Game game) {
 
         try {
-            PrintWriter writer = new PrintWriter(new FileWriter("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "game_" + game.getId() + ".txt"));
-            writer.println(game.getId());
+            String patch = patchBuilder(game.getId(), "game");
+            PrintWriter writer = new PrintWriter(new FileWriter(patch));
+
             writer.println(game.getPlayer1().getPlayerName());
             writer.println(game.getPlayer2().getPlayerName());
             writer.println(game.getWhichPlayer());
@@ -202,30 +159,22 @@ public class FileManager {
 
     public static Game loadFileTxtToGame(int gameId) {
 
-        Game game = new Game(InitializeGame.newGame());
+        Game game = new Game(InitializeGame.newTempGame());
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "game_" + gameId + ".txt"));
-            int id = Integer.parseInt(reader.readLine());
+            String patch = patchBuilder(game.getId(), "game");
+            BufferedReader reader = new BufferedReader(new FileReader(patch));
             game.getPlayer1().setPlayerName(reader.readLine());
             game.getPlayer2().setPlayerName(reader.readLine());
 
-            System.out.println(game.getWhichPlayer());
             game.setWhichPlayer(reader.readLine());
-            System.out.println(game.getWhichPlayer());
 
             for (int i = 0; i < 64; i++) {
                 StringTokenizer token = new StringTokenizer(reader.readLine(), "|");
                 token.nextToken();
                 token.nextToken();
 
-
                 String figureColor = token.nextToken();
-                FigureColor newFigureColor;
-                if (figureColor.equals("WHITE")) {
-                    newFigureColor = FigureColor.WHITE;
-                } else {
-                    newFigureColor = FigureColor.BLACK;
-                }
+                FigureColor newFigureColor = figureColor.equals("WHITE") ? FigureColor.WHITE : FigureColor.BLACK;
 
                 switch (figureColor) {
                     case "EMPTY": {
@@ -268,12 +217,10 @@ public class FileManager {
     public static void saveCurrentBoard(Game game, boolean append) {
 
         try {
-            PrintWriter writer;
-            if (append) {
-                writer = new PrintWriter(new FileWriter("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "currentBoard_" + game.getId() + ".txt", true));
-            } else {
-                writer = new PrintWriter(new FileWriter("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "currentBoard_" + game.getId() + ".txt"));
-            }
+            String patch = patchBuilder(game.getId(), "board");
+            PrintWriter writer = append ?
+                    new PrintWriter(new FileWriter(patch, true)) :
+                    new PrintWriter(new FileWriter(patch));
 
             writer.println(passiveMoveCounter);
             for (int i = 0; i < 64; i++) {
@@ -298,12 +245,13 @@ public class FileManager {
 
         if (passiveMoveCounter > 50) {
             game.setDraw(true);
-            System.out.println("50 ruchów z rzędu bez zbicia figury lub poruszenia pionka... Dokonałeś niemożliwego. \nGratuluje spektakularnego remisu!");
+            System.out.println("50 ruchów z rzędu bez zbicia figury lub poruszenia pionka... \nGratuluje spektakularnego remisu!");
         } else {
             try {
-                BufferedReader reader = new BufferedReader(new FileReader("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "currentBoard_" + game.getId() + ".txt"));
+                String patch = patchBuilder(game.getId(), "board");
+                BufferedReader reader = new BufferedReader(new FileReader(patch));
 
-                SimpleBoard simpleBoard[] = new SimpleBoard[50];
+                SimpleBoard[] simpleBoard = new SimpleBoard[50];
 
                 for (int j = 0; j < passiveMoveCounter; j++) {
                     int whichBoard = Integer.parseInt(reader.readLine());
@@ -317,16 +265,18 @@ public class FileManager {
                 }
 
                 for (int j = 0; j < passiveMoveCounter; j++) {
-                    if (j + 1 == passiveMoveCounter)
+                    if (j + 1 == passiveMoveCounter) {
                         break;
+                    }
 
                     for (int i = j + 1; i < passiveMoveCounter; i++) {
                         if (simpleBoard[j].equals(simpleBoard[i]))
                             theSameBoard++;
                     }
-                    if (theSameBoard < 3)
+
+                    if (theSameBoard < 3) {
                         theSameBoard = 0;
-                    else {
+                    } else {
                         game.setDraw(true);
                         System.out.println("50 ruchów z rzędu bez zbicia figury lub poruszenia pionka... Dokonałeś niemożliwego. \nGratuluje spektakularnego remisu!");
                         break;
@@ -340,8 +290,32 @@ public class FileManager {
         }
     }
 
-    public static int getPassiveMoveCounter() {
-        return passiveMoveCounter;
+    public static String patchBuilder(int gameId, String name) {
+        StringBuilder patch = new StringBuilder();
+
+        patch.append("src");
+        patch.append(System.getProperty("file.separator"));
+        patch.append("main");
+        patch.append(System.getProperty("file.separator"));
+        patch.append("java");
+        patch.append(System.getProperty("file.separator"));
+        patch.append("database");
+        patch.append(System.getProperty("file.separator"));
+        patch.append(name + "_" + gameId + ".txt");
+
+        return patch.toString();
+    }
+
+    public static StringBuilder stringBuilderFactory(DataInputStream inS, int LENGHT) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder(LENGHT);
+        for (int j = 0; j < LENGHT; j++) {
+            char tChar = inS.readChar();
+            if (tChar != '\0') {
+                stringBuilder.append(tChar);
+            }
+        }
+        stringBuilder.setLength(LENGHT);
+        return stringBuilder;
     }
 
     public static void setPassiveMoveCounter(int passiveMoveCounter) {

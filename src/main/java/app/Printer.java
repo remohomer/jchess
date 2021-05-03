@@ -1,341 +1,133 @@
 package app;
 
+import enums.PrintBoardType;
 import enums.FigureColor;
+
 
 public class Printer {
 
-    public static void printBoard(Game game) {
+    public static final int NOT_SELCTED_FIGURE = -1;
+
+    public static void printBoard(Game game, PrintBoardType printBoardType, int selectedFigurePosition) {
+
+        if (selectedFigurePosition != -1) {
+            game.getBoard().getField(selectedFigurePosition).getFigure().movement(game, selectedFigurePosition);
+        }
+        System.out.println();
+
+        String player = game.getWhichPlayer() == FigureColor.BLACK ? ("\t** " + game.getPlayer2().getPlayerName() + "**") : ("\t" + game.getPlayer2().getPlayerName());
+        System.out.println(player);
+
         int row = 8;
 
         for (int i = 0; i < 64; i++) {
             if (i == 0) {
-                System.out.println();
-                System.out.println();
-                if (game.getWhichPlayer() == FigureColor.BLACK) {
-                    System.out.println(" ** " + game.getPlayer2().getPlayerName() + " **");
+                System.out.println("      a  b  c  d  e  f  g  h  \n");
+            }
+            if (i % 8 == 0) {
+                System.out.print(" " + row + "   ");
+            }
+
+            System.out.print(boardSwitch(game, i, printBoardType));
+
+            if ((i + 1) % 8 == 0) {
+                System.out.print("   " + row + "\n");
+            }
+
+            if (i != 0 && (i + 1) % 8 == 0) {
+                row--;
+            }
+
+            if (i == 63) {
+                System.out.println("\n      a  b  c  d  e  f  g  h  ");
+            }
+        }
+        player = game.getWhichPlayer() == FigureColor.WHITE ? ("\t\t\t\t\t\t** " + game.getPlayer1().getPlayerName() + "**") : ("\t" + game.getPlayer2().getPlayerName());
+        System.out.println(player);
+    }
+
+    public static String boardSwitch(Game game, int i, PrintBoardType printBoardType) {
+
+        switch (printBoardType.toString()) {
+            case "DEFAULT": {
+                return defaultBoardConditions(game, i);
+            }
+            case "NUMBERS": {
+                return i < 10 ? (" " + i + " ") : (" " + i);
+            }
+            case "LEGAL_MOVES": {
+                return game.getBoard().getField(i).getFigure().isLegalMove() ? (" Lm") : ("   ");
+            }
+            case "UNDER_PRESSURE": {
+                if (game.getWhichPlayer() == FigureColor.WHITE) {
+                    return game.getBoard().getField(i).getFigure().isUnderPressureByBlack() ? ("Up_") : ("   ");
                 } else {
-                    System.out.println(" " + game.getPlayer2().getPlayerName());
-                }
-                System.out.println("      a  b  c  d  e  f  g  h  \n");
-            }
-            if (i % 8 == 0) {
-                System.out.print(" " + row + "   ");
-            }
-
-            String fColor = game.getBoard().getField(i).getFigure().getFigureColor() == FigureColor.BLACK ? "_" : " ";
-
-            String selectedOrLegal = " ";
-            if(game.getBoard().getField(i).getFigure().isSelected()) {
-                selectedOrLegal = "@";
-            } else if(game.getBoard().getField(i).getFigure().isLegalMove()) {
-                selectedOrLegal = "*";
-            }
-
-            switch(game.getBoard().getField(i).getFigure().getFigureType().toString()) {
-                case "EMPTY" : {
-                    System.out.print(" " + selectedOrLegal + " ");
-                    break;
-                }
-                case "PAWN" : {
-                    System.out.print(fColor + "P" + selectedOrLegal);
-                    break;
-                }
-                case "KNIGHT" : {
-                    System.out.print(fColor + "N" + selectedOrLegal);
-                    break;
-                }
-                case "BISHOP" : {
-                    System.out.print(fColor + "B" + selectedOrLegal);
-                    break;
-                }
-                case "ROOK" : {
-                    System.out.print(fColor + "R" + selectedOrLegal);
-                    break;
-                }
-                case "QUEEN" : {
-                    System.out.print(fColor + "Q" + selectedOrLegal);
-                    break;
-                }
-                case "KING" : {
-                    System.out.print(fColor + "K" + selectedOrLegal);
-                    break;
+                    return game.getBoard().getField(i).getFigure().isUnderPressureByWhite() ? ("Up ") : ("   ");
                 }
             }
-
-            if ((i + 1) % 8 == 0) {
-                System.out.print("   " + row + "\n");
-            }
-
-            if (i != 0 && (i + 1) % 8 == 0) {
-                row--;
-            }
-
-            if (i == 63) {
-                System.out.println("\n      a  b  c  d  e  f  g  h  ");
-                if (game.getWhichPlayer() == FigureColor.WHITE)
-                    System.out.println("\t\t\t\t\t\t** " + game.getPlayer1().getPlayerName() + " **");
-                else
-                    System.out.println("\t\t\t\t\t\t" + game.getPlayer1().getPlayerName());
-            }
-        }
-    }
-
-    public static void printBoardWithNumbers() {
-
-        int row = 8;
-
-        for (int i = 0; i < 64; i++) {
-            if (i == 0) {
-                System.out.println("      a  b  c  d  e  f  g  h  \n");
-            }
-            if (i % 8 == 0) {
-                System.out.print(" " + row + "   ");
-            }
-            if (i < 10) {
-                System.out.print(" " + i + " ");
-            } else {
-                System.out.print(" " + i);
-            }
-
-            if ((i + 1) % 8 == 0) {
-                System.out.print("   " + row + "\n");
-            }
-
-            if (i != 0 && (i + 1) % 8 == 0) {
-                row--;
-            }
-
-            if (i == 63) {
-                System.out.println("\n      a  b  c  d  e  f  g  h  ");
-            }
-        }
-    }
-
-    public static void printBoardWithUnderPressure(Game game) {
-
-        System.out.println("\n isUnderPressure()");
-
-        int row = 8;
-
-        for (int i = 0; i < 64; i++) {
-            if (i == 0) {
-                System.out.println("      a  b  c  d  e  f  g  h  \n");
-            }
-            if (i % 8 == 0) {
-                System.out.print(" " + row + "   ");
-            }
-
-            if (game.getWhichPlayer() == FigureColor.WHITE) {
-                if (game.getBoard().getField(i).getFigure().isUnderPressureByBlack()) {
-                    System.out.print("Up_");
+            case "PROTECTED": {
+                if (game.getWhichPlayer() == FigureColor.WHITE) {
+                    return game.getBoard().getField(i).getFigure().isProtectedByBlack() ? (" Pr") : ("   ");
                 } else {
-                    System.out.print("   ");
+                    return game.getBoard().getField(i).getFigure().isProtectedByWhite() ? (" Pr") : ("   ");
                 }
-            } else {
-                if (game.getBoard().getField(i).getFigure().isUnderPressureByWhite()) {
-                    System.out.print(" Up");
+            }
+            case "EN_PASSANT": {
+                return game.getBoard().getField(i).getFigure().isEnPassant() ? (" Ep") : ("   ");
+            }
+            case "CHECK_LINES": {
+                return game.getBoard().getField(i).getFigure().isCheckLine() ? (" Cl") : ("   ");
+            }
+            case "PINNED_AND_PINNED_CHECK_LINES": {
+                if (game.getBoard().getField(i).getFigure().isPinned()) {
+                    return (" P ");
+                } else if (game.getBoard().getField(i).getFigure().isPinnedCheckLine()) {
+                    return (" l ");
                 } else {
-                    System.out.print("   ");
+                    return ("   ");
                 }
             }
-
-            if ((i + 1) % 8 == 0) {
-                System.out.print("   " + row + "\n");
-            }
-
-            if (i != 0 && (i + 1) % 8 == 0) {
-                row--;
-            }
-
-            if (i == 63) {
-                System.out.println("\n      a  b  c  d  e  f  g  h  ");
+            default: {
+                return "Błąd przy odczytywaniu danych z PrintBoardType";
             }
         }
     }
 
-    public static void printBoardWithProtected(Game game) {
+    public static String defaultBoardConditions(Game game, int i) {
 
-        System.out.println("\n isProtected()");
-
-        int row = 8;
-
-        for (int i = 0; i < 64; i++) {
-            if (i == 0) {
-                System.out.println("      a  b  c  d  e  f  g  h  \n");
-            }
-            if (i % 8 == 0) {
-                System.out.print(" " + row + "   ");
-            }
-
-            if (game.getWhichPlayer() == FigureColor.WHITE) {
-                if (game.getBoard().getField(i).getFigure().isProtectedByBlack()) {
-                    System.out.print(" Pr");
-                } else {
-                    System.out.print("   ");
-                }
-            } else {
-                if (game.getBoard().getField(i).getFigure().isProtectedByWhite()) {
-                    System.out.print(" Pr");
-                } else {
-                    System.out.print("   ");
-                }
-            }
-
-            if ((i + 1) % 8 == 0) {
-                System.out.print("   " + row + "\n");
-            }
-
-            if (i != 0 && (i + 1) % 8 == 0) {
-                row--;
-            }
-
-            if (i == 63) {
-                System.out.println("\n      a  b  c  d  e  f  g  h  ");
-            }
+        String fColor = game.getBoard().getField(i).getFigure().getFigureColor() == FigureColor.BLACK ? "_" : " ";
+        String selectedOrLegal = " ";
+        if (game.getBoard().getField(i).getFigure().isSelected()) {
+            selectedOrLegal = "@";
+        } else if (game.getBoard().getField(i).getFigure().isLegalMove()) {
+            selectedOrLegal = "*";
         }
-    }
 
-    public static void printBoardWithLegalMoves(Game game) {
-
-        System.out.println("\n isLegalMove()");
-
-        int row = 8;
-
-        for (int i = 0; i < 64; i++) {
-            if (i == 0) {
-                System.out.println("      a  b  c  d  e  f  g  h  \n");
+        switch (game.getBoard().getField(i).getFigure().getFigureType().toString()) {
+            case "EMPTY": {
+                return game.getBoard().getField(i).getFigure().isActivePromotion() ? (" ? ") : (" " + selectedOrLegal + " ");
             }
-            if (i % 8 == 0) {
-                System.out.print(" " + row + "   ");
+            case "PAWN": {
+                return fColor + "P" + selectedOrLegal;
             }
-            if (game.getBoard().getField(i).getFigure().isLegalMove()) {
-                System.out.print(" Lm");
-            } else {
-                System.out.print("   ");
+            case "KNIGHT": {
+                return fColor + "N" + selectedOrLegal;
             }
-
-            if ((i + 1) % 8 == 0) {
-                System.out.print("   " + row + "\n");
+            case "BISHOP": {
+                return fColor + "B" + selectedOrLegal;
             }
-
-            if (i != 0 && (i + 1) % 8 == 0) {
-                row--;
+            case "ROOK": {
+                return fColor + "R" + selectedOrLegal;
             }
-
-            if (i == 63) {
-                System.out.println("\n      a  b  c  d  e  f  g  h  ");
+            case "QUEEN": {
+                return fColor + "Q" + selectedOrLegal;
             }
-        }
-    }
-
-    public static void printBoardWithPinnedAndPinnedCheckLines(Game game) {
-
-        System.out.println("\n isPinnedFigure() && isPinnedCheckLine()");
-
-        int row = 8;
-
-        for (int i = 0; i < 64; i++) {
-            if (i == 0) {
-                System.out.println("      a  b  c  d  e  f  g  h  \n");
+            case "KING": {
+                return fColor + "K" + selectedOrLegal;
             }
-            if (i % 8 == 0) {
-                System.out.print(" " + row + "   ");
+            default: {
+                return "Błąd przy odczytywaniu danych z FigureType";
             }
-            if (game.getBoard().getField(i).getFigure().isPinned()) {
-                System.out.print(" P ");
-            } else if (game.getBoard().getField(i).getFigure().isPinnedCheckLine()) {
-                System.out.print(" Pl");
-            } else {
-                System.out.print("   ");
-            }
-
-            if ((i + 1) % 8 == 0) {
-                System.out.print("   " + row + "\n");
-            }
-
-            if (i != 0 && (i + 1) % 8 == 0) {
-                row--;
-            }
-
-            if (i == 63) {
-                System.out.println("\n      a  b  c  d  e  f  g  h  ");
-            }
-        }
-    }
-
-    public static void printBoardWithCheckLines(Game game) {
-
-        System.out.println("\n isCheckLine()");
-
-        int row = 8;
-
-        for (int i = 0; i < 64; i++) {
-            if (i == 0) {
-                System.out.println("      a  b  c  d  e  f  g  h  \n");
-            }
-            if (i % 8 == 0) {
-                System.out.print(" " + row + "   ");
-            }
-            if (game.getBoard().getField(i).getFigure().isCheckLine()) {
-                System.out.print(" Cl");
-            } else {
-                System.out.print("   ");
-            }
-
-            if ((i + 1) % 8 == 0) {
-                System.out.print("   " + row + "\n");
-            }
-
-            if (i != 0 && (i + 1) % 8 == 0) {
-                row--;
-            }
-
-            if (i == 63) {
-                System.out.println("\n      a  b  c  d  e  f  g  h  ");
-            }
-        }
-    }
-
-    public static void printBoardWithEnPassant(Game game) {
-
-        System.out.println("\n isEnPassant()");
-
-        int row = 8;
-
-        for (int i = 0; i < 64; i++) {
-            if (i == 0) {
-                System.out.println("      a  b  c  d  e  f  g  h  \n");
-            }
-            if (i % 8 == 0) {
-                System.out.print(" " + row + "   ");
-            }
-            if (game.getBoard().getField(i).getFigure().isEnPassant()) {
-                System.out.print(" Ep");
-            } else {
-                System.out.print("   ");
-            }
-
-            if ((i + 1) % 8 == 0) {
-                System.out.print("   " + row + "\n");
-            }
-
-            if (i != 0 && (i + 1) % 8 == 0) {
-                row--;
-            }
-
-            if (i == 63) {
-                System.out.println("\n      a  b  c  d  e  f  g  h  ");
-            }
-        }
-    }
-
-    public static void printBoardStats(Game game) {
-        for (int i = 0; i < 64; i++) {
-            System.out.print(i + ". ");
-            System.out.print(" number: " + game.getBoard().getField(i).getNumber());
-            System.out.print(" row: " + game.getBoard().getField(i).getRow());
-            System.out.print(" column: " + game.getBoard().getField(i).getColumn());
-            System.out.println(" cords: " + game.getBoard().getField(i).getCords());
         }
     }
 
