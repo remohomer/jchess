@@ -12,19 +12,19 @@ public class Game extends GameStatus {
     private final Player player1;
     private final Player player2;
     private final Board board;
-    private FigureColor whichPlayer;
-
+    private FigureColor whoseTurn;
     private static int counter = 1;
-    protected final int id;
-    public static final int UNINITIALIZED_POSITION = -1;
 
+    protected final int id;
+
+    public final static int DEFAULT = -1;
     public final static int RETURN = 99;
     public final static int EXIT_GAME = 100;
     public final static int SAVE_AND_EXIT_GAME = 111;
 
     public Game(Board board, Player player1, Player player2) {
         this.board = board;
-        this.whichPlayer = FigureColor.WHITE;
+        this.whoseTurn = FigureColor.WHITE;
         this.player1 = player1;
         this.player2 = player2;
         id = counter++;
@@ -32,7 +32,7 @@ public class Game extends GameStatus {
 
     public Game(Game game) {
         this.board = game.getBoard();
-        this.whichPlayer = game.getWhichPlayer();
+        this.whoseTurn = game.getWhoseTurn();
         this.player1 = game.getPlayer1();
         this.player2 = game.getPlayer2();
         this.id = game.getId();
@@ -44,49 +44,29 @@ public class Game extends GameStatus {
             if (lookingForDrawByRepeatingPositionOr50PassiveMoves()) {
                 break;
             }
-            FileManager.saveGameToFileTxt(this);
             scanBoardAndSetLegalMovesForCurrentPlayer();
 
             loadPositions:
             {
                 int firstPosition, secondPosition;
                 do {
-                    printBoard(Printer.NOT_SELCTED_FIGURE);
+
+                    printBoard(Printer.NOT_SELECTED_FIGURE);
 
                     firstPosition = loadFirstPosition();
-                    switch (firstPosition) {
-                        case SAVE_AND_EXIT_GAME: {
-                        }
-                        case EXIT_GAME: {
-                            exitGameConditions();
-                            break loadPositions;
-                        }
-                        default: {
-                            printBoard(firstPosition);
-                            break;
-                        }
+                    if (positionSwitcher(firstPosition) == EXIT_GAME) {
+                        break loadPositions;
                     }
+                    printBoard(firstPosition);
 
                     secondPosition = loadSecondPosition();
-                    switch (secondPosition) {
-                        case RETURN: {
-                            returnConditions();
-                            break;
-                        }
-                        case SAVE_AND_EXIT_GAME: {
-                        }
-                        case EXIT_GAME: {
-                            exitGameConditions();
-                            break loadPositions;
-                        }
-                        default: {
-                            Move.clearFigureStates(this.getBoard());
-                            Move.move(this, firstPosition, secondPosition);
-                            break;
-                        }
+                    if (positionSwitcher(firstPosition, secondPosition)) {
+                        break loadPositions;
                     }
+
                 } while (secondPosition == RETURN);
             }
+
 
             if (isActiveGame()) {
                 Move.clearSelectedFigureAndLegalMoves(this.board);
@@ -99,6 +79,34 @@ public class Game extends GameStatus {
                 }
             }
         }
+    }
+
+    private int positionSwitcher(int firstPosition) {
+        switch (firstPosition) {
+            case RETURN: {
+                returnConditions();
+                return RETURN;
+            }
+            case SAVE_AND_EXIT_GAME: {
+                FileManager.saveGameToFileTxt(this);
+            }
+            case EXIT_GAME: {
+                exitGameConditions();
+                return EXIT_GAME;
+            }
+            default: {
+                return DEFAULT;
+            }
+        }
+    }
+
+    private boolean positionSwitcher(int firstPosition, int secondPosition) {
+        if (positionSwitcher(secondPosition) == EXIT_GAME) {
+            return true;
+        }
+        Move.clearFigureStates(this.getBoard());
+        Move.move(this, firstPosition, secondPosition);
+        return false;
     }
 
     private boolean lookingForDrawByRepeatingPositionOr50PassiveMoves() {
@@ -129,7 +137,7 @@ public class Game extends GameStatus {
     }
 
     private boolean lookingForCheckMateOrDraw() {
-        invertWhichPlayer();
+        invertWhoseTurn();
         Move.scanBoardAndSetUnderPressureAndProtectedStates(this);
         Move.isKingCheck(this.board);
         Move.scanBoardAndFindCheckMateOrDraw(this);
@@ -144,13 +152,13 @@ public class Game extends GameStatus {
             thereAreNoExceptions = true;
             try {
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("Podaj liczbę [0-63 wybór figury / 100 wyjdź]: ");
+                System.out.print("Enter a number [0-63 figure choice / 100 exit / 111 save and exit]: ");
                 firstPosition = scanner.nextInt();
-                if (!Move.isLegalFirstPosition(this, this.whichPlayer, firstPosition)) {
+                if (!Move.isLegalFirstPosition(this, this.whoseTurn, firstPosition)) {
                     thereAreNoExceptions = false;
                 }
             } catch (Exception e) {
-                System.out.println("ERROR: Niepoprawne dane wejściowe");
+                System.out.println("ERROR: Invalid input data");
                 thereAreNoExceptions = false;
             }
         } while (!thereAreNoExceptions);
@@ -166,13 +174,13 @@ public class Game extends GameStatus {
             thereAreNoExceptions = true;
             try {
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("Gdzie tą figurę położyć? [0-63 wybór figury / 99 wróć / 100 wyjdź]: ");
+                System.out.print("Enter a number [0-63 figure choice / 99 return / 100 exit / 111 save and exit]: ");
                 secondPosition = scanner.nextInt();
-                if (!Move.isLegalSecondPosition(this, this.whichPlayer, secondPosition)) {
+                if (!Move.isLegalSecondPosition(this, this.whoseTurn, secondPosition)) {
                     thereAreNoExceptions = false;
                 }
             } catch (Exception e) {
-                System.out.println("ERROR: Niepoprawne dane wejściowe");
+                System.out.println("ERROR: Invalid input data");
                 thereAreNoExceptions = false;
             }
         } while (!thereAreNoExceptions);
@@ -180,31 +188,31 @@ public class Game extends GameStatus {
         return secondPosition;
     }
 
-    public void invertWhichPlayer() {
-        if (whichPlayer == FigureColor.WHITE) {
-            whichPlayer = FigureColor.BLACK;
+    public void invertWhoseTurn() {
+        if (whoseTurn == FigureColor.WHITE) {
+            whoseTurn = FigureColor.BLACK;
         } else {
-            whichPlayer = FigureColor.WHITE;
+            whoseTurn = FigureColor.WHITE;
         }
     }
 
-    public void setWhichPlayer(FigureColor figureColor) {
-        this.whichPlayer = figureColor;
+    public void setWhoseTurn(FigureColor figureColor) {
+        this.whoseTurn = figureColor;
     }
 
-    public void setWhichPlayer(String figureColor) {
+    public void setWhoseTurn(String figureColor) {
         if (figureColor.equals(FigureColor.WHITE.toString())) {
-            this.whichPlayer = FigureColor.WHITE;
+            this.whoseTurn = FigureColor.WHITE;
         } else {
-            this.whichPlayer = FigureColor.BLACK;
+            this.whoseTurn = FigureColor.BLACK;
         }
     }
 
     public void whoWon() {
-        if (this.whichPlayer == FigureColor.BLACK) {
-            System.out.println("Wygrał " + this.getPlayer1().getPlayerName());
+        if (this.whoseTurn == FigureColor.BLACK) {
+            System.out.println(this.getPlayer1().getPlayerName() + " WON!");
         } else {
-            System.out.println("Wygrał " + this.getPlayer2().getPlayerName());
+            System.out.println(this.getPlayer2().getPlayerName() + " WON!");
         }
     }
 
@@ -220,8 +228,8 @@ public class Game extends GameStatus {
         return player2;
     }
 
-    public FigureColor getWhichPlayer() {
-        return whichPlayer;
+    public FigureColor getWhoseTurn() {
+        return whoseTurn;
     }
 
     public int getId() {

@@ -8,9 +8,9 @@ import java.util.StringTokenizer;
 
 public class FileManager {
 
-    private static final int NAME_LENGHT = 30;
-    private static final int COLOR_LENGHT = 5;
-    private static final int TYPE_LENGHT = 6;
+    private static final int NAME_LENGTH = 30;
+    private static final int COLOR_LENGTH = 5;
+    private static final int TYPE_LENGTH = 6;
     private static int passiveMoveCounter = 0;
     private static int theSameBoard = 0;
 
@@ -21,17 +21,17 @@ public class FileManager {
 
             outS.writeInt(passiveMoveCounter);
 
-            StringBuilder firstPlayerName = new StringBuilder((NAME_LENGHT));
+            StringBuilder firstPlayerName = new StringBuilder((NAME_LENGTH));
             firstPlayerName.append(game.getPlayer1().getPlayerName());
-            firstPlayerName.setLength(NAME_LENGHT);
+            firstPlayerName.setLength(NAME_LENGTH);
             outS.writeChars(firstPlayerName.toString());
 
-            StringBuilder secondPlayerName = new StringBuilder((NAME_LENGHT));
+            StringBuilder secondPlayerName = new StringBuilder((NAME_LENGTH));
             secondPlayerName.append(game.getPlayer2().getPlayerName());
-            secondPlayerName.setLength(NAME_LENGHT);
+            secondPlayerName.setLength(NAME_LENGTH);
             outS.writeChars(secondPlayerName.toString());
 
-            if (game.getWhichPlayer() == FigureColor.WHITE) {
+            if (game.getWhoseTurn() == FigureColor.WHITE) {
                 outS.writeInt(1);
             } else {
                 outS.writeInt(2);
@@ -40,14 +40,14 @@ public class FileManager {
             for (int i = 0; i < 64; i++) {
                 outS.writeInt(game.getBoard().getField(i).getNumber());
 
-                StringBuilder figureColor = new StringBuilder(COLOR_LENGHT);
+                StringBuilder figureColor = new StringBuilder(COLOR_LENGTH);
                 figureColor.append(game.getBoard().getField(i).getFigure().getFigureColor());
-                figureColor.setLength(COLOR_LENGHT);
+                figureColor.setLength(COLOR_LENGTH);
                 outS.writeChars(figureColor.toString());
 
-                StringBuilder figureType = new StringBuilder(TYPE_LENGHT);
+                StringBuilder figureType = new StringBuilder(TYPE_LENGTH);
                 figureType.append(game.getBoard().getField(i).getFigure().getFigureType());
-                figureType.setLength(TYPE_LENGHT);
+                figureType.setLength(TYPE_LENGTH);
                 outS.writeChars(figureType.toString());
             }
             outS.close();
@@ -68,21 +68,21 @@ public class FileManager {
 
             passiveMoveCounter = inS.readInt();
 
-            StringBuilder firstPlayerName = new StringBuilder(stringBuilderFactory(inS, NAME_LENGHT));
-            StringBuilder secondPlayerName = new StringBuilder(stringBuilderFactory(inS, NAME_LENGHT));
+            StringBuilder firstPlayerName = new StringBuilder(stringBuilderFactory(inS, NAME_LENGTH));
+            StringBuilder secondPlayerName = new StringBuilder(stringBuilderFactory(inS, NAME_LENGTH));
 
             if (inS.readInt() == 1) {
-                game.setWhichPlayer(FigureColor.WHITE);
+                game.setWhoseTurn(FigureColor.WHITE);
             } else
-                game.setWhichPlayer(FigureColor.BLACK);
+                game.setWhoseTurn(FigureColor.BLACK);
 
             for (int i = 0; i < 64; i++) {
 
                 int position;
                 position = (inS.readInt());
 
-                String figureColor = new String(stringBuilderFactory(inS, COLOR_LENGHT));
-                String figureType = new String(stringBuilderFactory(inS, TYPE_LENGHT));
+                String figureColor = new String(stringBuilderFactory(inS, COLOR_LENGTH));
+                String figureType = new String(stringBuilderFactory(inS, TYPE_LENGTH));
 
                 game.getPlayer1().setPlayerName(firstPlayerName.toString());
                 game.getPlayer2().setPlayerName(secondPlayerName.toString());
@@ -146,7 +146,7 @@ public class FileManager {
 
             writer.println(game.getPlayer1().getPlayerName());
             writer.println(game.getPlayer2().getPlayerName());
-            writer.println(game.getWhichPlayer());
+            writer.println(game.getWhoseTurn());
 
             for (int i = 0; i < 64; i++) {
                 writer.println(game.getBoard().getField(i).getNumber() + "|" + game.getBoard().getField(i).getCords() + "|" + game.getBoard().getField(i).getFigure().getFigureType() + "|" + game.getBoard().getField(i).getFigure().getFigureColor());
@@ -166,7 +166,7 @@ public class FileManager {
             game.getPlayer1().setPlayerName(reader.readLine());
             game.getPlayer2().setPlayerName(reader.readLine());
 
-            game.setWhichPlayer(reader.readLine());
+            game.setWhoseTurn(reader.readLine());
 
             for (int i = 0; i < 64; i++) {
                 StringTokenizer token = new StringTokenizer(reader.readLine(), "|");
@@ -234,7 +234,8 @@ public class FileManager {
     }
 
     public static void deleteCurrentBoardFile(Game game) {
-        File file = new File("src" + System.getProperty("file.separator") + "main" + System.getProperty("file.separator") + "java" + System.getProperty("file.separator") + "database" + System.getProperty("file.separator") + "currentBoard_" + game.getId() + ".txt");
+        String patch = patchBuilder(game.getId(),"board");
+        File file = new File(patch);
         if (file.exists()) {
             file.delete();
         }
@@ -245,7 +246,8 @@ public class FileManager {
 
         if (passiveMoveCounter > 50) {
             game.setDraw(true);
-            System.out.println("50 ruchów z rzędu bez zbicia figury lub poruszenia pionka... \nGratuluje spektakularnego remisu!");
+            System.out.println("50 moves in a row without capturing a piece or moving a pawn ...\n" +
+                    "Congratulations on a spectacular draw!");
         } else {
             try {
                 String patch = patchBuilder(game.getId(), "board");
@@ -278,7 +280,7 @@ public class FileManager {
                         theSameBoard = 0;
                     } else {
                         game.setDraw(true);
-                        System.out.println("50 ruchów z rzędu bez zbicia figury lub poruszenia pionka... Dokonałeś niemożliwego. \nGratuluje spektakularnego remisu!");
+                        System.out.println("IS A DRAW!");
                         break;
                     }
                 }
@@ -306,15 +308,15 @@ public class FileManager {
         return patch.toString();
     }
 
-    public static StringBuilder stringBuilderFactory(DataInputStream inS, int LENGHT) throws IOException {
-        StringBuilder stringBuilder = new StringBuilder(LENGHT);
-        for (int j = 0; j < LENGHT; j++) {
+    public static StringBuilder stringBuilderFactory(DataInputStream inS, int LENGTH) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder(LENGTH);
+        for (int j = 0; j < LENGTH; j++) {
             char tChar = inS.readChar();
             if (tChar != '\0') {
                 stringBuilder.append(tChar);
             }
         }
-        stringBuilder.setLength(LENGHT);
+        stringBuilder.setLength(LENGTH);
         return stringBuilder;
     }
 

@@ -95,10 +95,13 @@ public class King extends Figure {
     }
 
     public void setLegalCastling(Game game) {
+        if(game.getWhoseTurn() == FigureColor.WHITE) {
             game.getBoard().getField(62).getFigure().setLegalMove(isWhiteKingSideCastleActive(game));
             game.getBoard().getField(58).getFigure().setLegalMove(isWhiteQueenSideCastleActive(game));
+        } else {
             game.getBoard().getField(6).getFigure().setLegalMove(isBlackKingSideCastleActive(game));
             game.getBoard().getField(2).getFigure().setLegalMove(isBlackQueenSideCastleActive(game));
+        }
     }
 
     public static boolean isWhiteKingSideCastleActive(Game game) {
@@ -144,7 +147,7 @@ public class King extends Figure {
     }
 
     public boolean isUnderPressureOrProtected(Game game, int MOVE) {
-        if (game.getWhichPlayer() == FigureColor.WHITE)
+        if (game.getWhoseTurn() == FigureColor.WHITE)
             return game.getBoard().getField(MOVE).getFigure().isUnderPressureByBlack() || game.getBoard().getField(MOVE).getFigure().isProtectedByBlack();
         else
             return game.getBoard().getField(MOVE).getFigure().isUnderPressureByWhite() || game.getBoard().getField(MOVE).getFigure().isProtectedByWhite();

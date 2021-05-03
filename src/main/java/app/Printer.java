@@ -6,7 +6,7 @@ import enums.FigureColor;
 
 public class Printer {
 
-    public static final int NOT_SELCTED_FIGURE = -1;
+    public static final int NOT_SELECTED_FIGURE = -1;
 
     public static void printBoard(Game game, PrintBoardType printBoardType, int selectedFigurePosition) {
 
@@ -15,7 +15,7 @@ public class Printer {
         }
         System.out.println();
 
-        String player = game.getWhichPlayer() == FigureColor.BLACK ? ("\t** " + game.getPlayer2().getPlayerName() + "**") : ("\t" + game.getPlayer2().getPlayerName());
+        String player = game.getWhoseTurn() == FigureColor.BLACK ? ("\t** " + game.getPlayer2().getPlayerName() + "**") : ("\t" + game.getPlayer2().getPlayerName());
         System.out.println(player);
 
         int row = 8;
@@ -42,7 +42,7 @@ public class Printer {
                 System.out.println("\n      a  b  c  d  e  f  g  h  ");
             }
         }
-        player = game.getWhichPlayer() == FigureColor.WHITE ? ("\t\t\t\t\t\t** " + game.getPlayer1().getPlayerName() + "**") : ("\t" + game.getPlayer2().getPlayerName());
+        player = game.getWhoseTurn() == FigureColor.WHITE ? ("\t\t\t\t\t\t** " + game.getPlayer1().getPlayerName() + "**") : ("\t" + game.getPlayer2().getPlayerName());
         System.out.println(player);
     }
 
@@ -59,14 +59,14 @@ public class Printer {
                 return game.getBoard().getField(i).getFigure().isLegalMove() ? (" Lm") : ("   ");
             }
             case "UNDER_PRESSURE": {
-                if (game.getWhichPlayer() == FigureColor.WHITE) {
+                if (game.getWhoseTurn() == FigureColor.WHITE) {
                     return game.getBoard().getField(i).getFigure().isUnderPressureByBlack() ? ("Up_") : ("   ");
                 } else {
                     return game.getBoard().getField(i).getFigure().isUnderPressureByWhite() ? ("Up ") : ("   ");
                 }
             }
             case "PROTECTED": {
-                if (game.getWhichPlayer() == FigureColor.WHITE) {
+                if (game.getWhoseTurn() == FigureColor.WHITE) {
                     return game.getBoard().getField(i).getFigure().isProtectedByBlack() ? (" Pr") : ("   ");
                 } else {
                     return game.getBoard().getField(i).getFigure().isProtectedByWhite() ? (" Pr") : ("   ");
@@ -88,7 +88,7 @@ public class Printer {
                 }
             }
             default: {
-                return "Błąd przy odczytywaniu danych z PrintBoardType";
+                return "ERROR: reading data from enums.PrintBoardType";
             }
         }
     }
@@ -126,7 +126,7 @@ public class Printer {
                 return fColor + "K" + selectedOrLegal;
             }
             default: {
-                return "Błąd przy odczytywaniu danych z FigureType";
+                return "ERROR: reading data from enums.FigureType";
             }
         }
     }
@@ -142,9 +142,9 @@ public class Printer {
             System.out.print(" | PinCheckLn: " + game.getBoard().getField(i).getFigure().isPinnedCheckLine());
             System.out.print(" | CheckLn: " + game.getBoard().getField(i).getFigure().isCheckLine());
             System.out.print(" | PressByWhite: " + game.getBoard().getField(i).getFigure().isUnderPressureByWhite());
-            System.out.print(" | ProtByWhite: " + game.getBoard().getField(i).getFigure().isProtectedByWhite());
+            System.out.print(" | ProtectByWhite: " + game.getBoard().getField(i).getFigure().isProtectedByWhite());
             System.out.print(" | PressByBlack: " + game.getBoard().getField(i).getFigure().isUnderPressureByBlack());
-            System.out.print(" | ProtByBlack: " + game.getBoard().getField(i).getFigure().isProtectedByBlack());
+            System.out.print(" | ProtectByBlack: " + game.getBoard().getField(i).getFigure().isProtectedByBlack());
             System.out.println(" | Figure: " + game.getBoard().getField(i).getFigure().getFigureType());
         }
     }

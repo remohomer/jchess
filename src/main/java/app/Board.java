@@ -14,7 +14,7 @@ public class Board {
         this.field = field;
         this.castlingConditions = castlingConditions;
 
-        initializeBoard(); // if you want to initialize other Boards you have to comment "King.setLegalCastling(game)"
+        initializeBoardTestingCastling(); // if you want to initialize other Boards you have to comment "figures.King.setLegalCastling(game)"
     }
 
     public void initializeEmptyBoard() {
@@ -61,6 +61,20 @@ public class Board {
         this.field[30].initializeFigure(new Queen(FigureColor.WHITE));
     }
 
+    public void initializeBoardTestingCastling() {
+        initializeBoard();
+        this.field[1].initializeFigure(new Empty());
+        this.field[2].initializeFigure(new Empty());
+        this.field[3].initializeFigure(new Empty());
+        this.field[5].initializeFigure(new Empty());
+        this.field[6].initializeFigure(new Empty());
+        this.field[57].initializeFigure(new Empty());
+        this.field[58].initializeFigure(new Empty());
+        this.field[59].initializeFigure(new Empty());
+        this.field[61].initializeFigure(new Empty());
+        this.field[62].initializeFigure(new Empty());
+    }
+
     public void initializeBoardTestingCheckMate() {
         initializeBoard();
         this.field[12].initializeFigure(new Empty());
@@ -87,6 +101,7 @@ public class Board {
         initializeEmptyBoard();
         this.field[4].initializeFigure(new King(FigureColor.BLACK));
         this.field[10].initializeFigure(new Pawn(FigureColor.WHITE));
+        this.field[50].initializeFigure(new Pawn(FigureColor.BLACK));
         this.field[60].initializeFigure(new King(FigureColor.WHITE));
     }
 

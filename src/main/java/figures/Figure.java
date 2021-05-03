@@ -38,7 +38,7 @@ public abstract class Figure extends FigureState implements Movement {
     }
 
     public static boolean isKingCheck(Game game) {
-        if (game.getWhichPlayer() == FigureColor.WHITE) {
+        if (game.getWhoseTurn() == FigureColor.WHITE) {
             return game.getBoard().getCastlingConditions().isWhiteKingCheck();
         } else {
             return game.getBoard().getCastlingConditions().isBlackKingCheck();
@@ -83,14 +83,14 @@ public abstract class Figure extends FigureState implements Movement {
     }
 
     public static void setUnderPressure(Game game, int position) {
-        if (game.getWhichPlayer() == FigureColor.WHITE)
+        if (game.getWhoseTurn() == FigureColor.WHITE)
             game.getBoard().getField(position).getFigure().setUnderPressureByWhite(true);
         else
             game.getBoard().getField(position).getFigure().setUnderPressureByBlack(true);
     }
 
     public static void setProtected(Game game, int position) {
-        if (game.getWhichPlayer() == FigureColor.WHITE)
+        if (game.getWhoseTurn() == FigureColor.WHITE)
             game.getBoard().getField(position).getFigure().setProtectedByWhite(true);
         else
             game.getBoard().getField(position).getFigure().setProtectedByBlack(true);
@@ -155,15 +155,15 @@ public abstract class Figure extends FigureState implements Movement {
     }
 
     public static boolean isFriendlyFigure(Game game, int position) {
-        return game.getBoard().getField(position).getFigure().getFigureColor() == game.getWhichPlayer();
+        return game.getBoard().getField(position).getFigure().getFigureColor() == game.getWhoseTurn();
     }
 
     public static boolean isEnemyFigure(Game game, int position) {
-        return game.getBoard().getField(position).getFigure().getFigureColor() != FigureColor.NONE && game.getBoard().getField(position).getFigure().getFigureColor() != game.getWhichPlayer();
+        return game.getBoard().getField(position).getFigure().getFigureColor() != FigureColor.NONE && game.getBoard().getField(position).getFigure().getFigureColor() != game.getWhoseTurn();
     }
 
     public static boolean isEnemyKing(Game game, int position) {
-        return game.getBoard().getField(position).getFigure().getFigureType() == FigureType.KING && game.getBoard().getField(position).getFigure().getFigureColor() != game.getWhichPlayer();
+        return game.getBoard().getField(position).getFigure().getFigureType() == FigureType.KING && game.getBoard().getField(position).getFigure().getFigureColor() != game.getWhoseTurn();
     }
 
     public static boolean isEnPassant(Board board, int position) {

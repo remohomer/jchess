@@ -32,8 +32,7 @@ public class InitializeGame {
         Board board = new Board(castlingConditions, field);
         Player player1 = new Player("Player 1", FigureColor.WHITE);
         Player player2 = new Player("Player 2", FigureColor.BLACK);
-        Game game = new Game(board,player1,player2);
-        return game;
+        return new Game(board,player1,player2);
     }
 
     public static Game newGame() {

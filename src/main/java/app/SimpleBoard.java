@@ -1,8 +1,8 @@
 package app;
 
 public class SimpleBoard {
-    private String[] figureColor;
-    private String[] figureType;
+    private final String[] figureColor;
+    private final String[] figureType;
 
     SimpleBoard() {
         figureColor = new String[64];
@@ -35,9 +35,6 @@ public class SimpleBoard {
                 counter++;
         }
 
-        if (counter == 64)
-            return true;
-        else
-            return false;
+        return counter == 64;
     }
 }

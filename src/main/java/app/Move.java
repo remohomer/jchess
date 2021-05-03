@@ -19,9 +19,9 @@ public class Move {
                     || game.getBoard().getField(secondPosition).getFigure().getFigureType() != FigureType.EMPTY);
 
             if (doEnpassant(game, firstPosition, secondPosition)) {
-             ;
+
             } else if (doCastling(game.getBoard(), firstPosition, secondPosition)) {
-             ;
+
             } else if (doPromotion(game, firstPosition, secondPosition)) {
                 game.getBoard().getField(secondPosition).getFigure().setActivePromotion(false);
             } else {
@@ -31,6 +31,7 @@ public class Move {
                 game.getBoard().getField(secondPosition).setFigure(game.getBoard().getField(firstPosition).getFigure());
                 game.getBoard().getField(firstPosition).setFigure(new Empty());
             }
+            clearEnPassant(game.getBoard());
         } catch (
                 Exception e) {
             System.out.println(e.getMessage());
@@ -44,8 +45,8 @@ public class Move {
                 && game.getBoard().getField(secondPosition).getFigure().isLegalMove()) {
 
             game.getBoard().getField(firstPosition).setFigure(new Empty());
-            game.getBoard().getField(secondPosition).setFigure(new Pawn(game.getWhichPlayer()));
-            if (game.getWhichPlayer() == FigureColor.WHITE) {
+            game.getBoard().getField(secondPosition).setFigure(new Pawn(game.getWhoseTurn()));
+            if (game.getWhoseTurn() == FigureColor.WHITE) {
                 game.getBoard().getField(secondPosition + figures.Movement.BOTTOM).setFigure(new Empty());
             } else {
                 game.getBoard().getField(secondPosition + figures.Movement.TOP).setFigure(new Empty());
@@ -53,7 +54,6 @@ public class Move {
             return true;
 
         }
-        clearEnPassant(game.getBoard());
         return false;
     }
 
@@ -114,49 +114,26 @@ public class Move {
 
         if (game.getBoard().getField(firstPosition).getFigure().isPawn(game.getBoard(), firstPosition)) {
 
-            if (game.getBoard().getField(secondPosition).getRow() == 8) {
+            if (game.getBoard().getField(secondPosition).getRow() == 8 || game.getBoard().getField(secondPosition).getRow() == 1) {
                 game.getBoard().getField(firstPosition).setFigure(new Empty());
 
                 game.getBoard().getField(secondPosition).getFigure().setActivePromotion(true);
-                Printer.printBoard(game, PrintBoardType.DEFAULT,Printer.NOT_SELCTED_FIGURE);
+                Printer.printBoard(game, PrintBoardType.DEFAULT,Printer.NOT_SELECTED_FIGURE);
 
                 char typeOfPromotionFigure = (askPlayerForTypeOfPromotionFigure());
 
                 switch (typeOfPromotionFigure) {
                     case 'Q':
-                        game.getBoard().getField(secondPosition).setFigure(new Queen(FigureColor.WHITE));
+                        game.getBoard().getField(secondPosition).setFigure(new Queen(game.getWhoseTurn()));
                         break;
                     case 'R':
-                        game.getBoard().getField(secondPosition).setFigure(new Rook(FigureColor.WHITE));
+                        game.getBoard().getField(secondPosition).setFigure(new Rook(game.getWhoseTurn()));
                         break;
                     case 'B':
-                        game.getBoard().getField(secondPosition).setFigure(new Bishop(FigureColor.WHITE));
+                        game.getBoard().getField(secondPosition).setFigure(new Bishop(game.getWhoseTurn()));
                         break;
                     case 'N':
-                        game.getBoard().getField(secondPosition).setFigure(new Knight(FigureColor.WHITE));
-                        break;
-                    default:
-                        break;
-                }
-                return true;
-
-            } else if (game.getBoard().getField(secondPosition).getRow() == 1) {
-                game.getBoard().getField(firstPosition).setFigure(new Empty());
-
-                char typeOfPromotionFigure = (askPlayerForTypeOfPromotionFigure());
-
-                switch (typeOfPromotionFigure) {
-                    case 'Q':
-                        game.getBoard().getField(secondPosition).setFigure(new Queen(FigureColor.BLACK));
-                        break;
-                    case 'R':
-                        game.getBoard().getField(secondPosition).setFigure(new Rook(FigureColor.BLACK));
-                        break;
-                    case 'B':
-                        game.getBoard().getField(secondPosition).setFigure(new Bishop(FigureColor.BLACK));
-                        break;
-                    case 'N':
-                        game.getBoard().getField(secondPosition).setFigure(new Knight(FigureColor.BLACK));
+                        game.getBoard().getField(secondPosition).setFigure(new Knight(game.getWhoseTurn()));
                         break;
                     default:
                         break;
@@ -174,11 +151,11 @@ public class Move {
         try {
             while (!isCorrectFigureType(figureType)) {
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("Na jaką figurę promować pionka? [ Q / R / B / N ]: ");
+                System.out.print("What to promote the pawn?? [ Q / R / B / N ]: ");
                 figureType = scanner.nextLine().toUpperCase(Locale.ROOT).charAt(0);
             }
         } catch (Exception e) {
-            System.out.println("ERROR: Niepoprawna nazwa figury.");
+            System.out.println("ERROR: Incorrect figure name");
         }
 
         return figureType;
@@ -210,8 +187,10 @@ public class Move {
         board.getCastlingConditions().setWhiteLeftRookMove(DoIMoveWhiteLeftRook(board, firstPosition));
         board.getCastlingConditions().setWhiteRightRookMove(DoIMoveWhiteRightRook(board, firstPosition));
 
+        // tu coś miałem zrobić
+
         board.getCastlingConditions().setBlackKingMove(DoIMoveBlackKing(board, firstPosition));
-        board.getCastlingConditions().setBlackLeftRookMove(DoIMoveBlackeLeftRook(board, firstPosition));
+        board.getCastlingConditions().setBlackLeftRookMove(DoIMoveBlackLeftRook(board, firstPosition));
         board.getCastlingConditions().setBlackRightRookMove(DoIMoveBlackRightRook(board, firstPosition));
     }
 
@@ -239,7 +218,7 @@ public class Move {
                 && board.getField(firstPosition).getNumber() == 4;
     }
 
-    public static boolean DoIMoveBlackeLeftRook(Board board, int firstPosition) {
+    public static boolean DoIMoveBlackLeftRook(Board board, int firstPosition) {
         return board.getField(firstPosition).getFigure().getFigureType() == FigureType.ROOK
                 && board.getField(firstPosition).getFigure().getFigureColor() == FigureColor.BLACK
                 && board.getField(firstPosition).getNumber() == 0;
@@ -252,23 +231,23 @@ public class Move {
     }
 
     public static int[] findAllPositionsOfNoNEmptyFiguresOnTheBoard(Game game, boolean inverted) {
-        int[] tfiguresPosition = new int[64];
+        int[] tFiguresPosition = new int[64];
         int nr = 0;
 
         if (inverted) {
-            if (game.getWhichPlayer() == FigureColor.WHITE) {
+            if (game.getWhoseTurn() == FigureColor.WHITE) {
                 for (Field field : game.getBoard().getWholeField()) {
                     if (field.getFigure().getFigureColor() == FigureColor.BLACK) {
-                        tfiguresPosition[nr] = field.getNumber();
+                        tFiguresPosition[nr] = field.getNumber();
                         nr++;
                     }
                 }
 
-            } else if (game.getWhichPlayer() == FigureColor.BLACK) {
+            } else if (game.getWhoseTurn() == FigureColor.BLACK) {
 
                 for (Field field : game.getBoard().getWholeField()) {
                     if (field.getFigure().getFigureColor() == FigureColor.WHITE) {
-                        tfiguresPosition[nr] = field.getNumber();
+                        tFiguresPosition[nr] = field.getNumber();
                         nr++;
                     }
                 }
@@ -277,25 +256,25 @@ public class Move {
             int[] figuresPosition = new int[nr];
 
             for (int i = 0; i < figuresPosition.length; i++) {
-                figuresPosition[i] = tfiguresPosition[i];
+                figuresPosition[i] = tFiguresPosition[i];
             }
             return figuresPosition;
         } else {
 
-            if (game.getWhichPlayer() == FigureColor.WHITE) {
+            if (game.getWhoseTurn() == FigureColor.WHITE) {
 
                 for (Field field : game.getBoard().getWholeField()) {
                     if (field.getFigure().getFigureColor() == FigureColor.WHITE) {
-                        tfiguresPosition[nr] = field.getNumber();
+                        tFiguresPosition[nr] = field.getNumber();
                         nr++;
                     }
                 }
 
-            } else if (game.getWhichPlayer() == FigureColor.BLACK) {
+            } else if (game.getWhoseTurn() == FigureColor.BLACK) {
 
                 for (Field field : game.getBoard().getWholeField()) {
                     if (field.getFigure().getFigureColor() == FigureColor.BLACK) {
-                        tfiguresPosition[nr] = field.getNumber();
+                        tFiguresPosition[nr] = field.getNumber();
                         nr++;
                     }
                 }
@@ -304,7 +283,7 @@ public class Move {
             int[] figuresPosition = new int[nr];
 
             for (int i = 0; i < figuresPosition.length; i++) {
-                figuresPosition[i] = tfiguresPosition[i];
+                figuresPosition[i] = tFiguresPosition[i];
             }
             return figuresPosition;
         }
@@ -314,11 +293,11 @@ public class Move {
 
         final int[] figuresPosition = findAllPositionsOfNoNEmptyFiguresOnTheBoard(game, true);
 
-        game.invertWhichPlayer();
+        game.invertWhoseTurn();
         for (int position : figuresPosition) {
             game.getBoard().getField(position).getFigure().movement(game, position);
         }
-        game.invertWhichPlayer();
+        game.invertWhoseTurn();
 
         clearSelectedFigureAndLegalMoves(game.getBoard());
     }
@@ -339,7 +318,6 @@ public class Move {
     public static void isCheckMateOrDraw(Game game) {
 
         boolean isLegalMoveHere = false;
-
         for (Field field : game.getBoard().getWholeField()) {
             if (field.getFigure().isLegalMove()) {
                 isLegalMoveHere = true;
@@ -348,16 +326,16 @@ public class Move {
         }
         if (!isLegalMoveHere) {
             clearSelectedFigureAndLegalMoves(game.getBoard());
-            Printer.printBoard(game, PrintBoardType.DEFAULT, Printer.NOT_SELCTED_FIGURE);
+            Printer.printBoard(game, PrintBoardType.DEFAULT, Printer.NOT_SELECTED_FIGURE);
             if (isKingCheck(game.getBoard())) {
                 game.setCheckMate(true);
                 System.out.println();
-                System.out.println("SZACH MAT!");
+                System.out.println("CHECK MATE!");
                 game.whoWon();
             } else {
                 game.setDraw(true);
                 System.out.println();
-                System.out.println("REMIS!");
+                System.out.println("IS A DRAW!");
             }
         }
     }
@@ -379,7 +357,6 @@ public class Move {
                     check = true;
                 }
             }
-
         }
 
         if (check)
@@ -390,30 +367,30 @@ public class Move {
     }
 
     public static boolean isLegalFirstPosition(Game game, FigureColor whichPlayer, int firstPosition) {
-        if (firstPosition == Game.EXIT_GAME) {
+        if (firstPosition == Game.EXIT_GAME || firstPosition == Game.SAVE_AND_EXIT_GAME) {
             return true;
         }
         if (game.getBoard().getField(firstPosition).getFigure().getFigureType() == FigureType.EMPTY) {
-            System.out.println("ERROR: Pole, które wybrałeś jest puste");
+            System.out.println("ERROR: The field you selected is empty");
             return false;
         }
         if (whichPlayer != game.getBoard().getField(firstPosition).getFigure().getFigureColor()) {
-            System.out.println("ERROR: To nie jest Twoja figura");
+            System.out.println("ERROR: Its not your figure");
             return false;
         }
         return true;
     }
 
     public static boolean isLegalSecondPosition(Game game, FigureColor whichPlayer, int secondPosition) {
-        if (secondPosition == Game.RETURN || secondPosition == Game.EXIT_GAME) {
+        if (secondPosition == Game.RETURN || secondPosition == Game.EXIT_GAME || secondPosition == Game.SAVE_AND_EXIT_GAME) {
             return true;
         }
         if (whichPlayer == game.getBoard().getField(secondPosition).getFigure().getFigureColor()) {
-            System.out.println("ERROR: Nie możesz zbić własnej figury");
+            System.out.println("ERROR: You cannot take your own pieces");
             return false;
         }
         if (!game.getBoard().getField(secondPosition).getFigure().isLegalMove()) {
-            System.out.println("ERROR: Niepoprawny ruch");
+            System.out.println("ERROR: Incorrect move");
             return false;
         }
         return true;
