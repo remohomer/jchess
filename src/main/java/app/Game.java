@@ -121,7 +121,11 @@ public class Game extends GameStatus {
     }
 
     private void printBoard(int selectedFigurePosition) {
-        Printer.printBoard(this, PrintBoardType.NUMBERS, selectedFigurePosition);
+        Printer.printBoard(this, PrintBoardType.LEGAL_MOVES, selectedFigurePosition);
+        Printer.printBoard(this, PrintBoardType.CHECK_LINES, selectedFigurePosition);
+        Printer.printBoard(this, PrintBoardType.PINNED_AND_PINNED_CHECK_LINES, selectedFigurePosition);
+        Printer.printBoard(this, PrintBoardType.PROTECTED, selectedFigurePosition);
+        Printer.printBoard(this, PrintBoardType.UNDER_PRESSURE, selectedFigurePosition);
         Printer.printBoard(this, PrintBoardType.DEFAULT, selectedFigurePosition);
     }
 
@@ -152,7 +156,7 @@ public class Game extends GameStatus {
             thereAreNoExceptions = true;
             try {
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("Enter a number [0-63 figure choice / 100 exit / 111 save and exit]: ");
+                System.out.print("\nEnter a number [0-63 figure choice / 100 exit / 111 save and exit]: ");
                 firstPosition = scanner.nextInt();
                 if (!Move.isLegalFirstPosition(this, this.whoseTurn, firstPosition)) {
                     thereAreNoExceptions = false;

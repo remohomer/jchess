@@ -118,7 +118,7 @@ public class Move {
                 game.getBoard().getField(firstPosition).setFigure(new Empty());
 
                 game.getBoard().getField(secondPosition).getFigure().setActivePromotion(true);
-                Printer.printBoard(game, PrintBoardType.DEFAULT,Printer.NOT_SELECTED_FIGURE);
+                Printer.printBoard(game, PrintBoardType.DEFAULT, Printer.NOT_SELECTED_FIGURE);
 
                 char typeOfPromotionFigure = (askPlayerForTypeOfPromotionFigure());
 
@@ -230,63 +230,36 @@ public class Move {
                 && board.getField(firstPosition).getNumber() == 7;
     }
 
-    public static int[] findAllPositionsOfNoNEmptyFiguresOnTheBoard(Game game, boolean inverted) {
+    public static FigureColor invertColor(FigureColor figureColor) {
+        if (figureColor == FigureColor.WHITE) {
+            return FigureColor.BLACK;
+        } else if (figureColor == FigureColor.BLACK) {
+            return FigureColor.WHITE;
+        } else {
+            return FigureColor.NONE;
+        }
+    }
+
+    public static int[] findAllPositionsOfNoNEmptyFiguresOnTheBoard(Game game, boolean invertColor) {
         int[] tFiguresPosition = new int[64];
         int nr = 0;
 
-        if (inverted) {
-            if (game.getWhoseTurn() == FigureColor.WHITE) {
-                for (Field field : game.getBoard().getWholeField()) {
-                    if (field.getFigure().getFigureColor() == FigureColor.BLACK) {
-                        tFiguresPosition[nr] = field.getNumber();
-                        nr++;
-                    }
-                }
-
-            } else if (game.getWhoseTurn() == FigureColor.BLACK) {
-
-                for (Field field : game.getBoard().getWholeField()) {
-                    if (field.getFigure().getFigureColor() == FigureColor.WHITE) {
-                        tFiguresPosition[nr] = field.getNumber();
-                        nr++;
-                    }
-                }
-
-            }
-            int[] figuresPosition = new int[nr];
-
-            for (int i = 0; i < figuresPosition.length; i++) {
-                figuresPosition[i] = tFiguresPosition[i];
-            }
-            return figuresPosition;
-        } else {
-
-            if (game.getWhoseTurn() == FigureColor.WHITE) {
-
-                for (Field field : game.getBoard().getWholeField()) {
-                    if (field.getFigure().getFigureColor() == FigureColor.WHITE) {
-                        tFiguresPosition[nr] = field.getNumber();
-                        nr++;
-                    }
-                }
-
-            } else if (game.getWhoseTurn() == FigureColor.BLACK) {
-
-                for (Field field : game.getBoard().getWholeField()) {
-                    if (field.getFigure().getFigureColor() == FigureColor.BLACK) {
-                        tFiguresPosition[nr] = field.getNumber();
-                        nr++;
-                    }
-                }
-
-            }
-            int[] figuresPosition = new int[nr];
-
-            for (int i = 0; i < figuresPosition.length; i++) {
-                figuresPosition[i] = tFiguresPosition[i];
-            }
-            return figuresPosition;
+        FigureColor watchingFigureColor = game.getWhoseTurn();
+        if (invertColor) {
+            watchingFigureColor = invertColor(watchingFigureColor);
         }
+
+        for (Field field : game.getBoard().getWholeField()) {
+            if (field.getFigure().getFigureColor() == watchingFigureColor) {
+                tFiguresPosition[nr] = field.getNumber();
+                nr++;
+            }
+        }
+
+        int[] figuresPosition = new int[nr];
+        System.arraycopy(tFiguresPosition, 0, figuresPosition, 0, figuresPosition.length);
+
+        return figuresPosition;
     }
 
     public static void scanBoardAndSetUnderPressureAndProtectedStates(Game game) {

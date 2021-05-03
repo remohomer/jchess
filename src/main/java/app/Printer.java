@@ -16,7 +16,12 @@ public class Printer {
         System.out.println();
 
         String player = game.getWhoseTurn() == FigureColor.BLACK ? ("\t** " + game.getPlayer2().getPlayerName() + "**") : ("\t" + game.getPlayer2().getPlayerName());
-        System.out.println(player);
+
+        if (printBoardType == PrintBoardType.DEFAULT) {
+            System.out.println(player);
+        } else {
+            System.out.println(printBoardType.toString());
+        }
 
         int row = 8;
 
@@ -42,8 +47,10 @@ public class Printer {
                 System.out.println("\n      a  b  c  d  e  f  g  h  ");
             }
         }
-        player = game.getWhoseTurn() == FigureColor.WHITE ? ("\t\t\t\t\t\t** " + game.getPlayer1().getPlayerName() + "**") : ("\t" + game.getPlayer2().getPlayerName());
-        System.out.println(player);
+        player = game.getWhoseTurn() == FigureColor.WHITE ? ("\t\t\t\t\t\t** " + game.getPlayer1().getPlayerName() + "**") : ("\t\t\t\t\t\t" + game.getPlayer1().getPlayerName());
+        if (printBoardType == PrintBoardType.DEFAULT) {
+            System.out.println(player);
+        }
     }
 
     public static String boardSwitch(Game game, int i, PrintBoardType printBoardType) {
