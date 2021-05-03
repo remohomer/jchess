@@ -25,26 +25,41 @@ public class Printer {
 
         int row = 8;
 
-        for (int i = 0; i < 64; i++) {
-            if (i == 0) {
-                System.out.println("      a  b  c  d  e  f  g  h  \n");
+        for (Field field : game.getBoard().getWholeField()) {
+            if (field.getNumber() == 0) {
+                System.out.println("      a  b  c  d  e  f  g  h           |           a  b  c  d  e  f  g  h"
+                        + "\n                                       |                                 ");
             }
-            if (i % 8 == 0) {
+
+            if (field.getNumber() % 8 == 0) {
                 System.out.print(" " + row + "   ");
             }
 
-            System.out.print(boardSwitch(game, i, printBoardType));
+            System.out.print(boardSwitch(game, field.getNumber(), printBoardType));
 
-            if ((i + 1) % 8 == 0) {
-                System.out.print("   " + row + "\n");
+            if ((field.getNumber() + 1) % 8 == 0) {
+                System.out.print("   " + row);
+
+                for (int secondBoardNumber = field.getNumber() - 7; secondBoardNumber <= field.getNumber(); secondBoardNumber++) {
+                    if (secondBoardNumber % 8 == 0) {
+                        System.out.print("      |      " + row + "   ");
+                    }
+                    System.out.print(boardSwitch(game, secondBoardNumber, PrintBoardType.NUMBERS));
+
+                    if ((secondBoardNumber + 1) % 8 == 0) {
+                        System.out.print("   " + row + "\n");
+                    }
+                }
             }
 
-            if (i != 0 && (i + 1) % 8 == 0) {
+
+            if (field.getNumber() != 0 && (field.getNumber() + 1) % 8 == 0) {
                 row--;
             }
 
-            if (i == 63) {
-                System.out.println("\n      a  b  c  d  e  f  g  h  ");
+            if (field.getNumber() == 63) {
+                System.out.println("                                       |                                 " +
+                        "\n      a  b  c  d  e  f  g  h           |           a  b  c  d  e  f  g  h");
             }
         }
         player = game.getWhoseTurn() == FigureColor.WHITE ? ("\t\t\t\t\t\t** " + game.getPlayer1().getPlayerName() + "**") : ("\t\t\t\t\t\t" + game.getPlayer1().getPlayerName());

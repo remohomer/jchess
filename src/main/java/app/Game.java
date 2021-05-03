@@ -121,11 +121,16 @@ public class Game extends GameStatus {
     }
 
     private void printBoard(int selectedFigurePosition) {
-        Printer.printBoard(this, PrintBoardType.LEGAL_MOVES, selectedFigurePosition);
+        Printer.printBoard(this, PrintBoardType.DEFAULT, selectedFigurePosition);
+    }
+
+    private void printAllBoards(int selectedFigurePosition) {
+        Printer.printBoard(this, PrintBoardType.EN_PASSANT, selectedFigurePosition);
         Printer.printBoard(this, PrintBoardType.CHECK_LINES, selectedFigurePosition);
         Printer.printBoard(this, PrintBoardType.PINNED_AND_PINNED_CHECK_LINES, selectedFigurePosition);
         Printer.printBoard(this, PrintBoardType.PROTECTED, selectedFigurePosition);
         Printer.printBoard(this, PrintBoardType.UNDER_PRESSURE, selectedFigurePosition);
+        Printer.printBoard(this, PrintBoardType.LEGAL_MOVES, selectedFigurePosition);
         Printer.printBoard(this, PrintBoardType.DEFAULT, selectedFigurePosition);
     }
 
