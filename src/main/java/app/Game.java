@@ -51,13 +51,13 @@ public class Game extends GameStatus {
                 int firstPosition, secondPosition;
                 do {
 
-                    printBoard(Printer.NOT_SELECTED_FIGURE);
+                    Printer.printBoard(this, PrintBoardType.DEFAULT, Printer.NOT_SELECTED_FIGURE);
 
                     firstPosition = loadFirstPosition();
                     if (positionSwitcher(firstPosition) == EXIT_GAME) {
                         break loadPositions;
                     }
-                    printBoard(firstPosition);
+                    Printer.printBoard(this, PrintBoardType.DEFAULT, firstPosition);
 
                     secondPosition = loadSecondPosition();
                     if (positionSwitcher(firstPosition, secondPosition)) {
@@ -120,11 +120,8 @@ public class Game extends GameStatus {
         Move.isKingCheck(this.board);
     }
 
-    private void printBoard(int selectedFigurePosition) {
-        Printer.printBoard(this, PrintBoardType.DEFAULT, selectedFigurePosition);
-    }
 
-    private void printAllBoards(int selectedFigurePosition) {
+    private void printAllOfBoards(int selectedFigurePosition) {
         Printer.printBoard(this, PrintBoardType.EN_PASSANT, selectedFigurePosition);
         Printer.printBoard(this, PrintBoardType.CHECK_LINES, selectedFigurePosition);
         Printer.printBoard(this, PrintBoardType.PINNED_AND_PINNED_CHECK_LINES, selectedFigurePosition);
