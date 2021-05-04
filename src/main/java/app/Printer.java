@@ -137,7 +137,8 @@ public class Printer implements ConsoleColors {
         if (game.getBoard().getField(i).getFigure().isSelected()) {
             bgColor = BG_SELECTED_COLOR;
         } else if (game.getBoard().getField(i).getFigure().isLegalMove()) {
-            bgColor = game.getBoard().getField(i).getFigure().isEnPassant() ? BG_LEGAL_OFFENSIVE_MOVE :
+            bgColor = game.getBoard().getField(i).getFigure().isEnPassant() ?
+                    BG_LEGAL_OFFENSIVE_MOVE :
                     (game.getBoard().getField(i).getFigure().getFigureColor() == Move.invertColor(game.getWhoseTurn()) ? BG_LEGAL_OFFENSIVE_MOVE : BG_LEGAL_MOVE);
         }
 
