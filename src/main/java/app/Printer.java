@@ -5,17 +5,6 @@ import enums.PrintBoardType;
 
 public class Printer implements ConsoleColors {
 
-    public static final String BG_CURRENT_PLAYERS_TURN = BLUE_BACKGROUND_BRIGHT;
-    public static final String BG_COLOR_1 = BLUE_BACKGROUND;
-    public static final String BG_COLOR_2 = CYAN_BACKGROUND_BRIGHT;
-    public static final String BG_SELECTED_COLOR = YELLOW_BACKGROUND;
-    public static final String BG_LEGAL_MOVE = GREEN_BACKGROUND;
-    public static final String BG_LEGAL_OFFENSIVE_MOVE = RED_BACKGROUND;
-
-    public static final String WHITE_FIGURE = WHITE_BOLD_BRIGHT;
-    public static final String BLACK_FIGURE = BLACK_BOLD;
-    public static final String EMPTY_FIGURE = WHITE_BOLD;
-
     public static final int NOT_SELECTED_FIGURE = -1;
 
 
@@ -27,8 +16,8 @@ public class Printer implements ConsoleColors {
         System.out.println();
 
         String player = game.getWhoseTurn() == FigureColor.BLACK ?
-                (BG_CURRENT_PLAYERS_TURN + WHITE_FIGURE + " " + game.getPlayer2().getPlayerName() + " " + RESET) :
-                ("\t" + WHITE_FIGURE + game.getPlayer2().getPlayerName() + RESET);
+                (BG_CURRENT_PLAYERS_TURN + WHITE_FIGURE + " " + game.getPlayer2().getPlayerName() + " " + RESET_COLORS) :
+                ("\t" + WHITE_FIGURE + game.getPlayer2().getPlayerName() + RESET_COLORS);
 
         if (secondBoardType == PrintBoardType.DEFAULT) {
             System.out.println("\t" + player);
@@ -73,8 +62,8 @@ public class Printer implements ConsoleColors {
             }
         }
         player = game.getWhoseTurn() == FigureColor.WHITE ?
-                ("\t\t\t\t\t" + BG_CURRENT_PLAYERS_TURN + WHITE_FIGURE + " " + game.getPlayer1().getPlayerName() + " " + RESET) :
-                ("\t\t\t\t\t" + WHITE_FIGURE + game.getPlayer1().getPlayerName() + RESET);
+                ("\t\t\t\t\t" + BG_CURRENT_PLAYERS_TURN + WHITE_FIGURE + " " + game.getPlayer1().getPlayerName() + " " + RESET_COLORS) :
+                ("\t\t\t\t\t" + WHITE_FIGURE + game.getPlayer1().getPlayerName() + RESET_COLORS);
         System.out.println(player);
     }
 
@@ -145,7 +134,7 @@ public class Printer implements ConsoleColors {
         switch (game.getBoard().getField(i).getFigure().getFigureType().toString()) {
             case "EMPTY": {
                 return game.getBoard().getField(i).getFigure().isActivePromotion() ?
-                        (BG_SELECTED_COLOR + fColor + " ? " + RESET) :
+                        (BG_SELECTED_COLOR + fColor + " ? " + RESET_COLORS) :
                         createEmptyString(bgColor);
             }
             case "PAWN": {
@@ -189,23 +178,23 @@ public class Printer implements ConsoleColors {
             fColor = game.getWhoseTurn() == FigureColor.WHITE ? WHITE_FIGURE : BLACK_FIGURE;
         }
 
-        return i < 10 ? (bgColor + fColor + " " + i + " " + RESET) : (bgColor + fColor + " " + i + RESET);
+        return i < 10 ? (bgColor + fColor + " " + i + " " + RESET_COLORS) : (bgColor + fColor + " " + i + RESET_COLORS);
     }
 
     private static String createAtSignString(String bgColor) {
-        return bgColor + BLACK_FIGURE + " @ " + RESET;
+        return bgColor + BLACK_FIGURE + " @ " + RESET_COLORS;
     }
 
     private static String createStarString(String bgColor) {
-        return bgColor + BLACK_FIGURE + " * " + RESET;
+        return bgColor + BLACK_FIGURE + " * " + RESET_COLORS;
     }
 
     private static String createEmptyString(String bgColor) {
-        return bgColor + BLACK_FIGURE + "   " + RESET;
+        return bgColor + BLACK_FIGURE + "   " + RESET_COLORS;
     }
 
     private static String createFigureString(String bgColor, String fColor, String figureType) {
-        return bgColor + fColor + " " + figureType + " " + RESET;
+        return bgColor + fColor + " " + figureType + " " + RESET_COLORS;
     }
 
     public static void printAllOfBoards(Game game, int selectedFigurePosition) {
