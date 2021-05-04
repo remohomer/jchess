@@ -1,8 +1,8 @@
 package app;
 
-import enums.PrintBoardType;
 import enums.FigureColor;
 import booleans.GameStatus;
+import enums.PrintBoardType;
 
 import java.util.Scanner;
 
@@ -51,13 +51,13 @@ public class Game extends GameStatus {
                 int firstPosition, secondPosition;
                 do {
 
-                    Printer.printBoard(this, PrintBoardType.DEFAULT, Printer.NOT_SELECTED_FIGURE);
+                    Printer.printBoard(this, Printer.NOT_SELECTED_FIGURE, PrintBoardType.NUMBERS);
 
                     firstPosition = loadFirstPosition();
                     if (positionSwitcher(firstPosition) == EXIT_GAME) {
                         break loadPositions;
                     }
-                    Printer.printBoard(this, PrintBoardType.DEFAULT, firstPosition);
+                    Printer.printBoard(this, firstPosition, PrintBoardType.NUMBERS);
 
                     secondPosition = loadSecondPosition();
                     if (positionSwitcher(firstPosition, secondPosition)) {
@@ -147,7 +147,7 @@ public class Game extends GameStatus {
             thereAreNoExceptions = true;
             try {
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("\nEnter a number [0-63 figure choice / 100 exit / 111 save and exit]: ");
+                System.out.print("Enter a number [0-63 figure choice / 100 exit / 111 save and exit]: ");
                 firstPosition = scanner.nextInt();
                 if (!Move.isLegalFirstPosition(this, this.whoseTurn, firstPosition)) {
                     thereAreNoExceptions = false;

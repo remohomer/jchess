@@ -25,13 +25,13 @@ public class Move {
             } else if (doPromotion(game, firstPosition, secondPosition)) {
                 game.getBoard().getField(secondPosition).getFigure().setActivePromotion(false);
             } else {
+                clearEnPassant(game.getBoard());
                 updateEnPassantConditions(game.getBoard(), firstPosition, secondPosition);
                 updateCastlingConditions(game.getBoard(), firstPosition);
 
                 game.getBoard().getField(secondPosition).setFigure(game.getBoard().getField(firstPosition).getFigure());
                 game.getBoard().getField(firstPosition).setFigure(new Empty());
             }
-            clearEnPassant(game.getBoard());
         } catch (
                 Exception e) {
             System.out.println(e.getMessage());
@@ -118,7 +118,7 @@ public class Move {
                 game.getBoard().getField(firstPosition).setFigure(new Empty());
 
                 game.getBoard().getField(secondPosition).getFigure().setActivePromotion(true);
-                Printer.printBoard(game, PrintBoardType.DEFAULT, Printer.NOT_SELECTED_FIGURE);
+                Printer.printBoard(game, Printer.NOT_SELECTED_FIGURE, PrintBoardType.DEFAULT);
 
                 char typeOfPromotionFigure = (askPlayerForTypeOfPromotionFigure());
 
@@ -299,7 +299,7 @@ public class Move {
         }
         if (!isLegalMoveHere) {
             clearSelectedFigureAndLegalMoves(game.getBoard());
-            Printer.printBoard(game, PrintBoardType.DEFAULT, Printer.NOT_SELECTED_FIGURE);
+            Printer.printBoard(game, Printer.NOT_SELECTED_FIGURE, PrintBoardType.DEFAULT);
             if (isKingCheck(game.getBoard())) {
                 game.setCheckMate(true);
                 System.out.println();
@@ -398,6 +398,12 @@ public class Move {
 
     public static void clearCheckLine(Board board) {
         for (Field field : board.getWholeField()) {
+            field.getFigure().setCheckLine(false);
+        }
+    }
+
+    public static void clearPinnedCheckLine(Board board) {
+        for (Field field : board.getWholeField()) {
             field.getFigure().setPinnedCheckLine(false);
         }
     }
@@ -413,6 +419,7 @@ public class Move {
         Move.clearProtected(board);
         Move.clearCheckLine(board);
         Move.clearPinned(board);
+        clearPinnedCheckLine(board);
     }
 
     public static boolean getPawnIsMovedOrFigureIsTaking() {

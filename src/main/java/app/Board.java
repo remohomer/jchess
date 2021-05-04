@@ -61,6 +61,13 @@ public class Board {
         this.field[30].initializeFigure(new Queen(FigureColor.WHITE));
     }
 
+    public void initializeBoardTestingEnPassant() {
+
+        initializeBoard();
+        this.field[11].initializeFigure(new Empty());
+        this.field[35].initializeFigure(new Pawn(FigureColor.BLACK));
+    }
+
     public void initializeBoardTestingCastling() {
         initializeBoard();
         this.field[1].initializeFigure(new Empty());

@@ -1,196 +1,209 @@
 package app;
 
-import enums.PrintBoardType;
 import enums.FigureColor;
+import enums.PrintBoardType;
 
+public class Printer implements ConsoleColors {
 
-public class Printer {
+    public static final String BG_WHOSE_TURN = BLUE_BACKGROUND_BRIGHT;
+
+    public static final String BG_COLOR_1 = BLUE_BACKGROUND;
+    public static final String BG_COLOR_2 = CYAN_BACKGROUND_BRIGHT;
+    public static final String BG_SELECTED_COLOR = GREEN_BACKGROUND;
+
+    public static final String BG_LEGAL_MOVE = YELLOW_BACKGROUND;
+    public static final String BG_LEGAL_OFFENSIVE_MOVE = RED_BACKGROUND;
+
+    public static final String WHITE_FIGURE = WHITE_BOLD_BRIGHT;
+    public static final String BLACK_FIGURE = BLACK_BOLD;
+    public static final String EMPTY_FIGURE = WHITE_BOLD;
 
     public static final int NOT_SELECTED_FIGURE = -1;
 
-    public static void printBoard(Game game, PrintBoardType printBoardType, int selectedFigurePosition) {
+    public static void printBoard(Game game, int selectedFigurePosition, PrintBoardType secondBoardType) {
 
         if (selectedFigurePosition != -1) {
             game.getBoard().getField(selectedFigurePosition).getFigure().movement(game, selectedFigurePosition);
         }
         System.out.println();
 
-        String player = game.getWhoseTurn() == FigureColor.BLACK ? ("\t** " + game.getPlayer2().getPlayerName() + "**") : ("\t" + game.getPlayer2().getPlayerName());
+        String player = game.getWhoseTurn() == FigureColor.BLACK ?
+                (BG_WHOSE_TURN + WHITE_FIGURE + " " + game.getPlayer2().getPlayerName() + " " + RESET) :
+                ("\t" + WHITE_FIGURE + game.getPlayer2().getPlayerName() + RESET);
 
-        if (printBoardType == PrintBoardType.DEFAULT) {
-            System.out.println(player);
+        if (secondBoardType == PrintBoardType.DEFAULT) {
+            System.out.println("\t" + player);
         } else {
-            System.out.println(printBoardType.toString());
+            System.out.println(player + "\t\t\t\t\t\t\t\t\t" + secondBoardType.toString());
         }
 
         int row = 8;
 
         for (Field field : game.getBoard().getWholeField()) {
             if (field.getNumber() == 0) {
-                System.out.println("      a  b  c  d  e  f  g  h           |           a  b  c  d  e  f  g  h"
-                        + "\n                                       |                                 ");
+                System.out.println("    a  b  c  d  e  f  g  h         |         a  b  c  d  e  f  g  h");
             }
 
             if (field.getNumber() % 8 == 0) {
-                System.out.print(" " + row + "   ");
+                System.out.print(" " + row + " ");
             }
 
-            System.out.print(boardSwitch(game, field.getNumber(), printBoardType));
+            System.out.print(boardSwitch(game, field.getNumber(), PrintBoardType.DEFAULT));
 
             if ((field.getNumber() + 1) % 8 == 0) {
-                System.out.print("   " + row);
+                System.out.print(" " + row);
 
                 for (int secondBoardNumber = field.getNumber() - 7; secondBoardNumber <= field.getNumber(); secondBoardNumber++) {
                     if (secondBoardNumber % 8 == 0) {
-                        System.out.print("      |      " + row + "   ");
+                        System.out.print("      |      " + row + " ");
                     }
-                    System.out.print(boardSwitch(game, secondBoardNumber, PrintBoardType.NUMBERS));
+                    System.out.print(boardSwitch(game, secondBoardNumber, secondBoardType));
 
                     if ((secondBoardNumber + 1) % 8 == 0) {
-                        System.out.print("   " + row + "\n");
+                        System.out.print(" " + row + "\n");
                     }
                 }
             }
-
 
             if (field.getNumber() != 0 && (field.getNumber() + 1) % 8 == 0) {
                 row--;
             }
 
             if (field.getNumber() == 63) {
-                System.out.println("                                       |                                 " +
-                        "\n      a  b  c  d  e  f  g  h           |           a  b  c  d  e  f  g  h");
+                System.out.println("      a  b  c  d  e  f  g  h       |         a  b  c  d  e  f  g  h");
             }
         }
-        player = game.getWhoseTurn() == FigureColor.WHITE ? ("\t\t\t\t\t\t** " + game.getPlayer1().getPlayerName() + "**") : ("\t\t\t\t\t\t" + game.getPlayer1().getPlayerName());
-        if (printBoardType == PrintBoardType.DEFAULT) {
-            System.out.println(player);
-        }
+        player = game.getWhoseTurn() == FigureColor.WHITE ?
+                ("\t\t\t\t\t" + BG_WHOSE_TURN + WHITE_FIGURE + " " + game.getPlayer1().getPlayerName() + " " + RESET) :
+                ("\t\t\t\t\t" + WHITE_FIGURE + game.getPlayer1().getPlayerName() + RESET);
+        System.out.println(player);
     }
 
     public static String boardSwitch(Game game, int i, PrintBoardType printBoardType) {
 
+        String bgColor = game.getBoard().getField(i).getRow() % 2 == 0 ?
+                (i % 2 == 0 ? BG_COLOR_1 : BG_COLOR_2) :
+                (i % 2 == 0 ? BG_COLOR_2 : BG_COLOR_1);
+
         switch (printBoardType.toString()) {
             case "DEFAULT": {
-                return defaultBoardConditions(game, i);
+                return defaultBoardConditions(game, i, bgColor);
             }
             case "NUMBERS": {
-                return i < 10 ? (" " + i + " ") : (" " + i);
+
+                return numberBoardConditions(game, i, bgColor);
             }
             case "LEGAL_MOVES": {
-                return game.getBoard().getField(i).getFigure().isLegalMove() ? (" Lm") : ("   ");
+                return game.getBoard().getField(i).getFigure().isLegalMove() ? (bgColor + BLACK_FIGURE + " * " + RESET) : (bgColor + "   " + RESET);
             }
             case "UNDER_PRESSURE": {
                 if (game.getWhoseTurn() == FigureColor.WHITE) {
-                    return game.getBoard().getField(i).getFigure().isUnderPressureByBlack() ? ("Up_") : ("   ");
+                    return game.getBoard().getField(i).getFigure().isUnderPressureByBlack() ? (bgColor + BLACK_FIGURE + " * " + RESET) : (bgColor + "   " + RESET);
                 } else {
-                    return game.getBoard().getField(i).getFigure().isUnderPressureByWhite() ? ("Up ") : ("   ");
+                    return game.getBoard().getField(i).getFigure().isUnderPressureByWhite() ? (bgColor + WHITE_FIGURE + " * " + RESET) : (bgColor + "   " + RESET);
                 }
             }
             case "PROTECTED": {
                 if (game.getWhoseTurn() == FigureColor.WHITE) {
-                    return game.getBoard().getField(i).getFigure().isProtectedByBlack() ? (" Pr") : ("   ");
+                    return game.getBoard().getField(i).getFigure().isProtectedByBlack() ? (bgColor + BLACK_FIGURE + " @ " + RESET) : (bgColor + "   " + RESET);
                 } else {
-                    return game.getBoard().getField(i).getFigure().isProtectedByWhite() ? (" Pr") : ("   ");
+                    return game.getBoard().getField(i).getFigure().isProtectedByWhite() ? (bgColor + WHITE_FIGURE + " @ " + RESET) : (bgColor + "   " + RESET);
                 }
             }
             case "EN_PASSANT": {
-                return game.getBoard().getField(i).getFigure().isEnPassant() ? (" Ep") : ("   ");
+                return game.getBoard().getField(i).getFigure().isEnPassant() ? (bgColor + BLACK_FIGURE + " * " + RESET) : (bgColor + "   " + RESET);
             }
             case "CHECK_LINES": {
-                return game.getBoard().getField(i).getFigure().isCheckLine() ? (" Cl") : ("   ");
+                return game.getBoard().getField(i).getFigure().isCheckLine() ? (bgColor + BLACK_FIGURE + " * " + RESET) : (bgColor + "   " + RESET);
             }
             case "PINNED_AND_PINNED_CHECK_LINES": {
                 if (game.getBoard().getField(i).getFigure().isPinned()) {
-                    return (" P ");
+                    return (bgColor + BLACK_FIGURE + " @ " + RESET);
                 } else if (game.getBoard().getField(i).getFigure().isPinnedCheckLine()) {
-                    return (" l ");
+                    return (bgColor + BLACK_FIGURE + " * " + RESET);
                 } else {
-                    return ("   ");
+                    return (bgColor + BLACK_FIGURE + "   " + RESET);
                 }
             }
             default: {
-                return "ERROR: reading data from enums.PrintBoardType";
+                return " ERROR: reading data from enums.PrintBoardType ";
             }
         }
     }
 
-    public static String defaultBoardConditions(Game game, int i) {
+    public static String defaultBoardConditions(Game game, int i, String bgColor) {
 
-        String fColor = game.getBoard().getField(i).getFigure().getFigureColor() == FigureColor.BLACK ? "_" : " ";
-        String selectedOrLegal = " ";
+        String fColor = game.getBoard().getField(i).getFigure().getFigureColor() == FigureColor.BLACK ? BLACK_FIGURE : WHITE_FIGURE;
+
         if (game.getBoard().getField(i).getFigure().isSelected()) {
-            selectedOrLegal = "@";
+            bgColor = BG_SELECTED_COLOR;
         } else if (game.getBoard().getField(i).getFigure().isLegalMove()) {
-            selectedOrLegal = "*";
+            bgColor = game.getBoard().getField(i).getFigure().isEnPassant() ? BG_LEGAL_OFFENSIVE_MOVE :
+                    (game.getBoard().getField(i).getFigure().getFigureColor() == Move.invertColor(game.getWhoseTurn()) ? BG_LEGAL_OFFENSIVE_MOVE : BG_LEGAL_MOVE);
         }
+
 
         switch (game.getBoard().getField(i).getFigure().getFigureType().toString()) {
             case "EMPTY": {
-                return game.getBoard().getField(i).getFigure().isActivePromotion() ? (" ? ") : (" " + selectedOrLegal + " ");
+                return game.getBoard().getField(i).getFigure().isActivePromotion() ?
+                        (BG_SELECTED_COLOR + fColor + " ? " + RESET) :
+                        (bgColor + fColor + "   " + RESET);
             }
             case "PAWN": {
-                return fColor + "P" + selectedOrLegal;
+                return bgColor + fColor + " P " + RESET;
             }
             case "KNIGHT": {
-                return fColor + "N" + selectedOrLegal;
+                return bgColor + fColor + " N " + RESET;
             }
             case "BISHOP": {
-                return fColor + "B" + selectedOrLegal;
+                return bgColor + fColor + " B " + RESET;
             }
             case "ROOK": {
-                return fColor + "R" + selectedOrLegal;
+                return bgColor + fColor + " R " + RESET;
             }
             case "QUEEN": {
-                return fColor + "Q" + selectedOrLegal;
+                return bgColor + fColor + " Q " + RESET;
             }
             case "KING": {
-                return fColor + "K" + selectedOrLegal;
+                return bgColor + fColor + " K " + RESET;
             }
             default: {
                 return "ERROR: reading data from enums.FigureType";
             }
         }
+
     }
 
-    private static void printAllOfBoards(Game game, int selectedFigurePosition) {
-        Printer.printBoard(game, PrintBoardType.EN_PASSANT, selectedFigurePosition);
-        Printer.printBoard(game, PrintBoardType.CHECK_LINES, selectedFigurePosition);
-        Printer.printBoard(game, PrintBoardType.PINNED_AND_PINNED_CHECK_LINES, selectedFigurePosition);
-        Printer.printBoard(game, PrintBoardType.PROTECTED, selectedFigurePosition);
-        Printer.printBoard(game, PrintBoardType.UNDER_PRESSURE, selectedFigurePosition);
-        Printer.printBoard(game, PrintBoardType.LEGAL_MOVES, selectedFigurePosition);
-        Printer.printBoard(game, PrintBoardType.DEFAULT, selectedFigurePosition);
-    }
+    public static String numberBoardConditions(Game game, int i, String bgColor) {
+        String fColor = EMPTY_FIGURE;
 
-    public static void printFigureStates(Game game) {
-        for (int i = 0; i < 64; i++) {
-            if (i < 10) System.out.print("0" + game.getBoard().getField(i).getNumber());
-            else System.out.print(game.getBoard().getField(i).getNumber());
-            System.out.print(" Select: " + game.getBoard().getField(i).getFigure().isSelected());
-            System.out.print(" | Legal: " + game.getBoard().getField(i).getFigure().isLegalMove());
-            System.out.print(" | EnPassant: " + game.getBoard().getField(i).getFigure().isEnPassant());
-            System.out.print(" | Pin: " + game.getBoard().getField(i).getFigure().isPinned());
-            System.out.print(" | PinCheckLn: " + game.getBoard().getField(i).getFigure().isPinnedCheckLine());
-            System.out.print(" | CheckLn: " + game.getBoard().getField(i).getFigure().isCheckLine());
-            System.out.print(" | PressByWhite: " + game.getBoard().getField(i).getFigure().isUnderPressureByWhite());
-            System.out.print(" | ProtectByWhite: " + game.getBoard().getField(i).getFigure().isProtectedByWhite());
-            System.out.print(" | PressByBlack: " + game.getBoard().getField(i).getFigure().isUnderPressureByBlack());
-            System.out.print(" | ProtectByBlack: " + game.getBoard().getField(i).getFigure().isProtectedByBlack());
-            System.out.println(" | Figure: " + game.getBoard().getField(i).getFigure().getFigureType());
+        if (game.getBoard().getField(i).getFigure().getFigureColor() == game.getWhoseTurn() && game.getWhoseTurn() == FigureColor.WHITE) {
+            fColor = WHITE_FIGURE;
+        } else if (game.getBoard().getField(i).getFigure().getFigureColor() == game.getWhoseTurn() && game.getWhoseTurn() == FigureColor.BLACK) {
+            fColor = BLACK_FIGURE;
         }
+
+        if (game.getBoard().getField(i).getFigure().isSelected() || game.getBoard().getField(i).getFigure().isActivePromotion()) {
+            bgColor = BG_SELECTED_COLOR;
+        } else if (game.getBoard().getField(i).getFigure().isLegalMove()) {
+            bgColor = game.getBoard().getField(i).getFigure().isEnPassant() ? BG_LEGAL_OFFENSIVE_MOVE :
+                    (game.getBoard().getField(i).getFigure().getFigureColor() == Move.invertColor(game.getWhoseTurn()) ? BG_LEGAL_OFFENSIVE_MOVE : BG_LEGAL_MOVE);
+            fColor = game.getWhoseTurn() == FigureColor.WHITE ? WHITE_FIGURE : BLACK_FIGURE;
+        }
+
+        return i < 10 ? (bgColor + fColor + " " + i + " " + RESET) : (bgColor + fColor + " " + i + RESET);
     }
 
-    public static void printCastlingBooleans(Game game) {
-        System.out.println(" isBlackKingMove(): " + game.getBoard().getCastlingConditions().isBlackKingMove());
-        System.out.println(" isWhiteKingMove(): " + game.getBoard().getCastlingConditions().isWhiteKingMove());
-        System.out.println(" isWhiteKingChecking(): " + game.getBoard().getCastlingConditions().isWhiteKingCheck());
-        System.out.println(" isBlackKingChecking(): " + game.getBoard().getCastlingConditions().isBlackKingCheck());
-        System.out.println(" isWhiteLeftRookMove(): " + game.getBoard().getCastlingConditions().isWhiteLeftRookMove());
-        System.out.println(" isBlackLeftRookMove(): " + game.getBoard().getCastlingConditions().isBlackLeftRookMove());
-        System.out.println(" isWhiteRightRookMove(: " + game.getBoard().getCastlingConditions().isWhiteRightRookMove());
-        System.out.println(" isBlackRightRookMove(): " + game.getBoard().getCastlingConditions().isBlackRightRookMove());
+    public static void printAllOfBoards(Game game, int selectedFigurePosition) {
+        Printer.printBoard(game, selectedFigurePosition, PrintBoardType.EN_PASSANT);
+        Printer.printBoard(game, selectedFigurePosition, PrintBoardType.CHECK_LINES);
+        Printer.printBoard(game, selectedFigurePosition, PrintBoardType.PINNED_AND_PINNED_CHECK_LINES);
+        Printer.printBoard(game, selectedFigurePosition, PrintBoardType.PROTECTED);
+        Printer.printBoard(game, selectedFigurePosition, PrintBoardType.UNDER_PRESSURE);
+        Printer.printBoard(game, selectedFigurePosition, PrintBoardType.NUMBERS);
     }
+
 }
+
 
 
