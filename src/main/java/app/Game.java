@@ -89,6 +89,7 @@ public class Game extends GameStatus {
             }
             case SAVE_AND_EXIT_GAME: {
                 FileManager.saveGameToFileTxt(this);
+                FileManager.saveGameToBytesFile(this);
             }
             case EXIT_GAME: {
                 exitGameConditions();

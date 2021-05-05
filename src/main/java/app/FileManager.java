@@ -14,22 +14,14 @@ public class FileManager {
     private static int passiveMoveCounter = 0;
     private static int theSameBoard = 0;
 
-    public static void saveGameToByteFile(Game game) {
+    public static void saveGameToBytesFile(Game game) {
         try {
-            String patch = patchBuilder(game.getId(), "game");
+            String patch = patchBuilder(game.getId(), "game","bytes");
             DataOutputStream outS = new DataOutputStream(new FileOutputStream(patch));
 
-            outS.writeInt(passiveMoveCounter);
-
-            StringBuilder firstPlayerName = new StringBuilder((NAME_LENGTH));
-            firstPlayerName.append(game.getPlayer1().getPlayerName());
-            firstPlayerName.setLength(NAME_LENGTH);
-            outS.writeChars(firstPlayerName.toString());
-
-            StringBuilder secondPlayerName = new StringBuilder((NAME_LENGTH));
-            secondPlayerName.append(game.getPlayer2().getPlayerName());
-            secondPlayerName.setLength(NAME_LENGTH);
-            outS.writeChars(secondPlayerName.toString());
+//            outS.writeInt(passiveMoveCounter);
+            buildStringAndWriteToFile(outS, game.getPlayer1().getPlayerName(), NAME_LENGTH);
+            buildStringAndWriteToFile(outS, game.getPlayer2().getPlayerName(), NAME_LENGTH);
 
             if (game.getWhoseTurn() == FigureColor.WHITE) {
                 outS.writeInt(1);
@@ -39,16 +31,8 @@ public class FileManager {
 
             for (int i = 0; i < 64; i++) {
                 outS.writeInt(game.getBoard().getField(i).getNumber());
-
-                StringBuilder figureColor = new StringBuilder(COLOR_LENGTH);
-                figureColor.append(game.getBoard().getField(i).getFigure().getFigureColor());
-                figureColor.setLength(COLOR_LENGTH);
-                outS.writeChars(figureColor.toString());
-
-                StringBuilder figureType = new StringBuilder(TYPE_LENGTH);
-                figureType.append(game.getBoard().getField(i).getFigure().getFigureType());
-                figureType.setLength(TYPE_LENGTH);
-                outS.writeChars(figureType.toString());
+                buildStringAndWriteToFile(outS, game.getBoard().getField(i).getFigure().getFigureColor().toString(), COLOR_LENGTH);
+                buildStringAndWriteToFile(outS, game.getBoard().getField(i).getFigure().getFigureType().toString(), TYPE_LENGTH);
             }
             outS.close();
 
@@ -58,18 +42,17 @@ public class FileManager {
         }
     }
 
-    public static Game loadByteFileToGame(int gameId) {
+    public static Game loadBytesFileToGame(int gameId) {
 
         Game game = new Game(InitializeGame.newGame());
 
         try {
-            String patch = patchBuilder(game.getId(), "game");
+            String patch = patchBuilder(gameId, "game","bytes");
             DataInputStream inS = new DataInputStream(new FileInputStream(patch));
 
-            passiveMoveCounter = inS.readInt();
-
-            StringBuilder firstPlayerName = new StringBuilder(stringBuilderFactory(inS, NAME_LENGTH));
-            StringBuilder secondPlayerName = new StringBuilder(stringBuilderFactory(inS, NAME_LENGTH));
+//            passiveMoveCounter = inS.readInt();
+            String firstPlayerName = convertCharsToString(inS, NAME_LENGTH);
+            String secondPlayerName = convertCharsToString(inS, NAME_LENGTH);
 
             if (inS.readInt() == 1) {
                 game.setWhoseTurn(FigureColor.WHITE);
@@ -81,11 +64,11 @@ public class FileManager {
                 int position;
                 position = (inS.readInt());
 
-                String figureColor = new String(stringBuilderFactory(inS, COLOR_LENGTH));
-                String figureType = new String(stringBuilderFactory(inS, TYPE_LENGTH));
+                String figureColor = convertCharsToString(inS, COLOR_LENGTH);
+                String figureType = convertCharsToString(inS, TYPE_LENGTH);
 
-                game.getPlayer1().setPlayerName(firstPlayerName.toString());
-                game.getPlayer2().setPlayerName(secondPlayerName.toString());
+                game.getPlayer1().setPlayerName(firstPlayerName);
+                game.getPlayer2().setPlayerName(secondPlayerName);
                 initializeFigure(game.getBoard(), figureColor, figureType, position);
             }
             inS.close();
@@ -96,14 +79,55 @@ public class FileManager {
         return game;
     }
 
+    public static void saveGameToFileTxt(Game game) {
+
+        try {
+            String patch = patchBuilder(game.getId(), "game","txt");
+            PrintWriter writer = new PrintWriter(new FileWriter(patch));
+
+            writer.println(game.getPlayer1().getPlayerName());
+            writer.println(game.getPlayer2().getPlayerName());
+            writer.println(game.getWhoseTurn());
+
+            for (int i = 0; i < 64; i++) {
+                writer.println(game.getBoard().getField(i).getNumber() + "|" + game.getBoard().getField(i).getFigure().getFigureType() + "|" + game.getBoard().getField(i).getFigure().getFigureColor());
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static Game loadFileTxtToGame(int gameId) {
+
+        Game game = new Game(InitializeGame.newTempGame());
+        try {
+            String patch = patchBuilder(gameId, "game","txt");
+            BufferedReader reader = new BufferedReader(new FileReader(patch));
+
+            game.getPlayer1().setPlayerName(reader.readLine());
+            game.getPlayer2().setPlayerName(reader.readLine());
+            game.setWhoseTurn(reader.readLine());
+
+            for (int i = 0; i < 64; i++) {
+                StringTokenizer token = new StringTokenizer(reader.readLine(), "|");
+                int position = Integer.parseInt(token.nextToken());
+
+                String figureType = token.nextToken();
+                String figureColor = token.nextToken();
+                initializeFigure(game.getBoard(), figureColor, figureType, position);
+
+            }
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        return game;
+    }
+
     public static void initializeFigure(Board board, String figureColor, String figureType, int position) {
 
-        FigureColor newFigureColor;
-        if (figureColor.equals("WHITE")) {
-            newFigureColor = FigureColor.WHITE;
-        } else {
-            newFigureColor = FigureColor.BLACK;
-        }
+        FigureColor newFigureColor = figureColor.equals("WHITE") ? FigureColor.WHITE : FigureColor.BLACK;
 
         switch (figureType) {
             case "EMPTY": {
@@ -135,89 +159,12 @@ public class FileManager {
                 break;
             }
         }
-
-    }
-
-    public static void saveGameToFileTxt(Game game) {
-
-        try {
-            String patch = patchBuilder(game.getId(), "game");
-            PrintWriter writer = new PrintWriter(new FileWriter(patch));
-
-            writer.println(game.getPlayer1().getPlayerName());
-            writer.println(game.getPlayer2().getPlayerName());
-            writer.println(game.getWhoseTurn());
-
-            for (int i = 0; i < 64; i++) {
-                writer.println(game.getBoard().getField(i).getNumber() + "|" + game.getBoard().getField(i).getCords() + "|" + game.getBoard().getField(i).getFigure().getFigureType() + "|" + game.getBoard().getField(i).getFigure().getFigureColor());
-            }
-            writer.close();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public static Game loadFileTxtToGame(int gameId) {
-
-        Game game = new Game(InitializeGame.newTempGame());
-        try {
-            String patch = patchBuilder(game.getId(), "game");
-            BufferedReader reader = new BufferedReader(new FileReader(patch));
-            game.getPlayer1().setPlayerName(reader.readLine());
-            game.getPlayer2().setPlayerName(reader.readLine());
-
-            game.setWhoseTurn(reader.readLine());
-
-            for (int i = 0; i < 64; i++) {
-                StringTokenizer token = new StringTokenizer(reader.readLine(), "|");
-                token.nextToken();
-                token.nextToken();
-
-                String figureColor = token.nextToken();
-                FigureColor newFigureColor = figureColor.equals("WHITE") ? FigureColor.WHITE : FigureColor.BLACK;
-
-                switch (figureColor) {
-                    case "EMPTY": {
-                        game.getBoard().getField(i).setFigure(new Empty());
-                        break;
-                    }
-                    case "PAWN": {
-                        game.getBoard().getField(i).setFigure(new Pawn(newFigureColor));
-                        break;
-                    }
-                    case "BISHOP": {
-                        game.getBoard().getField(i).setFigure(new Bishop(newFigureColor));
-                        break;
-                    }
-                    case "KNIGHT": {
-                        game.getBoard().getField(i).setFigure(new Knight(newFigureColor));
-                        break;
-                    }
-                    case "ROOK": {
-                        game.getBoard().getField(i).setFigure(new Rook(newFigureColor));
-                        break;
-                    }
-                    case "QUEEN": {
-                        game.getBoard().getField(i).setFigure(new Queen(newFigureColor));
-                        break;
-                    }
-                    case "KING": {
-                        game.getBoard().getField(i).setFigure(new King(newFigureColor));
-                        break;
-                    }
-                }
-            }
-
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
-        return game;
     }
 
     public static void saveCurrentBoard(Game game, boolean append) {
 
         try {
-            String patch = patchBuilder(game.getId(), "board");
+            String patch = patchBuilder(game.getId(), "board","txt");
             PrintWriter writer = append ?
                     new PrintWriter(new FileWriter(patch, true)) :
                     new PrintWriter(new FileWriter(patch));
@@ -234,7 +181,7 @@ public class FileManager {
     }
 
     public static void deleteCurrentBoardFile(Game game) {
-        String patch = patchBuilder(game.getId(),"board");
+        String patch = patchBuilder(game.getId(), "board","txt");
         File file = new File(patch);
         if (file.exists()) {
             file.delete();
@@ -250,7 +197,7 @@ public class FileManager {
                     "Congratulations on a spectacular draw!");
         } else {
             try {
-                String patch = patchBuilder(game.getId(), "board");
+                String patch = patchBuilder(game.getId(), "board","txt");
                 BufferedReader reader = new BufferedReader(new FileReader(patch));
 
                 SimpleBoard[] simpleBoard = new SimpleBoard[50];
@@ -292,23 +239,18 @@ public class FileManager {
         }
     }
 
-    public static String patchBuilder(int gameId, String name) {
-        StringBuilder patch = new StringBuilder();
-
-        patch.append("src");
-        patch.append(System.getProperty("file.separator"));
-        patch.append("main");
-        patch.append(System.getProperty("file.separator"));
-        patch.append("java");
-        patch.append(System.getProperty("file.separator"));
-        patch.append("database");
-        patch.append(System.getProperty("file.separator"));
-        patch.append(name + "_" + gameId + ".txt");
-
-        return patch.toString();
+    public static String patchBuilder(int gameId, String name, String extension) {
+        final String SEP = System.getProperty("file.separator");
+        return "src" + SEP + "main" + SEP + "java" + SEP + "database" + SEP + name + "_" + gameId + "." + extension;
     }
 
-    public static StringBuilder stringBuilderFactory(DataInputStream inS, int LENGTH) throws IOException {
+    public static void buildStringAndWriteToFile(DataOutputStream outS, String append, int LENGTH) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder(LENGTH).append(append);
+        stringBuilder.setLength(LENGTH);
+        outS.writeChars(stringBuilder.toString());
+    }
+
+    public static String convertCharsToString(DataInputStream inS, int LENGTH) throws IOException {
         StringBuilder stringBuilder = new StringBuilder(LENGTH);
         for (int j = 0; j < LENGTH; j++) {
             char tChar = inS.readChar();
@@ -316,8 +258,7 @@ public class FileManager {
                 stringBuilder.append(tChar);
             }
         }
-        stringBuilder.setLength(LENGTH);
-        return stringBuilder;
+        return stringBuilder.toString();
     }
 
     public static void setPassiveMoveCounter(int passiveMoveCounter) {
