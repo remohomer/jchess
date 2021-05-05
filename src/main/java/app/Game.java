@@ -17,7 +17,6 @@ public class Game extends GameStatus {
 
     protected final int id;
 
-    public final static int DEFAULT = -1;
     public final static int SAVE_AND_EXIT_GAME = 99;
     public final static int EXIT_GAME = 100;
     public final static int UNSELECT_FIGURE = 111;
@@ -57,6 +56,7 @@ public class Game extends GameStatus {
                     if (positionSwitcher(firstPosition)) {
                         break loadPositions;
                     }
+
                     Printer.printBoard(this, firstPosition, PrintBoardType.NUMBERS);
 
                     secondPosition = loadSecondPosition();
@@ -66,7 +66,6 @@ public class Game extends GameStatus {
 
                 } while (secondPosition == UNSELECT_FIGURE);
             }
-
 
             if (isActiveGame()) {
                 Move.clearSelectedFigureAndLegalMoves(this.board);
