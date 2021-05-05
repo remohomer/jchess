@@ -22,7 +22,7 @@ public class Printer implements ConsoleColors {
         if (secondBoardType == PrintBoardType.DEFAULT) {
             System.out.println("\t" + player);
         } else {
-            System.out.println(player + "\t\t\t\t\t\t\t\t\t" + secondBoardType.toString());
+            System.out.println(player + "\t\t\t\t\t\t\t\t\t\t" + secondBoardType.toString());
         }
 
         int row = 8;
@@ -58,7 +58,7 @@ public class Printer implements ConsoleColors {
             }
 
             if (field.getNumber() == 63) {
-                System.out.println("      a  b  c  d  e  f  g  h       |         a  b  c  d  e  f  g  h");
+                System.out.println("    a  b  c  d  e  f  g  h         |         a  b  c  d  e  f  g  h");
             }
         }
         player = game.getWhoseTurn() == FigureColor.WHITE ?
@@ -78,7 +78,6 @@ public class Printer implements ConsoleColors {
                 return defaultBoardConditions(game, i, bgColor);
             }
             case "NUMBERS": {
-
                 return numberBoardConditions(game, i, bgColor);
             }
             case "LEGAL_MOVES": {
