@@ -18,9 +18,9 @@ public class Game extends GameStatus {
     protected final int id;
 
     public final static int DEFAULT = -1;
-    public final static int RETURN = 99;
+    public final static int SAVE_AND_EXIT_GAME = 99;
     public final static int EXIT_GAME = 100;
-    public final static int SAVE_AND_EXIT_GAME = 111;
+    public final static int UNSELECT_FIGURE = 111;
 
     public Game(Board board, Player player1, Player player2) {
         this.board = board;
@@ -64,7 +64,7 @@ public class Game extends GameStatus {
                         break loadPositions;
                     }
 
-                } while (secondPosition == RETURN);
+                } while (secondPosition == UNSELECT_FIGURE);
             }
 
 
@@ -81,11 +81,11 @@ public class Game extends GameStatus {
         }
     }
 
-    private int positionSwitcher(int firstPosition) {
-        switch (firstPosition) {
-            case RETURN: {
+    private int positionSwitcher(int position) {
+        switch (position) {
+            case UNSELECT_FIGURE: {
                 returnConditions();
-                return RETURN;
+                return UNSELECT_FIGURE;
             }
             case SAVE_AND_EXIT_GAME: {
                 FileManager.saveGameToFileTxt(this);
@@ -148,7 +148,7 @@ public class Game extends GameStatus {
             thereAreNoExceptions = true;
             try {
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("Enter a number [0-63 figure choice / 100 exit / 111 save and exit]: ");
+                System.out.print("ENTER A NUMBER [0-63 figure choice / 99 save and exit / 100 exit]: ");
                 firstPosition = scanner.nextInt();
                 if (!Move.isLegalFirstPosition(this, this.whoseTurn, firstPosition)) {
                     thereAreNoExceptions = false;
@@ -170,7 +170,7 @@ public class Game extends GameStatus {
             thereAreNoExceptions = true;
             try {
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("Enter a number [0-63 figure choice / 99 return / 100 exit / 111 save and exit]: ");
+                System.out.print("ENTER A NUMBER [0-63 figure choice / 99 save and exit / 100 exit / 111 unselect figure]: ");
                 secondPosition = scanner.nextInt();
                 if (!Move.isLegalSecondPosition(this, this.whoseTurn, secondPosition)) {
                     thereAreNoExceptions = false;

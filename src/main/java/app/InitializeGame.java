@@ -42,8 +42,7 @@ public class InitializeGame {
     }
 
     public static Game newGame(String firstPlayerName, String secondPlayerName) {
-        Game game = new Game(newTempGame());
-        FileManager.deleteCurrentBoardFile(game);
+        Game game = new Game(newGame());
         game.getPlayer1().setPlayerName(firstPlayerName);
         game.getPlayer2().setPlayerName(secondPlayerName);
         return game;

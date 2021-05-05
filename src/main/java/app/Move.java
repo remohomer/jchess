@@ -361,7 +361,7 @@ public class Move {
     }
 
     public static boolean isLegalSecondPosition(Game game, FigureColor whichPlayer, int secondPosition) {
-        if (secondPosition == Game.RETURN || secondPosition == Game.EXIT_GAME || secondPosition == Game.SAVE_AND_EXIT_GAME) {
+        if (secondPosition == Game.UNSELECT_FIGURE || secondPosition == Game.EXIT_GAME || secondPosition == Game.SAVE_AND_EXIT_GAME) {
             return true;
         }
         if (whichPlayer == game.getBoard().getField(secondPosition).getFigure().getFigureColor()) {
