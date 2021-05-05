@@ -14,9 +14,9 @@ public class FileManager {
     private static int passiveMoveCounter = 0;
     private static int theSameBoard = 0;
 
-    public static void saveGameToBytesFile(Game game) {
+    public static void saveGameToDataFile(Game game) {
         try {
-            String patch = patchBuilder(game.getId(), "game","bytes");
+            String patch = patchBuilder(game.getId(), "game","dat");
             DataOutputStream outS = new DataOutputStream(new FileOutputStream(patch));
 
 //            outS.writeInt(passiveMoveCounter);
@@ -42,12 +42,12 @@ public class FileManager {
         }
     }
 
-    public static Game loadBytesFileToGame(int gameId) {
+    public static Game loadDataFileToGame(int gameId) {
 
         Game game = new Game(InitializeGame.newGame());
 
         try {
-            String patch = patchBuilder(gameId, "game","bytes");
+            String patch = patchBuilder(gameId, "game","dat");
             DataInputStream inS = new DataInputStream(new FileInputStream(patch));
 
 //            passiveMoveCounter = inS.readInt();
