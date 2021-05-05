@@ -54,7 +54,7 @@ public class Game extends GameStatus {
                     Printer.printBoard(this, Printer.NOT_SELECTED_FIGURE, PrintBoardType.NUMBERS);
 
                     firstPosition = loadFirstPosition();
-                    if (positionSwitcher(firstPosition) == EXIT_GAME) {
+                    if (positionSwitcher(firstPosition)) {
                         break loadPositions;
                     }
                     Printer.printBoard(this, firstPosition, PrintBoardType.NUMBERS);
@@ -81,11 +81,11 @@ public class Game extends GameStatus {
         }
     }
 
-    private int positionSwitcher(int position) {
+    private boolean positionSwitcher(int position) {
         switch (position) {
             case UNSELECT_FIGURE: {
                 returnConditions();
-                return UNSELECT_FIGURE;
+                return false;
             }
             case SAVE_AND_EXIT_GAME: {
                 FileManager.saveGameToFileTxt(this);
@@ -93,21 +93,24 @@ public class Game extends GameStatus {
             }
             case EXIT_GAME: {
                 exitGameConditions();
-                return EXIT_GAME;
+                return true;
             }
             default: {
-                return DEFAULT;
+                return false;
             }
         }
     }
 
     private boolean positionSwitcher(int firstPosition, int secondPosition) {
-        if (positionSwitcher(secondPosition) == EXIT_GAME) {
+        if (positionSwitcher(secondPosition)) {
             return true;
+        } else if (secondPosition == UNSELECT_FIGURE) {
+            return false;
+        } else {
+            Move.clearFigureStates(this.getBoard());
+            Move.move(this, firstPosition, secondPosition);
+            return false;
         }
-        Move.clearFigureStates(this.getBoard());
-        Move.move(this, firstPosition, secondPosition);
-        return false;
     }
 
     private boolean lookingForDrawByRepeatingPositionOr50PassiveMoves() {
