@@ -53,14 +53,14 @@ public class Game extends GameStatus {
                     Printer.printBoard(this, Printer.NOT_SELECTED_FIGURE, PrintBoardType.NUMBERS);
 
                     firstPosition = loadFirstPosition();
-                    if (positionSwitcher(firstPosition)) {
+                    if (IsExitGame(firstPosition)) {
                         break loadPositions;
                     }
 
                     Printer.printBoard(this, firstPosition, PrintBoardType.NUMBERS);
 
                     secondPosition = loadSecondPosition();
-                    if (positionSwitcher(firstPosition, secondPosition)) {
+                    if (IsExitGame(firstPosition, secondPosition)) {
                         break loadPositions;
                     }
 
@@ -80,7 +80,7 @@ public class Game extends GameStatus {
         }
     }
 
-    private boolean positionSwitcher(int position) {
+    private boolean IsExitGame(int position) {
         switch (position) {
             case UNSELECT_FIGURE: {
                 returnConditions();
@@ -100,8 +100,8 @@ public class Game extends GameStatus {
         }
     }
 
-    private boolean positionSwitcher(int firstPosition, int secondPosition) {
-        if (positionSwitcher(secondPosition)) {
+    private boolean IsExitGame(int firstPosition, int secondPosition) {
+        if (IsExitGame(secondPosition)) {
             return true;
         } else if (secondPosition == UNSELECT_FIGURE) {
             return false;

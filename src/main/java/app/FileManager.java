@@ -19,7 +19,6 @@ public class FileManager {
             String patch = patchBuilder(game.getId(), "game","dat");
             DataOutputStream outS = new DataOutputStream(new FileOutputStream(patch));
 
-//            outS.writeInt(passiveMoveCounter);
             buildStringAndWriteToFile(outS, game.getPlayer1().getPlayerName(), NAME_LENGTH);
             buildStringAndWriteToFile(outS, game.getPlayer2().getPlayerName(), NAME_LENGTH);
 
@@ -50,7 +49,6 @@ public class FileManager {
             String patch = patchBuilder(gameId, "game","dat");
             DataInputStream inS = new DataInputStream(new FileInputStream(patch));
 
-//            passiveMoveCounter = inS.readInt();
             String firstPlayerName = convertCharsToString(inS, NAME_LENGTH);
             String secondPlayerName = convertCharsToString(inS, NAME_LENGTH);
 
