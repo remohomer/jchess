@@ -7,9 +7,9 @@ import enums.Error;
 public class Printer implements ConsoleColors {
 
     public static final int NOT_SELECTED_FIGURE = -1;
+    public static final String NEW_LINE = System.lineSeparator();
     public static final String SPACE = " ";
     public static final String TAB = "\t";
-
 
     public static void printBoard(Game game, int selectedFigurePosition, PrintBoardType secondBoardType) {
 
@@ -51,7 +51,7 @@ public class Printer implements ConsoleColors {
                     System.out.print(boardSwitch(game, secondBoardNumber, secondBoardType));
 
                     if ((secondBoardNumber + 1) % 8 == 0) {
-                        System.out.print(SPACE + row + "\n");
+                        System.out.print(SPACE + row + NEW_LINE);
                     }
                 }
             }
