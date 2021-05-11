@@ -10,7 +10,7 @@ public class Queen extends Figure {
     public Queen(FigureColor figureColor) {
         super(figureColor);
         this.figureType = FigureType.QUEEN;
-        moves = moveSide(TOP, BOTTOM, LEFT, RIGHT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT);
+        moves = moveSide(TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT);
     }
 
     public Queen(Figure figure) {

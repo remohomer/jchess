@@ -33,6 +33,7 @@ public abstract class Figure extends FigureState implements Movement {
     public FigureColor getFigureColor() {
         return figureColor;
     }
+
     public FigureType getFigureType() {
         return figureType;
     }
@@ -49,8 +50,9 @@ public abstract class Figure extends FigureState implements Movement {
         if (isKingCheck(game)) {
             if (game.getBoard().getField(MOVE).getFigure().isCheckLine() && game.getBoard().getField(MOVE).getFigure().getFigureType() != FigureType.KING) {
                 game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
-                if (setUnderPressure)
+                if (setUnderPressure) {
                     setUnderPressure(game, MOVE);
+                }
                 return true;
             }
             return true;
@@ -64,16 +66,18 @@ public abstract class Figure extends FigureState implements Movement {
                 if (game.getBoard().getField(SELECTED).getFigure().getFigureType() == FigureType.PAWN) {
                     if (game.getBoard().getField(MOVE).getFigure().isPinnedCheckLine() && isEnemyFigure(game, MOVE)) {
                         game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
-                        if (setUnderPressure)
+                        if (setUnderPressure) {
                             setUnderPressure(game, MOVE);
+                        }
                         return true;
                     }
                     return true;
                 }
                 if (game.getBoard().getField(MOVE).getFigure().isPinnedCheckLine()) {
                     game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
-                    if (setUnderPressure)
+                    if (setUnderPressure) {
                         setUnderPressure(game, MOVE);
+                    }
                     return true;
                 }
                 return true;
@@ -83,17 +87,19 @@ public abstract class Figure extends FigureState implements Movement {
     }
 
     public static void setUnderPressure(Game game, int position) {
-        if (game.getWhoseTurn() == FigureColor.WHITE)
+        if (game.getWhoseTurn() == FigureColor.WHITE) {
             game.getBoard().getField(position).getFigure().setUnderPressureByWhite(true);
-        else
+        } else {
             game.getBoard().getField(position).getFigure().setUnderPressureByBlack(true);
+        }
     }
 
     public static void setProtected(Game game, int position) {
-        if (game.getWhoseTurn() == FigureColor.WHITE)
+        if (game.getWhoseTurn() == FigureColor.WHITE) {
             game.getBoard().getField(position).getFigure().setProtectedByWhite(true);
-        else
+        } else {
             game.getBoard().getField(position).getFigure().setProtectedByBlack(true);
+        }
     }
 
     public static boolean setCheckLines(Game game, int MOVE, int whichMove, int j) {
@@ -124,9 +130,9 @@ public abstract class Figure extends FigureState implements Movement {
     }
 
     public static void setLegalMoves(Game game, int MOVE, int SELECTED, boolean setUnderPressure) {
-        if (canIMoveWhenIsKingCheck(game, MOVE, setUnderPressure)) ;
-        else if (canIMoveWhenIAmPinned(game, MOVE, SELECTED, setUnderPressure)) ;
-        else {
+        if (canIMoveWhenIsKingCheck(game, MOVE, setUnderPressure)) {
+        } else if (canIMoveWhenIAmPinned(game, MOVE, SELECTED, setUnderPressure)) {
+        } else {
             game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
             if (setUnderPressure)
                 setUnderPressure(game, MOVE);
@@ -296,6 +302,7 @@ public abstract class Figure extends FigureState implements Movement {
     public static boolean isEightColumn(Board board, int selectedFigurePosition) {
         return board.getField(selectedFigurePosition).getColumn() == 8;
     }
+
     public boolean isActivePromotion() {
         return activePromotion;
     }

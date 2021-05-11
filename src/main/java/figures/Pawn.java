@@ -11,18 +11,16 @@ public class Pawn extends Figure {
     public Pawn(FigureColor figureColor) {
         super(figureColor);
         this.figureType = FigureType.PAWN;
-        if (figureColor == FigureColor.WHITE)
-            moves = moveSide(TOP, TOP_TOP, TOP_LEFT, TOP_RIGHT);
-        else
-            moves = moveSide(BOTTOM, BOTTOM_BOTTOM, BOTTOM_LEFT, BOTTOM_RIGHT);
+        moves = (figureColor == FigureColor.WHITE)
+                ? moveSide(TOP, TOP_TOP, TOP_LEFT, TOP_RIGHT)
+                : moveSide(BOTTOM, BOTTOM_BOTTOM, BOTTOM_LEFT, BOTTOM_RIGHT);
     }
 
     public Pawn(Figure figure) {
         super(figure);
-        if (figureColor == FigureColor.WHITE)
-            moves = moveSide(TOP, TOP_TOP, TOP_LEFT, TOP_RIGHT);
-        else
-            moves = moveSide(BOTTOM, BOTTOM_BOTTOM, BOTTOM_LEFT, BOTTOM_RIGHT);
+        moves = (figureColor == FigureColor.WHITE)
+                ? moveSide(TOP, TOP_TOP, TOP_LEFT, TOP_RIGHT)
+                : moveSide(BOTTOM, BOTTOM_BOTTOM, BOTTOM_LEFT, BOTTOM_RIGHT);
     }
 
     @Override
@@ -32,7 +30,6 @@ public class Pawn extends Figure {
         for (int whichMove : moves) {
 
             final int MOVE = SELECTED + whichMove;
-
             try {
                 if (isOnBoard(MOVE)) {
                     switch (whichMove) {

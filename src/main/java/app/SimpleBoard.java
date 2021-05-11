@@ -1,5 +1,7 @@
 package app;
 
+import enums.Error;
+
 public class SimpleBoard {
     private final String[] figureColor;
     private final String[] figureType;
@@ -26,15 +28,27 @@ public class SimpleBoard {
     }
 
     @Override
-    public boolean equals(Object ob) {
+    public boolean equals(Object object) {
 
-        int counter = 0;
-
-        for (int i = 0; i < 64; i++) {
-            if (this.getFigureColor(i).equals(((SimpleBoard) ob).getFigureColor(i)) && this.getFigureType(i).equals(((SimpleBoard) ob).getFigureType(i)))
-                counter++;
+        if (this == object) {
+            System.out.println(Error.THE_SAME_OBJECT.getMessage());
+            return false;
+        } else if (object == null) {
+            System.out.println(Error.OBJECT_IS_NULL.getMessage());
+            return false;
+        } else if (getClass() != object.getClass()) {
+            System.out.println(Error.INCORRECT_TYPE_OF_OBJECT.getMessage());
+            return false;
         }
 
-        return counter == 64;
+        SimpleBoard other = (SimpleBoard) object;
+
+        int sameColorAndFigure = 0;
+        for (int i = 0; i < 64; i++) {
+            if (this.getFigureColor(i).equals(other.getFigureColor(i)) && this.getFigureType(i).equals(other.getFigureType(i)))
+                sameColorAndFigure++;
+        }
+
+        return sameColorAndFigure == 64;
     }
 }

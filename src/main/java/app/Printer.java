@@ -2,10 +2,13 @@ package app;
 
 import enums.FigureColor;
 import enums.PrintBoardType;
+import enums.Error;
 
 public class Printer implements ConsoleColors {
 
     public static final int NOT_SELECTED_FIGURE = -1;
+    public static final String SPACE = " ";
+    public static final String TAB = "\t";
 
 
     public static void printBoard(Game game, int selectedFigurePosition, PrintBoardType secondBoardType) {
@@ -15,12 +18,12 @@ public class Printer implements ConsoleColors {
         }
         System.out.println();
 
-        String player = game.getWhoseTurn() == FigureColor.BLACK ?
-                (BG_CURRENT_PLAYERS_TURN + WHITE_FIGURE + " " + game.getPlayer2().getPlayerName() + " " + RESET_COLORS) :
-                ("\t" + WHITE_FIGURE + game.getPlayer2().getPlayerName() + RESET_COLORS);
+        String player = (game.getWhoseTurn() == FigureColor.BLACK)
+                ? BG_CURRENT_PLAYERS_TURN + WHITE_FIGURE + SPACE + game.getPlayer2().getPlayerName() + SPACE + RESET_COLORS
+                : TAB + WHITE_FIGURE + game.getPlayer2().getPlayerName() + RESET_COLORS;
 
         if (secondBoardType == PrintBoardType.DEFAULT) {
-            System.out.println("\t" + player);
+            System.out.println(TAB + player);
         } else {
             System.out.println(player + "\t\t\t\t\t\t\t\t\t\t" + secondBoardType.toString());
         }
@@ -33,22 +36,22 @@ public class Printer implements ConsoleColors {
             }
 
             if (field.getNumber() % 8 == 0) {
-                System.out.print(" " + row + " ");
+                System.out.print(SPACE + row + SPACE);
             }
 
             System.out.print(boardSwitch(game, field.getNumber(), PrintBoardType.DEFAULT));
 
             if ((field.getNumber() + 1) % 8 == 0) {
-                System.out.print(" " + row);
+                System.out.print(SPACE + row);
 
                 for (int secondBoardNumber = field.getNumber() - 7; secondBoardNumber <= field.getNumber(); secondBoardNumber++) {
                     if (secondBoardNumber % 8 == 0) {
-                        System.out.print("      |      " + row + " ");
+                        System.out.print("      |      " + row + SPACE);
                     }
                     System.out.print(boardSwitch(game, secondBoardNumber, secondBoardType));
 
                     if ((secondBoardNumber + 1) % 8 == 0) {
-                        System.out.print(" " + row + "\n");
+                        System.out.print(SPACE + row + "\n");
                     }
                 }
             }
@@ -61,17 +64,17 @@ public class Printer implements ConsoleColors {
                 System.out.println("    a  b  c  d  e  f  g  h         |         a  b  c  d  e  f  g  h");
             }
         }
-        player = game.getWhoseTurn() == FigureColor.WHITE ?
-                ("\t\t\t\t\t" + BG_CURRENT_PLAYERS_TURN + WHITE_FIGURE + " " + game.getPlayer1().getPlayerName() + " " + RESET_COLORS) :
-                ("\t\t\t\t\t" + WHITE_FIGURE + game.getPlayer1().getPlayerName() + RESET_COLORS);
+        player = (game.getWhoseTurn() == FigureColor.WHITE)
+                ? "\t\t\t\t\t" + BG_CURRENT_PLAYERS_TURN + WHITE_FIGURE + SPACE + game.getPlayer1().getPlayerName() + SPACE + RESET_COLORS
+                : "\t\t\t\t\t" + WHITE_FIGURE + game.getPlayer1().getPlayerName() + RESET_COLORS;
         System.out.println(player);
     }
 
     public static String boardSwitch(Game game, int i, PrintBoardType printBoardType) {
 
-        String bgColor = game.getBoard().getField(i).getRow() % 2 == 0 ?
-                (i % 2 == 0 ? BG_COLOR_1 : BG_COLOR_2) :
-                (i % 2 == 0 ? BG_COLOR_2 : BG_COLOR_1);
+        String bgColor = (game.getBoard().getField(i).getRow() % 2 == 0)
+                ? (i % 2 == 0) ? BG_COLOR_1 : BG_COLOR_2
+                : (i % 2 == 0) ? BG_COLOR_2 : BG_COLOR_1;
 
         switch (printBoardType.toString()) {
             case "DEFAULT": {
@@ -81,27 +84,27 @@ public class Printer implements ConsoleColors {
                 return numberBoardConditions(game, i, bgColor);
             }
             case "LEGAL_MOVES": {
-                return game.getBoard().getField(i).getFigure().isLegalMove() ? createStarString(bgColor) : createEmptyString(bgColor);
+                return (game.getBoard().getField(i).getFigure().isLegalMove()) ? createStarString(bgColor) : createEmptyString(bgColor);
             }
             case "UNDER_PRESSURE": {
                 if (game.getWhoseTurn() == FigureColor.WHITE) {
-                    return game.getBoard().getField(i).getFigure().isUnderPressureByBlack() ? createStarString(bgColor) : createEmptyString(bgColor);
+                    return (game.getBoard().getField(i).getFigure().isUnderPressureByBlack()) ? createStarString(bgColor) : createEmptyString(bgColor);
                 } else {
-                    return game.getBoard().getField(i).getFigure().isUnderPressureByWhite() ? createStarString(bgColor) : createEmptyString(bgColor);
+                    return (game.getBoard().getField(i).getFigure().isUnderPressureByWhite()) ? createStarString(bgColor) : createEmptyString(bgColor);
                 }
             }
             case "PROTECTED": {
                 if (game.getWhoseTurn() == FigureColor.WHITE) {
-                    return game.getBoard().getField(i).getFigure().isProtectedByBlack() ? createAtSignString(bgColor) : createEmptyString(bgColor);
+                    return (game.getBoard().getField(i).getFigure().isProtectedByBlack()) ? createAtSignString(bgColor) : createEmptyString(bgColor);
                 } else {
-                    return game.getBoard().getField(i).getFigure().isProtectedByWhite() ? createAtSignString(bgColor) : createEmptyString(bgColor);
+                    return (game.getBoard().getField(i).getFigure().isProtectedByWhite()) ? createAtSignString(bgColor) : createEmptyString(bgColor);
                 }
             }
             case "EN_PASSANT": {
-                return game.getBoard().getField(i).getFigure().isEnPassant() ? createStarString(bgColor) : createEmptyString(bgColor);
+                return (game.getBoard().getField(i).getFigure().isEnPassant()) ? createStarString(bgColor) : createEmptyString(bgColor);
             }
             case "CHECK_LINES": {
-                return game.getBoard().getField(i).getFigure().isCheckLine() ? createStarString(bgColor) : createEmptyString(bgColor);
+                return (game.getBoard().getField(i).getFigure().isCheckLine()) ? createStarString(bgColor) : createEmptyString(bgColor);
             }
             case "PINNED_AND_PINNED_CHECK_LINES": {
                 if (game.getBoard().getField(i).getFigure().isPinned()) {
@@ -113,28 +116,28 @@ public class Printer implements ConsoleColors {
                 }
             }
             default: {
-                return " ERROR: incorrect reading data from enums.PrintBoardType ";
+                return Error.INCORRECT_TYPE_OF_BOARD.getMessage();
             }
         }
     }
 
     public static String defaultBoardConditions(Game game, int i, String bgColor) {
 
-        String fColor = game.getBoard().getField(i).getFigure().getFigureColor() == FigureColor.BLACK ? BLACK_FIGURE : WHITE_FIGURE;
+        String fColor = (game.getBoard().getField(i).getFigure().getFigureColor() == FigureColor.BLACK) ? BLACK_FIGURE : WHITE_FIGURE;
 
         if (game.getBoard().getField(i).getFigure().isSelected()) {
             bgColor = BG_SELECTED_COLOR;
         } else if (game.getBoard().getField(i).getFigure().isLegalMove()) {
-            bgColor = game.getBoard().getField(i).getFigure().isEnPassant() ?
-                    BG_LEGAL_OFFENSIVE_MOVE :
-                    (game.getBoard().getField(i).getFigure().getFigureColor() == Move.invertColor(game.getWhoseTurn()) ? BG_LEGAL_OFFENSIVE_MOVE : BG_LEGAL_MOVE);
+            bgColor = (game.getBoard().getField(i).getFigure().isEnPassant())
+                    ? BG_LEGAL_OFFENSIVE_MOVE
+                    : (game.getBoard().getField(i).getFigure().getFigureColor() == Move.invertColor(game.getWhoseTurn()) ? BG_LEGAL_OFFENSIVE_MOVE : BG_LEGAL_MOVE);
         }
 
         switch (game.getBoard().getField(i).getFigure().getFigureType().toString()) {
             case "EMPTY": {
-                return game.getBoard().getField(i).getFigure().isActivePromotion() ?
-                        (BG_SELECTED_COLOR + fColor + " ? " + RESET_COLORS) :
-                        createEmptyString(bgColor);
+                return (game.getBoard().getField(i).getFigure().isActivePromotion())
+                        ? (BG_SELECTED_COLOR + fColor + " ? " + RESET_COLORS)
+                        : createEmptyString(bgColor);
             }
             case "PAWN": {
                 return createFigureString(bgColor, fColor, "P");
@@ -155,7 +158,7 @@ public class Printer implements ConsoleColors {
                 return createFigureString(bgColor, fColor, "K");
             }
             default: {
-                return "ERROR: incorrect reading data from enums.FigureType";
+                return Error.INCORRECT_TYPE_OF_FIGURE.getMessage();
             }
         }
     }
@@ -173,14 +176,14 @@ public class Printer implements ConsoleColors {
             bgColor = BG_SELECTED_COLOR;
         } else if (game.getBoard().getField(i).getFigure().isLegalMove()) {
 
-            bgColor = game.getBoard().getField(i).getFigure().isEnPassant() ?
-                    BG_LEGAL_OFFENSIVE_MOVE :
-                    (game.getBoard().getField(i).getFigure().getFigureColor() == Move.invertColor(game.getWhoseTurn()) ? BG_LEGAL_OFFENSIVE_MOVE : BG_LEGAL_MOVE);
+            bgColor = (game.getBoard().getField(i).getFigure().isEnPassant())
+                    ? BG_LEGAL_OFFENSIVE_MOVE
+                    : (game.getBoard().getField(i).getFigure().getFigureColor() == Move.invertColor(game.getWhoseTurn()) ? BG_LEGAL_OFFENSIVE_MOVE : BG_LEGAL_MOVE);
 
-            fColor = game.getWhoseTurn() == FigureColor.WHITE ? WHITE_FIGURE : BLACK_FIGURE;
+            fColor = (game.getWhoseTurn() == FigureColor.WHITE) ? WHITE_FIGURE : BLACK_FIGURE;
         }
 
-        return i < 10 ? (bgColor + fColor + " " + i + " " + RESET_COLORS) : (bgColor + fColor + " " + i + RESET_COLORS);
+        return (i < 10) ? (bgColor + fColor + SPACE + i + SPACE + RESET_COLORS) : (bgColor + fColor + SPACE + i + RESET_COLORS);
     }
 
     private static String createAtSignString(String bgColor) {
@@ -196,7 +199,7 @@ public class Printer implements ConsoleColors {
     }
 
     private static String createFigureString(String bgColor, String fColor, String figureType) {
-        return bgColor + fColor + " " + figureType + " " + RESET_COLORS;
+        return bgColor + fColor + SPACE + figureType + SPACE + RESET_COLORS;
     }
 
     public static void printAllOfBoards(Game game, int selectedFigurePosition) {

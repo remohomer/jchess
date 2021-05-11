@@ -3,6 +3,7 @@ package app;
 import enums.FigureColor;
 import booleans.GameStatus;
 import enums.PrintBoardType;
+import enums.Error;
 
 import java.util.Scanner;
 
@@ -156,7 +157,7 @@ public class Game extends GameStatus {
                     thereAreNoExceptions = false;
                 }
             } catch (Exception e) {
-                System.out.println("ERROR: Invalid input data");
+                System.out.println(Error.INCORRECT_INPUT_DATA.getMessage());
                 thereAreNoExceptions = false;
             }
         } while (!thereAreNoExceptions);
@@ -178,7 +179,7 @@ public class Game extends GameStatus {
                     thereAreNoExceptions = false;
                 }
             } catch (Exception e) {
-                System.out.println("ERROR: Invalid input data");
+                System.out.println(Error.INCORRECT_INPUT_DATA.getMessage());
                 thereAreNoExceptions = false;
             }
         } while (!thereAreNoExceptions);

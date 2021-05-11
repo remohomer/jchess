@@ -16,7 +16,7 @@ public class FileManager {
 
     public static void saveGameToDataFile(Game game) {
         try {
-            String patch = patchBuilder(game.getId(), "game","dat");
+            String patch = patchBuilder(game.getId(), "game", "dat");
             DataOutputStream outS = new DataOutputStream(new FileOutputStream(patch));
 
             buildStringAndWriteToFile(outS, game.getPlayer1().getPlayerName(), NAME_LENGTH);
@@ -46,7 +46,7 @@ public class FileManager {
         Game game = new Game(InitializeGame.newGame());
 
         try {
-            String patch = patchBuilder(gameId, "game","dat");
+            String patch = patchBuilder(gameId, "game", "dat");
             DataInputStream inS = new DataInputStream(new FileInputStream(patch));
 
             String firstPlayerName = convertCharsToString(inS, NAME_LENGTH);
@@ -80,7 +80,7 @@ public class FileManager {
     public static void saveGameToFileTxt(Game game) {
 
         try {
-            String patch = patchBuilder(game.getId(), "game","txt");
+            String patch = patchBuilder(game.getId(), "game", "txt");
             PrintWriter writer = new PrintWriter(new FileWriter(patch));
 
             writer.println(game.getPlayer1().getPlayerName());
@@ -100,7 +100,7 @@ public class FileManager {
 
         Game game = new Game(InitializeGame.newTempGame());
         try {
-            String patch = patchBuilder(gameId, "game","txt");
+            String patch = patchBuilder(gameId, "game", "txt");
             BufferedReader reader = new BufferedReader(new FileReader(patch));
 
             game.getPlayer1().setPlayerName(reader.readLine());
@@ -162,10 +162,10 @@ public class FileManager {
     public static void saveCurrentBoard(Game game, boolean append) {
 
         try {
-            String patch = patchBuilder(game.getId(), "board","txt");
-            PrintWriter writer = append ?
-                    new PrintWriter(new FileWriter(patch, true)) :
-                    new PrintWriter(new FileWriter(patch));
+            String patch = patchBuilder(game.getId(), "board", "txt");
+            PrintWriter writer = (append)
+                    ? new PrintWriter(new FileWriter(patch, true))
+                    : new PrintWriter(new FileWriter(patch));
 
             writer.println(passiveMoveCounter);
             for (int i = 0; i < 64; i++) {
@@ -179,7 +179,7 @@ public class FileManager {
     }
 
     public static void deleteCurrentBoardFile(Game game) {
-        String patch = patchBuilder(game.getId(), "board","txt");
+        String patch = patchBuilder(game.getId(), "board", "txt");
         File file = new File(patch);
         if (file.exists()) {
             file.delete();
@@ -195,7 +195,7 @@ public class FileManager {
                     "Congratulations on a spectacular draw!");
         } else {
             try {
-                String patch = patchBuilder(game.getId(), "board","txt");
+                String patch = patchBuilder(game.getId(), "board", "txt");
                 BufferedReader reader = new BufferedReader(new FileReader(patch));
 
                 SimpleBoard[] simpleBoard = new SimpleBoard[50];

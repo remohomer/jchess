@@ -1,5 +1,6 @@
 package app;
 
+import enums.Error;
 import enums.FigureType;
 import enums.FigureColor;
 import enums.PrintBoardType;
@@ -151,7 +152,7 @@ public class Move {
                 figureType = scanner.nextLine().toUpperCase(Locale.ROOT).charAt(0);
             }
         } catch (Exception e) {
-            System.out.println("ERROR: Incorrect figure name");
+            System.out.println(Error.INCORRECT_INPUT_DATA.getMessage());
         }
 
         return figureType;
@@ -350,11 +351,11 @@ public class Move {
             return true;
         }
         if (game.getBoard().getField(firstPosition).getFigure().getFigureType() == FigureType.EMPTY) {
-            System.out.println("ERROR: The field you selected is empty");
+            System.out.println("The field you selected is empty");
             return false;
         }
         if (whichPlayer != game.getBoard().getField(firstPosition).getFigure().getFigureColor()) {
-            System.out.println("ERROR: Its not your figure");
+            System.out.println("Its not your figure");
             return false;
         }
         return true;
@@ -365,11 +366,11 @@ public class Move {
             return true;
         }
         if (whichPlayer == game.getBoard().getField(secondPosition).getFigure().getFigureColor()) {
-            System.out.println("ERROR: You cannot take your own pieces");
+            System.out.println("You cannot take your own pieces");
             return false;
         }
         if (!game.getBoard().getField(secondPosition).getFigure().isLegalMove()) {
-            System.out.println("ERROR: Incorrect move");
+            System.out.println("Its not legal move");
             return false;
         }
         return true;
