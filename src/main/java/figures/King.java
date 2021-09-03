@@ -20,16 +20,16 @@ public class King extends Figure {
     }
 
     @Override
-    public void movement(Game game, final int SELECTED) {
+    public void setLegalMovement(Game game, final int SELECTED) {
         this.setSelected(true);
         setLegalCastling(game); // comment this line if you are testing something on not default board
 
-        for (int whichMove : moves) {
-            final int MOVE = SELECTED + whichMove;
+        for (int moveDirection : moves) {
+            final int MOVE = SELECTED + moveDirection;
 
             try {
                 if (isOnBoard(MOVE)) {
-                    switch (whichMove) {
+                    switch (moveDirection) {
                         case TOP: {
                             if (!isEightRow(game.getBoard(), SELECTED)) {
                                 if (!isUnderPressureOrProtected(game, MOVE))
@@ -89,7 +89,7 @@ public class King extends Figure {
                     }
                 }
             } catch (Exception e) {
-                movementExceptions(game, e, SELECTED, whichMove);
+                movementExceptions(game, e, SELECTED, moveDirection);
             }
         }
     }
@@ -105,13 +105,15 @@ public class King extends Figure {
     }
 
     public static boolean isWhiteKingSideCastleActive(Game game) {
-        return !game.getBoard().getCastlingConditions().isWhiteKingCheck()
-                && !game.getBoard().getCastlingConditions().isWhiteKingMove()
-                && !game.getBoard().getCastlingConditions().isWhiteRightRookMove()
-                && !game.getBoard().getField(61).getFigure().isUnderPressureByBlack()
-                && !game.getBoard().getField(62).getFigure().isUnderPressureByBlack()
-                && game.getBoard().getField(61).getFigure().getFigureType() == FigureType.EMPTY
-                && game.getBoard().getField(62).getFigure().getFigureType() == FigureType.EMPTY;
+            return !game.getBoard().getCastlingConditions().isWhiteKingCheck()
+                    && !game.getBoard().getCastlingConditions().isWhiteKingMove()
+                    && !game.getBoard().getCastlingConditions().isWhiteRightRookMove()
+                    && !game.getBoard().getField(61).getFigure().isUnderPressureByBlack()
+                    && !game.getBoard().getField(62).getFigure().isUnderPressureByBlack()
+                    && game.getBoard().getField(61).getFigure().getFigureType() == FigureType.EMPTY
+                    && game.getBoard().getField(62).getFigure().getFigureType() == FigureType.EMPTY
+                    && game.getBoard().getField(63).getFigure().getFigureColor() == FigureColor.WHITE
+                    && game.getBoard().getField(63).getFigure().getFigureType() == FigureType.ROOK;
     }
 
     public static boolean isWhiteQueenSideCastleActive(Game game) {
@@ -122,7 +124,9 @@ public class King extends Figure {
                 && !game.getBoard().getField(59).getFigure().isUnderPressureByBlack()
                 && game.getBoard().getField(57).getFigure().getFigureType() == FigureType.EMPTY
                 && game.getBoard().getField(58).getFigure().getFigureType() == FigureType.EMPTY
-                && game.getBoard().getField(59).getFigure().getFigureType() == FigureType.EMPTY;
+                && game.getBoard().getField(59).getFigure().getFigureType() == FigureType.EMPTY
+                && game.getBoard().getField(56).getFigure().getFigureColor() == FigureColor.WHITE
+                && game.getBoard().getField(56).getFigure().getFigureType() == FigureType.ROOK;
     }
 
     public static boolean isBlackKingSideCastleActive(Game game) {
@@ -132,7 +136,9 @@ public class King extends Figure {
                 && !game.getBoard().getField(5).getFigure().isUnderPressureByWhite()
                 && !game.getBoard().getField(6).getFigure().isUnderPressureByWhite()
                 && game.getBoard().getField(5).getFigure().getFigureType() == FigureType.EMPTY
-                && game.getBoard().getField(6).getFigure().getFigureType() == FigureType.EMPTY;
+                && game.getBoard().getField(6).getFigure().getFigureType() == FigureType.EMPTY
+                && game.getBoard().getField(7).getFigure().getFigureColor() == FigureColor.BLACK
+                && game.getBoard().getField(7).getFigure().getFigureType() == FigureType.ROOK;
     }
 
     public static boolean isBlackQueenSideCastleActive(Game game) {
@@ -143,7 +149,9 @@ public class King extends Figure {
                 && !game.getBoard().getField(3).getFigure().isUnderPressureByWhite()
                 && game.getBoard().getField(1).getFigure().getFigureType() == FigureType.EMPTY
                 && game.getBoard().getField(2).getFigure().getFigureType() == FigureType.EMPTY
-                && game.getBoard().getField(3).getFigure().getFigureType() == FigureType.EMPTY;
+                && game.getBoard().getField(3).getFigure().getFigureType() == FigureType.EMPTY
+                && game.getBoard().getField(0).getFigure().getFigureColor() == FigureColor.BLACK
+                && game.getBoard().getField(0).getFigure().getFigureType() == FigureType.ROOK;
     }
 
     public boolean isUnderPressureOrProtected(Game game, int MOVE) {

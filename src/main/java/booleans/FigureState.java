@@ -5,8 +5,10 @@ public class FigureState {
     private boolean selected;
     private boolean pinned;
     private boolean checkLine;
+    private boolean checkLineBehindKing;
     private boolean pinnedCheckLine;
-    private boolean enPassant;
+    private boolean enPassantForWhite;
+    private boolean enPassantForBlack;
     private boolean protectedByWhite;
     private boolean protectedByBlack;
     private boolean underPressureByWhite;
@@ -18,8 +20,10 @@ public class FigureState {
         selected = false;
         pinned = false;
         checkLine = false;
+        checkLineBehindKing = false;
         pinnedCheckLine = false;
-        enPassant = false;
+        enPassantForWhite = false;
+        enPassantForBlack = false;
         protectedByWhite = false;
         protectedByBlack = false;
         underPressureByWhite = false;
@@ -58,12 +62,12 @@ public class FigureState {
         this.pinnedCheckLine = pinnedCheckLine;
     }
 
-    public boolean isEnPassant() {
-        return enPassant;
+    public boolean isEnPassantForWhite() {
+        return enPassantForWhite;
     }
 
-    public void setEnPassant(boolean enPassant) {
-        this.enPassant = enPassant;
+    public void setEnPassantForWhite(boolean enPassantForWhite) {
+        this.enPassantForWhite = enPassantForWhite;
     }
 
     public boolean isProtectedByWhite() {
@@ -104,5 +108,21 @@ public class FigureState {
 
     public void setLegalMove(boolean legalMove) {
         this.legalMove = legalMove;
+    }
+
+    public boolean isEnPassantForBlack() {
+        return enPassantForBlack;
+    }
+
+    public void setEnPassantForBlack(boolean bool) {
+        this.enPassantForBlack = bool;
+    }
+
+    public boolean isCheckLineBehindKing() {
+        return checkLineBehindKing;
+    }
+
+    public void setCheckLineBehindKing(boolean checkLineBehindKing) {
+        this.checkLineBehindKing = checkLineBehindKing;
     }
 }

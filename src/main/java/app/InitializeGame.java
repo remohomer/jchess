@@ -7,7 +7,7 @@ import figures.Figure;
 
 public class InitializeGame {
 
-    public static Game newTempGame() {
+    public static Game newStandardGame() {
         Figure figure = new Empty();
         Field[] field = new Field[64];
 
@@ -36,7 +36,7 @@ public class InitializeGame {
     }
 
     public static Game newGame() {
-        Game game = new Game(newTempGame());
+        Game game = new Game(newStandardGame());
         FileManager.deleteCurrentBoardFile(game);
         return game;
     }

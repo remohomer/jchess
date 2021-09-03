@@ -16,6 +16,6 @@ public class Empty extends Figure {
     }
 
     @Override
-    public void movement(Game game, int selectedFigurePosition) {
+    public void setLegalMovement(Game game, int selectedFigurePosition) {
     }
 }

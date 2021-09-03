@@ -28,4 +28,5 @@ public class GameStatus {
     public boolean isCheckMate() {
         return checkMate;
     }
+
 }

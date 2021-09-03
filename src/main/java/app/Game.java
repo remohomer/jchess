@@ -1,11 +1,18 @@
 package app;
 
+import booleans.CastlingConditions;
 import enums.FigureColor;
 import booleans.GameStatus;
-import enums.PrintBoardType;
 import enums.Error;
+import gui.Table;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Scanner;
+import java.util.StringTokenizer;
+
+import static app.FileManager.initializeFigure;
 
 
 public class Game extends GameStatus {
@@ -14,9 +21,11 @@ public class Game extends GameStatus {
     private final Player player2;
     private final Board board;
     private FigureColor whoseTurn;
+    public int sourcePosition = -1;
+    public int destinyPosition = -1;
     private static int counter = 1;
 
-    protected final int id;
+    protected final int ID;
 
     public final static int SAVE_AND_EXIT_GAME = 99;
     public final static int EXIT_GAME = 100;
@@ -27,7 +36,7 @@ public class Game extends GameStatus {
         this.whoseTurn = FigureColor.WHITE;
         this.player1 = player1;
         this.player2 = player2;
-        id = counter++;
+        ID = counter++;
     }
 
     public Game(Game game) {
@@ -35,40 +44,43 @@ public class Game extends GameStatus {
         this.whoseTurn = game.getWhoseTurn();
         this.player1 = game.getPlayer1();
         this.player2 = game.getPlayer2();
-        this.id = game.getId();
+        this.ID = game.getId();
     }
 
-    public void start() {
+    public void guiGamePlay() {
+        setLegalMovesForCurrentPlayer();
+        Table table = new Table(this);
+    }
+
+    public void consoleGamePlay() {
         this.setActiveGame(true);
         while (this.isActiveGame()) {
-            if (lookingForDrawByRepeatingPositionOr50PassiveMoves()) {
+            if (lookingForDrawBy50PassiveMoves()) {
                 break;
             }
-            scanBoardAndSetLegalMovesForCurrentPlayer();
+            setLegalMovesForCurrentPlayer();
 
             loadPositions:
             {
-                int firstPosition, secondPosition;
                 do {
+                    Printer.printAllOfBoards(this,Printer.NOT_SELECTED_FIGURE);
+                    Printer.printBooleans(this);
 
-                    Printer.printBoard(this, Printer.NOT_SELECTED_FIGURE, PrintBoardType.NUMBERS);
-
-                    firstPosition = loadFirstPosition();
-                    if (IsExitGame(firstPosition)) {
+                    sourcePosition = loadFirstPosition();
+                    if (IsExitGame(sourcePosition)) {
                         break loadPositions;
                     }
+                    Printer.printAllOfBoards(this,sourcePosition);
+                    Printer.printBooleans(this);
 
-                    Printer.printBoard(this, firstPosition, PrintBoardType.NUMBERS);
-
-                    secondPosition = loadSecondPosition();
-                    if (IsExitGame(firstPosition, secondPosition)) {
+                    destinyPosition = loadSecondPosition();
+                    if (IsExitGame(sourcePosition, destinyPosition)) {
                         break loadPositions;
                     }
-
-                } while (secondPosition == UNSELECT_FIGURE);
+                } while (destinyPosition == UNSELECT_FIGURE);
             }
 
-            if (isActiveGame()) {
+            if (this.isActiveGame()) {
                 Move.clearSelectedFigureAndLegalMoves(this.board);
                 if (Move.getPawnIsMovedOrFigureIsTaking()) {
                     FileManager.deleteCurrentBoardFile(this);
@@ -84,7 +96,7 @@ public class Game extends GameStatus {
     private boolean IsExitGame(int position) {
         switch (position) {
             case UNSELECT_FIGURE: {
-                returnConditions();
+                Move.clearSelectedFigureAndLegalMoves(this.getBoard());
                 return false;
             }
             case SAVE_AND_EXIT_GAME: {
@@ -107,20 +119,20 @@ public class Game extends GameStatus {
         } else if (secondPosition == UNSELECT_FIGURE) {
             return false;
         } else {
-            Move.clearFigureStates(this.getBoard());
+            Move.clearFigureStates(this);
             Move.move(this, firstPosition, secondPosition);
             return false;
         }
     }
 
-    private boolean lookingForDrawByRepeatingPositionOr50PassiveMoves() {
+    private boolean lookingForDrawBy50PassiveMoves() {
         FileManager.saveCurrentBoard(this, true);
         FileManager.scanCurrentBoard(this);
         return this.isDraw();
     }
 
-    private void scanBoardAndSetLegalMovesForCurrentPlayer() {
-        Move.scanBoardAndSetUnderPressureAndProtectedStates(this);
+    public void setLegalMovesForCurrentPlayer() {
+        Move.setUnderPressureandProtected(this);
         Move.isKingCheck(this.board);
     }
 
@@ -129,17 +141,11 @@ public class Game extends GameStatus {
         FileManager.deleteCurrentBoardFile(this);
     }
 
-    private void returnConditions() {
-        Move.clearFigureStates(this.getBoard());
-        Move.clearUnderPressure(this.getBoard());
-        Move.clearSelectedFigureAndLegalMoves(this.getBoard());
-    }
-
-    private boolean lookingForCheckMateOrDraw() {
+    public boolean lookingForCheckMateOrDraw() {
         invertWhoseTurn();
-        Move.scanBoardAndSetUnderPressureAndProtectedStates(this);
+        Move.setUnderPressureandProtected(this);
         Move.isKingCheck(this.board);
-        Move.scanBoardAndFindCheckMateOrDraw(this);
+        Move.findCheckMateOrDraw(this);
         return this.isCheckMate() || this.isDraw();
     }
 
@@ -232,7 +238,56 @@ public class Game extends GameStatus {
     }
 
     public int getId() {
-        return id;
+        return ID;
+    }
+
+    public void loadGame(int gameId) {
+        Game game = new Game(InitializeGame.newStandardGame());
+        try {
+            String patch = FileManager.patchBuilder(gameId, "game", "txt");
+            BufferedReader reader = new BufferedReader(new FileReader(patch));
+
+            game.getPlayer1().setPlayerName(reader.readLine());
+            game.getPlayer2().setPlayerName(reader.readLine());
+            game.setWhoseTurn(reader.readLine());
+
+            for (int i = 0; i < 64; i++) {
+                StringTokenizer token = new StringTokenizer(reader.readLine(), "|");
+                int position = Integer.parseInt(token.nextToken());
+
+                String figureType = token.nextToken();
+                String figureColor = token.nextToken();
+                initializeFigure(game.getBoard(), figureColor, figureType, position);
+                game.setLegalMovesForCurrentPlayer();
+            }
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        this.sourcePosition = game.sourcePosition;
+        this.destinyPosition = game.sourcePosition;
+        this.setWhoseTurn(game.whoseTurn);
+        this.setActiveGame(game.isActiveGame());
+        this.setDraw(game.isDraw());
+        this.setCheckMate(game.isCheckMate());
+
+        this.getPlayer1().setPlayerName(game.getPlayer1().getPlayerName());
+        this.getPlayer2().setPlayerName(game.getPlayer2().getPlayerName());
+        this.getBoard().initializeLoadedBoard(game);
+        this.getBoard().setCastlingConditions(game.getBoard().getCastlingConditions());
+    }
+
+    public void newGame() {
+        this.sourcePosition = -1;
+        this.destinyPosition = -1;
+        this.setWhoseTurn(FigureColor.WHITE);
+        this.setActiveGame(true);
+        this.setDraw(false);
+        this.setCheckMate(false);
+        this.getPlayer1().setPlayerName("Player_1");
+        this.getPlayer2().setPlayerName("Player_2");
+        this.getBoard().initializeBoard();
+        this.getBoard().setCastlingConditions(new CastlingConditions());
     }
 
 }

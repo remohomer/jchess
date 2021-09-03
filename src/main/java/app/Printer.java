@@ -1,8 +1,10 @@
 package app;
 
+import booleans.CastlingConditions;
 import enums.FigureColor;
 import enums.PrintBoardType;
 import enums.Error;
+import figures.Pawn;
 
 public class Printer implements ConsoleColors {
 
@@ -14,7 +16,7 @@ public class Printer implements ConsoleColors {
     public static void printBoard(Game game, int selectedFigurePosition, PrintBoardType secondBoardType) {
 
         if (selectedFigurePosition != NOT_SELECTED_FIGURE) {
-            game.getBoard().getField(selectedFigurePosition).getFigure().movement(game, selectedFigurePosition);
+            game.getBoard().getField(selectedFigurePosition).getFigure().setLegalMovement(game, selectedFigurePosition);
         }
         System.out.println();
 
@@ -101,7 +103,7 @@ public class Printer implements ConsoleColors {
                 }
             }
             case "EN_PASSANT": {
-                return (game.getBoard().getField(i).getFigure().isEnPassant()) ? createStarString(bgColor) : createEmptyString(bgColor);
+                return (Pawn.isEnPassant(game,i) ? createStarString(bgColor) : createEmptyString(bgColor));
             }
             case "CHECK_LINES": {
                 return (game.getBoard().getField(i).getFigure().isCheckLine()) ? createStarString(bgColor) : createEmptyString(bgColor);
@@ -128,7 +130,7 @@ public class Printer implements ConsoleColors {
         if (game.getBoard().getField(i).getFigure().isSelected()) {
             bgColor = BG_SELECTED_COLOR;
         } else if (game.getBoard().getField(i).getFigure().isLegalMove()) {
-            bgColor = (game.getBoard().getField(i).getFigure().isEnPassant())
+            bgColor = (Pawn.isEnPassant(game,i))
                     ? BG_LEGAL_OFFENSIVE_MOVE
                     : (game.getBoard().getField(i).getFigure().getFigureColor() == Move.invertColor(game.getWhoseTurn()) ? BG_LEGAL_OFFENSIVE_MOVE : BG_LEGAL_MOVE);
         }
@@ -176,7 +178,7 @@ public class Printer implements ConsoleColors {
             bgColor = BG_SELECTED_COLOR;
         } else if (game.getBoard().getField(i).getFigure().isLegalMove()) {
 
-            bgColor = (game.getBoard().getField(i).getFigure().isEnPassant())
+            bgColor = (Pawn.isEnPassant(game,i))
                     ? BG_LEGAL_OFFENSIVE_MOVE
                     : (game.getBoard().getField(i).getFigure().getFigureColor() == Move.invertColor(game.getWhoseTurn()) ? BG_LEGAL_OFFENSIVE_MOVE : BG_LEGAL_MOVE);
 
@@ -209,6 +211,15 @@ public class Printer implements ConsoleColors {
         Printer.printBoard(game, selectedFigurePosition, PrintBoardType.PROTECTED);
         Printer.printBoard(game, selectedFigurePosition, PrintBoardType.UNDER_PRESSURE);
         Printer.printBoard(game, selectedFigurePosition, PrintBoardType.NUMBERS);
+    }
+    public static void printBooleans(Game game) {
+        System.out.println("--------------------------------------");
+        System.out.println("White King Check: " + game.getBoard().getCastlingConditions().isWhiteKingCheck());
+        System.out.println("Black King Check: " + game.getBoard().getCastlingConditions().isBlackKingCheck());
+        System.out.println("Check Mate: " + game.isCheckMate());
+        System.out.println("Draw: " + game.isDraw());
+        System.out.println("--------------------------------------");
+
     }
 }
 

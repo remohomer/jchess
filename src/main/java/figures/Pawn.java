@@ -1,8 +1,11 @@
 package figures;
 
 import app.Game;
+import app.Move;
+import app.Printer;
 import enums.FigureType;
 import enums.FigureColor;
+import enums.PrintBoardType;
 
 public class Pawn extends Figure {
 
@@ -24,15 +27,15 @@ public class Pawn extends Figure {
     }
 
     @Override
-    public void movement(Game game, final int SELECTED) {
+    public void setLegalMovement(Game game, final int SELECTED) {
         this.setSelected(true);
 
-        for (int whichMove : moves) {
+        for (int moveDirection : moves) {
 
-            final int MOVE = SELECTED + whichMove;
+            final int MOVE = SELECTED + moveDirection;
             try {
                 if (isOnBoard(MOVE)) {
-                    switch (whichMove) {
+                    switch (moveDirection) {
                         case TOP: {
                             if (!isEightRow(game.getBoard(), SELECTED)) {
                                 if (isEmptyFigure(game, MOVE)) {
@@ -90,14 +93,24 @@ public class Pawn extends Figure {
                     }
                 }
             } catch (Exception e) {
-                movementExceptions(game, e, SELECTED, whichMove);
+                movementExceptions(game, e, SELECTED, moveDirection);
             }
         }
     }
 
+    public static boolean isEnPassant(Game game, int position) {
+        if (game.getWhoseTurn() == FigureColor.WHITE) {
+            return game.getBoard().getField(position).getFigure().isEnPassantForWhite();
+        } else if (game.getWhoseTurn() == FigureColor.BLACK) {
+            return game.getBoard().getField(position).getFigure().isEnPassantForBlack();
+        }
+        return false;
+    }
+
     public static void PawnsDiagonallyMovementConditions(Game game, int MOVE, int SELECTED) {
-        if (isEmptyFigure(game, MOVE) && isEnPassant(game.getBoard(), MOVE))
+        if (isEmptyFigure(game, MOVE) && isEnPassant(game, MOVE)) {
             setLegalMoves(game, MOVE, SELECTED, true);
+        }
         else if (isEmptyFigure(game, MOVE))
             setUnderPressure(game, MOVE);
         else if (isEnemyFigure(game, MOVE))

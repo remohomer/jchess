@@ -22,7 +22,7 @@ public interface Movement {
     int RIGHT_RIGHT_TOP = -6;
     int RIGHT_RIGHT_BOTTOM = 10;
 
-    void movement(Game game, final int selectedFigurePosition);
+    void setLegalMovement(Game game, final int selectedFigurePosition);
 
     default int[] moveSide(int... moveSide) {
         return moveSide;

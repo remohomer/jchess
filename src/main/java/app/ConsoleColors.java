@@ -2,7 +2,7 @@ package app;
 
 public interface ConsoleColors {
 
-    String RESET_COLORS = "\033[0m";                // Colors Reset
+    String  RESET_COLORS = "\033[0m";                // Colors Reset
 
     String WHITE_FIGURE = "\033[1;97m";             // WHITE
     String BLACK_FIGURE = "\033[1;30m";             // BLACK

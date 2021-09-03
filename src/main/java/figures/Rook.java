@@ -19,14 +19,14 @@ public class Rook extends Figure {
     }
 
     @Override
-    public void movement(Game game, final int SELECTED) {
+    public void setLegalMovement(Game game, final int SELECTED) {
         this.setSelected(true);
 
-        for (int whichMove : moves) {
+        for (int moveDirection : moves) {
             try {
-                LoopedMoveSwitch(game, SELECTED, whichMove);
+                LoopedMoveSwitch(game, SELECTED, moveDirection);
             } catch (Exception e) {
-                movementExceptions(game,  e, SELECTED, whichMove);
+                movementExceptions(game,  e, SELECTED, moveDirection);
             }
         }
     }

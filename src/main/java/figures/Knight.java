@@ -19,15 +19,15 @@ public class Knight extends Figure {
     }
 
     @Override
-    public void movement(Game game, final int SELECTED) {
+    public void setLegalMovement(Game game, final int SELECTED) {
         this.setSelected(true);
 
-        for (int whichMove : moves) {
-            final int MOVE = SELECTED + whichMove;
+        for (int moveDirection : moves) {
+            final int MOVE = SELECTED + moveDirection;
 
             try {
                 if (isOnBoard(MOVE) && !this.isPinned()) {
-                    switch (whichMove) {
+                    switch (moveDirection) {
                         case TOP_TOP_LEFT: {
                             if (!isSevenRow(game.getBoard(), SELECTED) && !isEightRow(game.getBoard(), SELECTED) && !isFirstColumn(game.getBoard(), SELECTED)) {
                                 if (canIMoveWhenIsKingCheck(game, MOVE,true))
@@ -95,7 +95,7 @@ public class Knight extends Figure {
                     }
                 }
             } catch (Exception e) {
-                movementExceptions(game, e, SELECTED, whichMove);
+                movementExceptions(game, e, SELECTED, moveDirection);
             }
         }
     }

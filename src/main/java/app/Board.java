@@ -7,7 +7,7 @@ import booleans.CastlingConditions;
 
 public class Board {
 
-    private final CastlingConditions castlingConditions;
+    private CastlingConditions castlingConditions;
     private final Field[] field;
 
     public Board(CastlingConditions castlingConditions, Field[] field) {
@@ -15,6 +15,7 @@ public class Board {
         this.castlingConditions = castlingConditions;
 
         initializeBoard(); // if you want to initialize other Boards you have to comment "figures.King.setLegalCastling(game)"
+//        initializeTestBoard();
     }
 
     public void initializeEmptyBoard() {
@@ -54,11 +55,18 @@ public class Board {
         this.field[63].initializeFigure(new Rook(FigureColor.WHITE));
     }
 
+    public void initializeLoadedBoard(Game game) {
+        for (int i = 0 ; i < 64 ; i ++)
+        this.field[i].initializeFigure(game.getBoard().getField(i).getFigure());
+
+
+    }
+
     public void initializeTestBoard() {
 
-        initializeEmptyBoard();
-        this.field[0].initializeFigure(new Queen(FigureColor.BLACK));
-        this.field[30].initializeFigure(new Queen(FigureColor.WHITE));
+        initializeBoard();
+        this.field[12].initializeFigure(new Queen(FigureColor.BLACK));
+        this.field[52].initializeFigure(new Queen(FigureColor.WHITE));
     }
 
     public void initializeBoardTestingEnPassant() {
@@ -112,10 +120,6 @@ public class Board {
         this.field[60].initializeFigure(new King(FigureColor.WHITE));
     }
 
-    public CastlingConditions getCastlingConditions() {
-        return castlingConditions;
-    }
-
     public Field getField(int i) {
         return field[i];
     }
@@ -123,6 +127,15 @@ public class Board {
     public Field[] getWholeField() {
         return field;
     }
+
+    public CastlingConditions getCastlingConditions() {
+        return castlingConditions;
+    }
+
+    public void setCastlingConditions(CastlingConditions castlingConditions) {
+        this.castlingConditions = castlingConditions;
+    }
 }
+
 
     

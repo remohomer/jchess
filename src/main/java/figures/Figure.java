@@ -9,7 +9,7 @@ import enums.FigureType;
 public abstract class Figure extends FigureState implements Movement {
 
 
-    public abstract void movement(Game game, final int selectedFigurePosition);
+    public abstract void setLegalMovement(Game game, final int selectedFigurePosition);
 
     protected FigureType figureType;
     protected FigureColor figureColor;
@@ -46,46 +46,6 @@ public abstract class Figure extends FigureState implements Movement {
         }
     }
 
-    public static boolean canIMoveWhenIsKingCheck(Game game, int MOVE, boolean setUnderPressure) {
-        if (isKingCheck(game)) {
-            if (game.getBoard().getField(MOVE).getFigure().isCheckLine() && game.getBoard().getField(MOVE).getFigure().getFigureType() != FigureType.KING) {
-                game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
-                if (setUnderPressure) {
-                    setUnderPressure(game, MOVE);
-                }
-                return true;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean canIMoveWhenIAmPinned(Game game, int MOVE, int SELECTED, boolean setUnderPressure) {
-        if (!isKingCheck(game)) {
-            if (game.getBoard().getField(SELECTED).getFigure().isPinned()) {
-                if (game.getBoard().getField(SELECTED).getFigure().getFigureType() == FigureType.PAWN) {
-                    if (game.getBoard().getField(MOVE).getFigure().isPinnedCheckLine() && isEnemyFigure(game, MOVE)) {
-                        game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
-                        if (setUnderPressure) {
-                            setUnderPressure(game, MOVE);
-                        }
-                        return true;
-                    }
-                    return true;
-                }
-                if (game.getBoard().getField(MOVE).getFigure().isPinnedCheckLine()) {
-                    game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
-                    if (setUnderPressure) {
-                        setUnderPressure(game, MOVE);
-                    }
-                    return true;
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static void setUnderPressure(Game game, int position) {
         if (game.getWhoseTurn() == FigureColor.WHITE) {
             game.getBoard().getField(position).getFigure().setUnderPressureByWhite(true);
@@ -102,34 +62,21 @@ public abstract class Figure extends FigureState implements Movement {
         }
     }
 
-    public static boolean setCheckLines(Game game, int MOVE, int whichMove, int j) {
+    public static boolean setCheckLines(Game game, final int MOVE, final int MOVE_DIRECTION, int beforePinned) {
         if (isEnemyKing(game, MOVE)) {
-            if (isOnBoard(MOVE + whichMove) && isEmptyFigure(game, MOVE + whichMove)) {
-                game.getBoard().getField(MOVE + whichMove).getFigure().setCheckLine(true);
-                setUnderPressure(game, MOVE + whichMove);
+            if (isOnBoard(MOVE + MOVE_DIRECTION) && isEmptyFigure(game, MOVE + MOVE_DIRECTION)) {
+                    game.getBoard().getField(MOVE + MOVE_DIRECTION).getFigure().setCheckLineBehindKing(true);
+                    setUnderPressure(game, MOVE + MOVE_DIRECTION);
             }
-            for (int i = 0; i <= j; i++) {
-                game.getBoard().getField(MOVE - whichMove * i).getFigure().setCheckLine(true);
+            for (int i = 0; i <= beforePinned; i++) {
+                game.getBoard().getField(MOVE - MOVE_DIRECTION * i).getFigure().setCheckLine(true);
             }
             return true;
         }
         return false;
     }
 
-    public static boolean setPinnedCheckLines(Game game, int MOVE, int whichMove, int j) {
-        if (isOnBoard(MOVE + whichMove)) {
-            if (isEnemyKing(game, MOVE + whichMove)) {
-                game.getBoard().getField(MOVE).getFigure().setPinned(true);
-                for (int i = 0; i <= j; i++) {
-                    game.getBoard().getField(MOVE - whichMove * i).getFigure().setPinnedCheckLine(true);
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static void setLegalMoves(Game game, int MOVE, int SELECTED, boolean setUnderPressure) {
+    public static void setLegalMoves(Game game, final int MOVE, final int SELECTED, boolean setUnderPressure) {
         if (canIMoveWhenIsKingCheck(game, MOVE, setUnderPressure)) {
         } else if (canIMoveWhenIAmPinned(game, MOVE, SELECTED, setUnderPressure)) {
         } else {
@@ -139,13 +86,13 @@ public abstract class Figure extends FigureState implements Movement {
         }
     }
 
-    public static void movementExceptions(Game game, Exception e, int SELECTED, int whichMove) {
+    public static void movementExceptions(Game game, Exception e, final int SELECTED, final int MOVE_DIRECTION) {
         System.out.println(e.getMessage());
         System.out.println("----------------------------------");
         System.out.println("FigureType: " + game.getBoard().getField(SELECTED).getFigure().figureType);
         System.out.println("FigureColor: " + game.getBoard().getField(SELECTED).getFigure().figureColor);
         System.out.println("SELECTED: " + SELECTED);
-        System.out.println("whichMoves: " + whichMove);
+        System.out.println("MOVE_DIRECTIONs: " + MOVE_DIRECTION);
     }
 
     public boolean isPawn(Board board, int position) {
@@ -172,96 +119,123 @@ public abstract class Figure extends FigureState implements Movement {
         return game.getBoard().getField(position).getFigure().getFigureType() == FigureType.KING && game.getBoard().getField(position).getFigure().getFigureColor() != game.getWhoseTurn();
     }
 
-    public static boolean isEnPassant(Board board, int position) {
-        return board.getField(position).getFigure().isEnPassant();
-    }
-
-    public static void LoopedMoveSwitch(Game game, final int SELECTED, int whichMove) {
-        switch (whichMove) {
+    public static void LoopedMoveSwitch(Game game, final int SELECTED, final int MOVE_DIRECTION) {
+        switch (MOVE_DIRECTION) {
             case TOP: {
-                if (!isEightRow(game.getBoard(), SELECTED))
-                    LoopedMoveInsideConditions(game, SELECTED, whichMove);
+                if (!isEightRow(game.getBoard(), SELECTED)) {
+                    LoopedMoveInsideConditions(game, SELECTED, MOVE_DIRECTION);
+                }
                 break;
             }
             case BOTTOM: {
-                if (!isFirstRow(game.getBoard(), SELECTED))
-                    LoopedMoveInsideConditions(game, SELECTED, whichMove);
+                if (!isFirstRow(game.getBoard(), SELECTED)) {
+                    LoopedMoveInsideConditions(game, SELECTED, MOVE_DIRECTION);
+                }
                 break;
             }
             case LEFT: {
-                if (!isFirstColumn(game.getBoard(), SELECTED))
-                    LoopedMoveInsideConditions(game, SELECTED, whichMove);
+                if (!isFirstColumn(game.getBoard(), SELECTED)) {
+                    LoopedMoveInsideConditions(game, SELECTED, MOVE_DIRECTION);
+                }
                 break;
             }
             case RIGHT: {
-                if (!isEightColumn(game.getBoard(), SELECTED))
-                    LoopedMoveInsideConditions(game, SELECTED, whichMove);
+                if (!isEightColumn(game.getBoard(), SELECTED)) {
+                    LoopedMoveInsideConditions(game, SELECTED, MOVE_DIRECTION);
+                }
                 break;
             }
             case TOP_LEFT: {
-                if (!isEightRow(game.getBoard(), SELECTED) && !isFirstColumn(game.getBoard(), SELECTED))
-                    LoopedMoveInsideConditions(game, SELECTED, whichMove);
+                if (!isEightRow(game.getBoard(), SELECTED) && !isFirstColumn(game.getBoard(), SELECTED)) {
+                    LoopedMoveInsideConditions(game, SELECTED, MOVE_DIRECTION);
+                }
                 break;
             }
             case TOP_RIGHT: {
-                if (!isEightRow(game.getBoard(), SELECTED) && !isEightColumn(game.getBoard(), SELECTED))
-                    LoopedMoveInsideConditions(game, SELECTED, whichMove);
+                if (!isEightRow(game.getBoard(), SELECTED) && !isEightColumn(game.getBoard(), SELECTED)) {
+                    LoopedMoveInsideConditions(game, SELECTED, MOVE_DIRECTION);
+                }
                 break;
             }
             case BOTTOM_LEFT: {
-                if (!isFirstRow(game.getBoard(), SELECTED) && !isFirstColumn(game.getBoard(), SELECTED))
-                    LoopedMoveInsideConditions(game, SELECTED, whichMove);
+                if (!isFirstRow(game.getBoard(), SELECTED) && !isFirstColumn(game.getBoard(), SELECTED)) {
+                    LoopedMoveInsideConditions(game, SELECTED, MOVE_DIRECTION);
+                }
                 break;
             }
             case BOTTOM_RIGHT: {
-                if (!isFirstRow(game.getBoard(), SELECTED) && !isEightColumn(game.getBoard(), SELECTED))
-                    LoopedMoveInsideConditions(game, SELECTED, whichMove);
+                if (!isFirstRow(game.getBoard(), SELECTED) && !isEightColumn(game.getBoard(), SELECTED)) {
+                    LoopedMoveInsideConditions(game, SELECTED, MOVE_DIRECTION);
+                }
                 break;
             }
         }
     }
 
-    public static void LoopedMoveInsideConditions(Game game, final int SELECTED, int whichMove) {
-        for (int j = 1; j < 8; j++) {
-            final int MOVE = SELECTED + (whichMove * j);
+    public static void LoopedMoveInsideConditions(Game game, final int SELECTED, final int MOVE_DIRECTION) {
+        for (int beforePinned = 1; beforePinned < 8; beforePinned++) {
+            final int MOVE = SELECTED + (MOVE_DIRECTION * beforePinned);
             if (isOnBoard(MOVE)) {
-                if (canIMoveWhenIsKingCheck(game, MOVE, true))
-                    break;
-                if (canIMoveWhenIAmPinned(game, MOVE, SELECTED, true))
-                    break;
+                if (canIMoveWhenIsKingCheck(game, MOVE, true)) {
+                    if(!isOnBoard(MOVE)) {
+                        break;
+                    }
+                }
+                if (canIMoveWhenIAmPinned(game, MOVE, SELECTED, true)) {
+                    // TODO: samo sprawdzenie warunku ustawiło pole. Dlaczego usunięcie break rozwiązało problem?
+                }
                 if (isEmptyFigure(game, MOVE)) {
                     setLegalMoves(game, MOVE, SELECTED, true);
-                    if (whichMove == TOP) {
-                        if (isEightRow(game.getBoard(), MOVE))
+                    if (MOVE_DIRECTION == TOP) {
+                        if (isEightRow(game.getBoard(), MOVE)) {
                             break;
-                    } else if (whichMove == BOTTOM) {
-                        if (isFirstRow(game.getBoard(), MOVE))
+                        }
+                    } else if (MOVE_DIRECTION == BOTTOM) {
+                        if (isFirstRow(game.getBoard(), MOVE)) {
                             break;
-                    } else if (whichMove == LEFT) {
-                        if (isFirstColumn(game.getBoard(), MOVE))
+                        }
+                    } else if (MOVE_DIRECTION == LEFT) {
+                        if (isFirstColumn(game.getBoard(), MOVE)) {
                             break;
-                    } else if (whichMove == RIGHT) {
-                        if (isEightColumn(game.getBoard(), MOVE))
+                        }
+                    } else if (MOVE_DIRECTION == RIGHT) {
+                        if (isEightColumn(game.getBoard(), MOVE)) {
                             break;
-                    } else if (whichMove == TOP_LEFT) {
-                        if (isEightRow(game.getBoard(), MOVE) || isFirstColumn(game.getBoard(), MOVE))
+                        }
+                    } else if (MOVE_DIRECTION == TOP_LEFT) {
+                        if (isEightRow(game.getBoard(), MOVE) || isFirstColumn(game.getBoard(), MOVE)) {
                             break;
-                    } else if (whichMove == TOP_RIGHT) {
-                        if (isEightRow(game.getBoard(), MOVE) || isEightColumn(game.getBoard(), MOVE))
+                        }
+                    } else if (MOVE_DIRECTION == TOP_RIGHT) {
+                        if (isEightRow(game.getBoard(), MOVE) || isEightColumn(game.getBoard(), MOVE)) {
                             break;
-                    } else if (whichMove == BOTTOM_LEFT) {
-                        if (isFirstRow(game.getBoard(), MOVE) || isFirstColumn(game.getBoard(), MOVE))
+                        }
+                    } else if (MOVE_DIRECTION == BOTTOM_LEFT) {
+                        if (isFirstRow(game.getBoard(), MOVE) || isFirstColumn(game.getBoard(), MOVE)) {
                             break;
-                    } else if (whichMove == BOTTOM_RIGHT) {
-                        if (isFirstRow(game.getBoard(), MOVE) || isEightColumn(game.getBoard(), MOVE))
+                        }
+                    } else if (MOVE_DIRECTION == BOTTOM_RIGHT) {
+                        if (isFirstRow(game.getBoard(), MOVE) || isEightColumn(game.getBoard(), MOVE)) {
                             break;
+                        }
                     }
                 } else if (isEnemyFigure(game, MOVE)) {
+                    // set protected to friendlyFigure if is behind of enemyKing
+                    try {
+                        if (isEnemyKing(game, MOVE) && isFriendlyFigure(game, MOVE + MOVE_DIRECTION)) {
+                            setProtected(game, MOVE + MOVE_DIRECTION);
+                        }
+                    } catch (IndexOutOfBoundsException e) {
+                        System.out.println(e);
+                    }
                     setLegalMoves(game, MOVE, SELECTED, true);
-                    if (setCheckLines(game, MOVE, whichMove, j))
-                        break;
-                    if (setPinnedCheckLines(game, MOVE, whichMove, j))
-                        break;
+
+                    if (setCheckLines(game, MOVE, MOVE_DIRECTION, beforePinned)) {
+                        // TODO: po co mi tu breake był?
+                    }
+                    if (setPinnedCheckLines(game, MOVE, MOVE_DIRECTION, beforePinned)) {
+                        // TODO: po co mi tu breake był?
+                    }
                     break;
                 } else {
                     setProtected(game, MOVE);
@@ -271,36 +245,102 @@ public abstract class Figure extends FigureState implements Movement {
         }
     }
 
-    public static boolean isFirstRow(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getRow() == 1;
+    public static boolean canIMoveWhenIsKingCheck(Game game, final int MOVE, boolean setUnderPressure) {
+        if (isKingCheck(game)) {
+            if (game.getBoard().getField(MOVE).getFigure().isCheckLine() && game.getBoard().getField(MOVE).getFigure().getFigureType() != FigureType.KING) {
+                game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
+                if (setUnderPressure) {
+                    setUnderPressure(game, MOVE);
+                }
+                return true;
+            }
+            return true;
+        }
+        return false;
     }
 
-    public static boolean isSecondRow(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getRow() == 2;
+    public static boolean canIMoveWhenIAmPinned(Game game, final int MOVE, final int SELECTED, boolean setUnderPressure) {
+        if (!isKingCheck(game)) {
+            if (game.getBoard().getField(SELECTED).getFigure().isPinned()) {
+                if (game.getBoard().getField(SELECTED).getFigure().getFigureType() == FigureType.PAWN) {
+                    if (game.getBoard().getField(MOVE).getFigure().isPinnedCheckLine() && isEnemyFigure(game, MOVE)) {
+                        game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
+                        if (setUnderPressure) {
+                            setUnderPressure(game, MOVE);
+                        }
+                        return true;
+                    } else if (game.getBoard().getField(MOVE).getFigure().isPinnedCheckLine() && isEmptyFigure(game, MOVE)) {
+                        game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
+                        return true;
+                    }
+                }
+                if (game.getBoard().getField(MOVE).getFigure().isPinnedCheckLine()) {
+                    game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
+                    if (setUnderPressure) {
+                        setUnderPressure(game, MOVE);
+                    }
+                    return true;
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
-    public static boolean isSevenRow(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getRow() == 7;
+    public static boolean setPinnedCheckLines(Game game, final int MOVE, final int MOVE_DIRECTION, int beforePinned) {
+        // TODO: tu coś fix'owałem
+        for (int afterPinned = 1; afterPinned <= 6; afterPinned++) {
+            if (isOnBoard(MOVE + MOVE_DIRECTION)) {
+                if (isEnemyFigure(game, MOVE + MOVE_DIRECTION * afterPinned) && !isEnemyKing(game, MOVE + MOVE_DIRECTION * afterPinned)) {
+                    return false;
+                }
+                if (isEnemyKing(game, MOVE + MOVE_DIRECTION * afterPinned)) {
+                    game.getBoard().getField(MOVE).getFigure().setPinned(true);
+
+                    for (int i = 0; i < afterPinned; i++) {
+                        game.getBoard().getField(MOVE + MOVE_DIRECTION * i).getFigure().setPinnedCheckLine(true);
+                    }
+
+                    for (int i = 1; i <= beforePinned; i++) {
+                        game.getBoard().getField(MOVE - MOVE_DIRECTION * i).getFigure().setPinnedCheckLine(true);
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
-    public static boolean isEightRow(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getRow() == 8;
+    public static boolean isFirstRow(Board board, final int SELECTED) {
+        return board.getField(SELECTED).getRow() == 1;
     }
 
-    public static boolean isFirstColumn(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getColumn() == 1;
+    public static boolean isSecondRow(Board board, final int SELECTED) {
+        return board.getField(SELECTED).getRow() == 2;
     }
 
-    public static boolean isSecondColumn(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getColumn() == 2;
+    public static boolean isSevenRow(Board board, final int SELECTED) {
+        return board.getField(SELECTED).getRow() == 7;
     }
 
-    public static boolean isSevenColumn(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getColumn() == 7;
+    public static boolean isEightRow(Board board, final int SELECTED) {
+        return board.getField(SELECTED).getRow() == 8;
     }
 
-    public static boolean isEightColumn(Board board, int selectedFigurePosition) {
-        return board.getField(selectedFigurePosition).getColumn() == 8;
+    public static boolean isFirstColumn(Board board, final int SELECTED) {
+        return board.getField(SELECTED).getColumn() == 1;
+    }
+
+    public static boolean isSecondColumn(Board board, final int SELECTED) {
+        return board.getField(SELECTED).getColumn() == 2;
+    }
+
+    public static boolean isSevenColumn(Board board, final int SELECTED) {
+        return board.getField(SELECTED).getColumn() == 7;
+    }
+
+    public static boolean isEightColumn(Board board, final int SELECTED) {
+        return board.getField(SELECTED).getColumn() == 8;
     }
 
     public boolean isActivePromotion() {

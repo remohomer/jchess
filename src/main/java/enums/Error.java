@@ -8,16 +8,10 @@ public enum Error {
     INCORRECT_TYPE_OF_OBJECT (4, "object class is incorrect"),
     INCORRECT_INPUT_DATA (5, "incorrect input data");
 
-    private final int id;
     private final String message;
 
     Error(int id, String message) {
-        this.id = id;
         this.message = "ERROR " + id + ": " + message;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public String getMessage() {

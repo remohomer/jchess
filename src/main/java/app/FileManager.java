@@ -98,7 +98,7 @@ public class FileManager {
 
     public static Game loadFileTxtToGame(int gameId) {
 
-        Game game = new Game(InitializeGame.newTempGame());
+        Game game = new Game(InitializeGame.newStandardGame());
         try {
             String patch = patchBuilder(gameId, "game", "txt");
             BufferedReader reader = new BufferedReader(new FileReader(patch));
