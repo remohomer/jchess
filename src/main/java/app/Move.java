@@ -18,6 +18,7 @@ public class Move {
 
     public static void move(Game game, int firstPosition, int secondPosition) {
         try {
+            FileManager.saveLastMoveToFileTxt(game);
             setPawnIsMovedOrFigureIsTaking(game.getBoard().getField(firstPosition).getFigure().getFigureType() == FigureType.PAWN
                     || game.getBoard().getField(secondPosition).getFigure().getFigureType() != FigureType.EMPTY);
 
@@ -61,12 +62,12 @@ public class Move {
     }
 
     public static void doWhiteKingSideCastling(Board board) {
-            board.getField(61).setFigure(new Rook(FigureColor.WHITE));
-            board.getField(62).setFigure(new King(FigureColor.WHITE));
-            board.getField(60).setFigure(new Empty());
-            board.getField(63).setFigure(new Empty());
-            board.getCastlingConditions().setWhiteKingMove(true);
-            board.getCastlingConditions().setWhiteRightRookMove(true);
+        board.getField(61).setFigure(new Rook(FigureColor.WHITE));
+        board.getField(62).setFigure(new King(FigureColor.WHITE));
+        board.getField(60).setFigure(new Empty());
+        board.getField(63).setFigure(new Empty());
+        board.getCastlingConditions().setWhiteKingMove(true);
+        board.getCastlingConditions().setWhiteRightRookMove(true);
     }
 
     public static void doWhiteQueenSideCastling(Board board) {
@@ -141,7 +142,7 @@ public class Move {
                 && game.getWhoseTurn() == FigureColor.WHITE
                 && game.getBoard().getField(secondPosition).getFigure().isEnPassantForWhite()
                 && game.getBoard().getField(secondPosition).getFigure().isLegalMove()
-        || game.getBoard().getField(firstPosition).getFigure().getFigureType() == FigureType.PAWN
+                || game.getBoard().getField(firstPosition).getFigure().getFigureType() == FigureType.PAWN
                 && game.getWhoseTurn() == FigureColor.BLACK
                 && game.getBoard().getField(secondPosition).getFigure().isEnPassantForBlack()
                 && game.getBoard().getField(secondPosition).getFigure().isLegalMove()
@@ -153,7 +154,8 @@ public class Move {
             } else {
                 game.getBoard().getField(secondPosition + figures.Movement.TOP).setFigure(new Empty());
             }
-            return true;
+                return true;
+
         }
         return false;
     }
@@ -358,8 +360,9 @@ public class Move {
             }
         }
 
-        if (check)
+        if (check) {
             return true;
+        }
         board.getCastlingConditions().setWhiteKingCheck(false);
         board.getCastlingConditions().setBlackKingCheck(false);
         return false;
@@ -464,6 +467,14 @@ public class Move {
 
     public void execute(Game game) {
 
+    }
+
+    static int getLastMoveSource() {
+        return lastMoveSource;
+    }
+
+    static int getLastMoveDestiny() {
+        return lastMoveDestiny;
     }
 
     static void setLastMove(int firstPosition, int secondPosition) {

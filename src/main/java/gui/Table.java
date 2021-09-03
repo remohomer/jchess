@@ -4,6 +4,7 @@ import app.FileManager;
 import app.Game;
 import app.Move;
 import app.Printer;
+import enums.FigureColor;
 import enums.FigureType;
 import enums.PrintBoardType;
 import app.Main;
@@ -30,6 +31,7 @@ public class Table {
     private final Color darkFieldColor = Color.decode("#76945b");
     private final Color selectedFieldColor = Color.decode("#e2de79");
     private final Color legalFieldColor = Color.decode("#f05456");
+    private final Color legalEmptyFieldColor = Color.decode("#f48183");
     private final Color lastMoveSourceColor = Color.decode("#f8f476");
     private final Color lastMoveDestinyColor = Color.decode("#f8f476");
 
@@ -39,7 +41,7 @@ public class Table {
     public static Dimension FRAME_DIMENSION = new Dimension(500, 500);
     public static Dimension BOARD_PANEL_DIMENSION = new Dimension(450, 450);
     public static Dimension FIELD_PANEL_DIMENSION = new Dimension(10, 10);
-    private static String defaultFigureIconPath = "images/figures/png/";
+    private static String defaultFigureIconPath = "src/images/figures/png/";
 
     public Table(Game game) {
         this.gameFrame = new JFrame("jChess by Remoh");
@@ -61,21 +63,20 @@ public class Table {
     }
 
     private JMenu createGameFileMenu(Game game) {
-        final JMenu fileMenu = new JMenu("Plik");
+        final JMenu fileMenu = new JMenu("Gra");
 
         final JMenuItem newGame = new JMenuItem("Nowa gra");
         newGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 game.newGame();
-                System.out.println("new game!");
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
                         boardPanel.drawBoard(game);
                     }
                 });
-                System.out.println("Load last game!");
+                System.out.println("new game!");
             }
         });
         fileMenu.add(newGame);
@@ -85,7 +86,7 @@ public class Table {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                game.loadGame(2);
+                game.loadGame(1);
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -97,6 +98,22 @@ public class Table {
             }
         });
         fileMenu.add(loadGame);
+
+        final JMenuItem stepBack = new JMenuItem("Cofnij ostatni ruch");
+        stepBack.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                game.loadLastMove(666);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        boardPanel.drawBoard(game);
+                    }
+                });
+                System.out.println("Cofam ostatni ruch");
+            }
+        });
+        fileMenu.add(stepBack);
 
         final JMenuItem saveGame = new JMenuItem("Zapisz i wyjdź");
         saveGame.addActionListener(new ActionListener() {
@@ -179,6 +196,7 @@ public class Table {
                                     System.out.println("Złapałem nową figure!");
                                     Printer.printBoard(game, fieldId, PrintBoardType.CHECK_LINES);
                                     Printer.printBoard(game, fieldId, PrintBoardType.PINNED_AND_PINNED_CHECK_LINES);
+//                                    Printer.printBoard(game, fieldId, PrintBoardType.NUMBERS);
                                     Printer.printBooleans(game);
                                 }
                             } else {
@@ -195,6 +213,7 @@ public class Table {
                                     System.out.println("Wykonałem poprawny ruch");
                                     Printer.printBoard(game, Printer.NOT_SELECTED_FIGURE, PrintBoardType.CHECK_LINES);
                                     Printer.printBoard(game, Printer.NOT_SELECTED_FIGURE, PrintBoardType.PINNED_AND_PINNED_CHECK_LINES);
+//                                    Printer.printBoard(game, fieldId, PrintBoardType.NUMBERS);
                                     Printer.printBooleans(game);
                                 } else {
                                     if (Move.isLegalFirstPosition(game, game.getWhoseTurn(), fieldId)) {
@@ -205,6 +224,7 @@ public class Table {
                                         System.out.println("Zmieniłem złapaną figure!");
                                         Printer.printBoard(game, fieldId, PrintBoardType.CHECK_LINES);
                                         Printer.printBoard(game, fieldId, PrintBoardType.PINNED_AND_PINNED_CHECK_LINES);
+//                                        Printer.printBoard(game, fieldId, PrintBoardType.NUMBERS);
                                         Printer.printBooleans(game);
                                     }
                                 }
@@ -275,7 +295,15 @@ public class Table {
                 if (game.getBoard().getField(fieldId).getFigure().isSelected()) {
                     setBackground(selectedFieldColor);
                 } else if (game.getBoard().getField(fieldId).getFigure().isLegalMove()) {
-                    setBackground(legalFieldColor);
+                    if (game.getWhoseTurn() == FigureColor.BLACK && game.getBoard().getField(fieldId).getFigure().isEnPassantForBlack()) {
+                        setBackground(legalFieldColor);
+                    } else if (game.getWhoseTurn() == FigureColor.WHITE && game.getBoard().getField(fieldId).getFigure().isEnPassantForWhite()) {
+                        setBackground(legalFieldColor);
+                    } else if (game.getBoard().getField(fieldId).getFigure().getFigureType() == FigureType.EMPTY) {
+                        setBackground(legalEmptyFieldColor);
+                    } else {
+                        setBackground(legalFieldColor);
+                    }
                 } else if (fieldId == Move.lastMoveSource) {
                     setBackground(lastMoveSourceColor);
                 } else if (fieldId == Move.lastMoveDestiny) {

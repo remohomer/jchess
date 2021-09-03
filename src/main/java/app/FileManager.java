@@ -96,6 +96,28 @@ public class FileManager {
         }
     }
 
+    public static void saveLastMoveToFileTxt(Game game) {
+
+        try {
+            String patch = patchBuilder(666, "game", "txt");
+
+            PrintWriter writer = new PrintWriter(new FileWriter(patch));
+
+            writer.println(game.getPlayer1().getPlayerName());
+            writer.println(game.getPlayer2().getPlayerName());
+            writer.println(game.getWhoseTurn());
+            writer.println(Move.getLastMoveSource());
+            writer.println(Move.getLastMoveDestiny());
+
+            for (int i = 0; i < 64; i++) {
+                writer.println(game.getBoard().getField(i).getNumber() + "|" + game.getBoard().getField(i).getFigure().getFigureType() + "|" + game.getBoard().getField(i).getFigure().getFigureColor());
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public static Game loadFileTxtToGame(int gameId) {
 
         Game game = new Game(InitializeGame.newStandardGame());

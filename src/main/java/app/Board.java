@@ -15,7 +15,7 @@ public class Board {
         this.castlingConditions = castlingConditions;
 
         initializeBoard(); // if you want to initialize other Boards you have to comment "figures.King.setLegalCastling(game)"
-//        initializeTestBoard();
+//        initializeMindFuckEnPassant();
     }
 
     public void initializeEmptyBoard() {
@@ -63,10 +63,16 @@ public class Board {
     }
 
     public void initializeTestBoard() {
+        initializeEmptyBoard();
+    }
 
-        initializeBoard();
-        this.field[12].initializeFigure(new Queen(FigureColor.BLACK));
-        this.field[52].initializeFigure(new Queen(FigureColor.WHITE));
+    public void initializeMindFuckEnPassant() {
+        initializeEmptyBoard();
+        this.field[51].initializeFigure(new Pawn(FigureColor.WHITE));
+        this.field[34].initializeFigure(new Pawn(FigureColor.BLACK));
+        this.field[33].initializeFigure(new King(FigureColor.BLACK));
+        this.field[39].initializeFigure(new Rook(FigureColor.WHITE));
+
     }
 
     public void initializeBoardTestingEnPassant() {

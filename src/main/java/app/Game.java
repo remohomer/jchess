@@ -63,14 +63,14 @@ public class Game extends GameStatus {
             loadPositions:
             {
                 do {
-                    Printer.printAllOfBoards(this,Printer.NOT_SELECTED_FIGURE);
+                    Printer.printAllOfBoards(this, Printer.NOT_SELECTED_FIGURE);
                     Printer.printBooleans(this);
 
                     sourcePosition = loadFirstPosition();
                     if (IsExitGame(sourcePosition)) {
                         break loadPositions;
                     }
-                    Printer.printAllOfBoards(this,sourcePosition);
+                    Printer.printAllOfBoards(this, sourcePosition);
                     Printer.printBooleans(this);
 
                     destinyPosition = loadSecondPosition();
@@ -258,8 +258,45 @@ public class Game extends GameStatus {
                 String figureType = token.nextToken();
                 String figureColor = token.nextToken();
                 initializeFigure(game.getBoard(), figureColor, figureType, position);
-                game.setLegalMovesForCurrentPlayer();
             }
+            game.setLegalMovesForCurrentPlayer();
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        this.sourcePosition = game.sourcePosition;
+        this.destinyPosition = game.sourcePosition;
+        this.setWhoseTurn(game.whoseTurn);
+        this.setActiveGame(game.isActiveGame());
+        this.setDraw(game.isDraw());
+        this.setCheckMate(game.isCheckMate());
+
+        this.getPlayer1().setPlayerName(game.getPlayer1().getPlayerName());
+        this.getPlayer2().setPlayerName(game.getPlayer2().getPlayerName());
+        this.getBoard().initializeLoadedBoard(game);
+        this.getBoard().setCastlingConditions(game.getBoard().getCastlingConditions());
+    }
+
+    public void loadLastMove(int gameId) {
+        Game game = new Game(InitializeGame.newStandardGame());
+        try {
+            String patch = FileManager.patchBuilder(gameId, "game", "txt");
+            BufferedReader reader = new BufferedReader(new FileReader(patch));
+
+            game.getPlayer1().setPlayerName(reader.readLine());
+            game.getPlayer2().setPlayerName(reader.readLine());
+            game.setWhoseTurn(reader.readLine());
+            Move.setLastMove(Integer.parseInt(reader.readLine()),Integer.parseInt(reader.readLine()));
+
+            for (int i = 0; i < 64; i++) {
+                StringTokenizer token = new StringTokenizer(reader.readLine(), "|");
+                int position = Integer.parseInt(token.nextToken());
+
+                String figureType = token.nextToken();
+                String figureColor = token.nextToken();
+                initializeFigure(game.getBoard(), figureColor, figureType, position);
+            }
+            game.setLegalMovesForCurrentPlayer();
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -288,6 +325,23 @@ public class Game extends GameStatus {
         this.getPlayer2().setPlayerName("Player_2");
         this.getBoard().initializeBoard();
         this.getBoard().setCastlingConditions(new CastlingConditions());
+        Move.setLastMove(-1,-1);
+    }
+
+    public int getSourcePosition() {
+        return sourcePosition;
+    }
+
+    public void setSourcePosition(int sourcePosition) {
+        this.sourcePosition = sourcePosition;
+    }
+
+    public int getDestinyPosition() {
+        return destinyPosition;
+    }
+
+    public void setDestinyPosition(int destinyPosition) {
+        this.destinyPosition = destinyPosition;
     }
 
 }

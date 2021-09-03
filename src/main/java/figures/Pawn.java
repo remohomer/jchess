@@ -1,5 +1,6 @@
 package figures;
 
+import app.FileManager;
 import app.Game;
 import app.Move;
 import app.Printer;
@@ -109,13 +110,31 @@ public class Pawn extends Figure {
 
     public static void PawnsDiagonallyMovementConditions(Game game, int MOVE, int SELECTED) {
         if (isEmptyFigure(game, MOVE) && isEnPassant(game, MOVE)) {
+
+            // MindFuck: checking isKingCheck after enPassant
+            FileManager.saveLastMoveToFileTxt(game);
+            Move.move(game, SELECTED, MOVE);
+            if(game.getWhoseTurn() == FigureColor.BLACK) {
+                game.getBoard().getField(MOVE + TOP).setFigure(new Empty());
+            } else {
+                game.getBoard().getField(MOVE + BOTTOM).setFigure(new Empty());
+            }
+            Move.setUnderPressureandProtected(game);
+            if (Move.isKingCheck(game.getBoard())) {
+                game.loadLastMove(999);
+            }
+
             setLegalMoves(game, MOVE, SELECTED, true);
-        }
-        else if (isEmptyFigure(game, MOVE))
+
+        } else if (isEmptyFigure(game, MOVE)) {
             setUnderPressure(game, MOVE);
-        else if (isEnemyFigure(game, MOVE))
+        } else if (isEnemyFigure(game, MOVE)) {
+            if (isEnemyKing(game, MOVE)) {
+                game.getBoard().getField(SELECTED).getFigure().setCheckLine(true);
+            }
             setLegalMoves(game, MOVE, SELECTED, true);
-        else if (isFriendlyFigure(game, MOVE))
+        } else if (isFriendlyFigure(game, MOVE)) {
             setProtected(game, MOVE);
+        }
     }
 }

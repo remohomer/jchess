@@ -62,20 +62,6 @@ public abstract class Figure extends FigureState implements Movement {
         }
     }
 
-    public static boolean setCheckLines(Game game, final int MOVE, final int MOVE_DIRECTION, int beforePinned) {
-        if (isEnemyKing(game, MOVE)) {
-            if (isOnBoard(MOVE + MOVE_DIRECTION) && isEmptyFigure(game, MOVE + MOVE_DIRECTION)) {
-                    game.getBoard().getField(MOVE + MOVE_DIRECTION).getFigure().setCheckLineBehindKing(true);
-                    setUnderPressure(game, MOVE + MOVE_DIRECTION);
-            }
-            for (int i = 0; i <= beforePinned; i++) {
-                game.getBoard().getField(MOVE - MOVE_DIRECTION * i).getFigure().setCheckLine(true);
-            }
-            return true;
-        }
-        return false;
-    }
-
     public static void setLegalMoves(Game game, final int MOVE, final int SELECTED, boolean setUnderPressure) {
         if (canIMoveWhenIsKingCheck(game, MOVE, setUnderPressure)) {
         } else if (canIMoveWhenIAmPinned(game, MOVE, SELECTED, setUnderPressure)) {
@@ -287,10 +273,23 @@ public abstract class Figure extends FigureState implements Movement {
         return false;
     }
 
+    public static boolean setCheckLines(Game game, final int MOVE, final int MOVE_DIRECTION, int beforePinned) {
+        if (isEnemyKing(game, MOVE)) {
+            if (isOnBoard(MOVE + MOVE_DIRECTION) && isEmptyFigure(game, MOVE + MOVE_DIRECTION)) {
+                game.getBoard().getField(MOVE + MOVE_DIRECTION).getFigure().setCheckLineBehindKing(true);
+                setUnderPressure(game, MOVE + MOVE_DIRECTION);
+            }
+            for (int i = 0; i <= beforePinned; i++) {
+                game.getBoard().getField(MOVE - MOVE_DIRECTION * i).getFigure().setCheckLine(true);
+            }
+            return true;
+        }
+        return false;
+    }
+
     public static boolean setPinnedCheckLines(Game game, final int MOVE, final int MOVE_DIRECTION, int beforePinned) {
-        // TODO: tu coś fix'owałem
         for (int afterPinned = 1; afterPinned <= 6; afterPinned++) {
-            if (isOnBoard(MOVE + MOVE_DIRECTION)) {
+            if (isOnBoard(MOVE + MOVE_DIRECTION * afterPinned)) {
                 if (isEnemyFigure(game, MOVE + MOVE_DIRECTION * afterPinned) && !isEnemyKing(game, MOVE + MOVE_DIRECTION * afterPinned)) {
                     return false;
                 }

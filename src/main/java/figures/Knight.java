@@ -1,6 +1,7 @@
 package figures;
 
 import app.Game;
+import booleans.FigureState;
 import enums.FigureColor;
 import enums.FigureType;
 
@@ -30,65 +31,65 @@ public class Knight extends Figure {
                     switch (moveDirection) {
                         case TOP_TOP_LEFT: {
                             if (!isSevenRow(game.getBoard(), SELECTED) && !isEightRow(game.getBoard(), SELECTED) && !isFirstColumn(game.getBoard(), SELECTED)) {
-                                if (canIMoveWhenIsKingCheck(game, MOVE,true))
+                                if (canIMoveWhenIsKingCheck(game, MOVE, true))
                                     break;
-                                MovementConditions(game, MOVE);
+                                MovementConditions(game, MOVE, SELECTED);
                             }
                             break;
                         }
                         case TOP_TOP_RIGHT: {
                             if (!isSevenRow(game.getBoard(), SELECTED) && !isEightRow(game.getBoard(), SELECTED) && !isEightColumn(game.getBoard(), SELECTED)) {
-                                if (canIMoveWhenIsKingCheck(game, MOVE,true))
+                                if (canIMoveWhenIsKingCheck(game, MOVE, true))
                                     break;
-                                MovementConditions(game, MOVE);
+                                MovementConditions(game, MOVE, SELECTED);
                             }
                             break;
                         }
                         case BOTTOM_BOTTOM_LEFT: {
                             if (!isFirstRow(game.getBoard(), SELECTED) && !isSecondRow(game.getBoard(), SELECTED) && !isFirstColumn(game.getBoard(), SELECTED)) {
-                                if (canIMoveWhenIsKingCheck(game, MOVE,true))
+                                if (canIMoveWhenIsKingCheck(game, MOVE, true))
                                     break;
-                                MovementConditions(game, MOVE);
+                                MovementConditions(game, MOVE, SELECTED);
                             }
                             break;
                         }
                         case BOTTOM_BOTTOM_RIGHT: {
                             if (!isFirstRow(game.getBoard(), SELECTED) && !isSecondRow(game.getBoard(), SELECTED) && !isEightColumn(game.getBoard(), SELECTED)) {
-                                if (canIMoveWhenIsKingCheck(game, MOVE,true))
+                                if (canIMoveWhenIsKingCheck(game, MOVE, true))
                                     break;
-                                MovementConditions(game, MOVE);
+                                MovementConditions(game, MOVE, SELECTED);
                             }
                             break;
                         }
                         case LEFT_LEFT_TOP: {
                             if (!isFirstColumn(game.getBoard(), SELECTED) && !isSecondColumn(game.getBoard(), SELECTED) && !isEightRow(game.getBoard(), SELECTED)) {
-                                if (canIMoveWhenIsKingCheck(game, MOVE,true))
+                                if (canIMoveWhenIsKingCheck(game, MOVE, true))
                                     break;
-                                MovementConditions(game, MOVE);
+                                MovementConditions(game, MOVE, SELECTED);
                             }
                             break;
                         }
                         case LEFT_LEFT_BOTTOM: {
                             if (!isFirstColumn(game.getBoard(), SELECTED) && !isSecondColumn(game.getBoard(), SELECTED) && !isFirstRow(game.getBoard(), SELECTED)) {
-                                if (canIMoveWhenIsKingCheck(game, MOVE,true))
+                                if (canIMoveWhenIsKingCheck(game, MOVE, true))
                                     break;
-                                MovementConditions(game, MOVE);
+                                MovementConditions(game, MOVE, SELECTED);
                             }
                             break;
                         }
                         case RIGHT_RIGHT_TOP: {
                             if (!isSevenColumn(game.getBoard(), SELECTED) && !isEightColumn(game.getBoard(), SELECTED) && !isEightRow(game.getBoard(), SELECTED)) {
-                                if (canIMoveWhenIsKingCheck(game, MOVE,true))
+                                if (canIMoveWhenIsKingCheck(game, MOVE, true))
                                     break;
-                                MovementConditions(game, MOVE);
+                                MovementConditions(game, MOVE, SELECTED);
                             }
                             break;
                         }
                         case RIGHT_RIGHT_BOTTOM: {
                             if (!isSevenColumn(game.getBoard(), SELECTED) && !isEightColumn(game.getBoard(), SELECTED) && !isFirstRow(game.getBoard(), SELECTED)) {
-                                if (canIMoveWhenIsKingCheck(game, MOVE,true))
+                                if (canIMoveWhenIsKingCheck(game, MOVE, true))
                                     break;
-                                MovementConditions(game, MOVE);
+                                MovementConditions(game, MOVE, SELECTED);
                             }
                             break;
                         }
@@ -100,10 +101,13 @@ public class Knight extends Figure {
         }
     }
 
-    public void MovementConditions(Game game, int MOVE) {
-        if (isFriendlyFigure(game, MOVE))
+    public void MovementConditions(Game game, int MOVE, int SELECTED) {
+        if (isFriendlyFigure(game, MOVE)) {
             setProtected(game, MOVE);
-        else {
+        } else {
+            if (isEnemyKing(game,MOVE)) {
+                game.getBoard().getField(SELECTED).getFigure().setCheckLine(true);
+            }
             game.getBoard().getField(MOVE).getFigure().setLegalMove(true);
             setUnderPressure(game, MOVE);
         }
