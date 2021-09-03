@@ -41,7 +41,7 @@ public class Table {
     public static Dimension FRAME_DIMENSION = new Dimension(500, 500);
     public static Dimension BOARD_PANEL_DIMENSION = new Dimension(450, 450);
     public static Dimension FIELD_PANEL_DIMENSION = new Dimension(10, 10);
-    private static String defaultFigureIconPath = "src/images/figures/png/";
+    private static String defaultFigureIconPath = "src/main/java/images/figures/png/";
 
     public Table(Game game) {
         this.gameFrame = new JFrame("jChess by Remoh");
